@@ -1,0 +1,6 @@
+(executable
+   (name hello)
+   (public_name HelloReasonApp.exe)
+   (libraries console.lib lwt lwt.unix)
+   ;(flags ( -ccopt -static ))
+)

@@ -1,0 +1,22 @@
+{
+  "name": "hello-reason",
+  "version": "0.0.0",
+  "esy": {
+    "build": "dune build"
+  },
+  "scripts": {
+    "start": "#{self.target_dir}/default/bin/hello.exe"
+  },
+  "dependencies": {
+    "@esy-ocaml/reason": "^3.5.2",
+    "@opam/dune": "2.3.1",
+    "@opam/lwt": "5.1.2",
+    "@reason-native/console": "^0.1.0",
+    "ocaml": "4.7.1004"
+  },
+  "resolutions": {
+    "esy-cross-compiler": "link:../esy-cross-compiler/package.json",
+    "ocaml": "github:EduardoRFS/ocaml:ocaml-cross-compiler.json#d2967d1d837a4135ab2fc554f992a6c55ce7f150",
+    "@opam/ocplib-endian": "github:OCamlPro/ocplib-endian:ocplib-endian.opam#4c7ce5474b574253074414f15e23aa09bb6abe6e"
+  }
+}
