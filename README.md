@@ -4,9 +4,7 @@
 
 - Docker
 
-### Linux Warning
-
-If you're using Linux you will need to setup binfmt + qemu to run ARM and ARMv8
+There is some additional requirements for Linux look at [docs/linux-setup.md](./docs/linux-setup.md)
 
 ## How to try it?
 
