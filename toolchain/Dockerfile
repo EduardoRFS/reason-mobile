@@ -22,5 +22,9 @@ RUN su ${TOOLCHAIN_USER} -c "curl -o- -L https://yarnpkg.com/install.sh | bash; 
 RUN echo "${TOOLCHAIN_USER} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers; \
   echo "Set disable_coredump false" > /etc/sudo.conf;
 
+RUN echo $'#! /bin/bash\n sudo ln -sf /opt/android/$1-$2/system /system' > /usr/local/bin/platform; \
+  chmod +x /usr/local/bin/platform
+
+
 # avoid cache invalidation
 RUN ln -s /app/.esy /home/${TOOLCHAIN_USER}/.esy 
