@@ -5,26 +5,8 @@
   "license": "MIT",
   "esy": {
     "build": [
-      [
-        "bash",
-        "-c",
-        "./install.sh"
-      ]
+      "bash -c ./setup.sh"
     ],
-    "buildsInSource": true,
-    "exportedEnv": {
-      "ESY_CROSS_COMPILER_TARGET": {
-        "val": "x86_64-linux-android",
-        "scope": "global"
-      },
-      "ESY_CROSS_COMPILER_HOST": {
-        "val": "x86_64-linux-android24",
-        "scope": "global"
-      },
-      "ESY_CROSS_COMPILER_CC": {
-        "val": "x86_64-linux-android24-clang #{esy-cross-compiler.lib / 'sys_shm.o'}",
-        "scope": "global"
-      }
-    }
+    "buildsInSource": true
   }
 }

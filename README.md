@@ -18,11 +18,8 @@ cd reason-mobile
 
 Now you should be inside of docker
 ```
-cd /app
-./switch x86_64 24
-
 cd /app/hello-reason
-esy # the first time will take some minutes
+esy # the first time can take some time
 esy start
 ```
 

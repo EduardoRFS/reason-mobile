@@ -2,7 +2,7 @@
   "name": "hello-reason",
   "version": "0.0.0",
   "esy": {
-    "build": "dune build"
+    "build": ["platform x86_64 24", "dune build @all"]
   },
   "scripts": {
     "start": "#{self.target_dir}/default/bin/hello.exe"
@@ -16,7 +16,7 @@
   },
   "resolutions": {
     "esy-cross-compiler": "link:../esy-cross-compiler/package.json",
-    "ocaml": "github:EduardoRFS/ocaml:ocaml-cross-compiler.json#d2967d1d837a4135ab2fc554f992a6c55ce7f150",
+    "ocaml": "github:EduardoRFS/ocaml:ocaml-cross-compiler.json#d546d2e7db567539d7628ca882a1509c71c7da36",
     "@opam/ocplib-endian": "github:OCamlPro/ocplib-endian:ocplib-endian.opam#4c7ce5474b574253074414f15e23aa09bb6abe6e"
   }
 }
