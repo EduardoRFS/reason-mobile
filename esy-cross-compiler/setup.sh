@@ -23,7 +23,7 @@ cp sys_shm.o $cur__install/lib
 platform x86_64 24
 
 # cross-build.sh
-NDK_COMPILER="x86_64-linux-android24-clang $cur__install/lib/sys_shm.o"
+NDK_COMPILER="x86_64-linux-android21-clang -fPIC $cur__install/lib/sys_shm.o"
 echo "#! /bin/bash
 set -u
 set -e
@@ -32,7 +32,7 @@ set -o pipefail
 
 ./esy-configure \
   -target x86_64-linux-android \
-  -host x86_64-linux-android24 \
+  -host x86_64-linux-android21 \
   -prefix \$cur__install \
   -flambda \
   -no-debugger \
