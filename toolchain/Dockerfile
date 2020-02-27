@@ -1,4 +1,4 @@
-FROM reason-mobile:base
+FROM eduardorfs/reason-mobile:base
 
 # RUN echo 'Server = http://linorg.usp.br/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
 RUN pacman -Sy --noconfirm unzip wget base base-devel zsh zsh-syntax-highlighting nodejs npm git
