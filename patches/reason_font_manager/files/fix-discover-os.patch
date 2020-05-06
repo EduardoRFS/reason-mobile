@@ -1,0 +1,173 @@
+diff --git a/config/discover.ml b/config/discover.ml
+deleted file mode 100644
+index ed01776..0000000
+--- a/config/discover.ml
++++ /dev/null
+@@ -1,61 +0,0 @@
+-
+-type os =
+-    | Windows
+-    | Mac
+-    | Linux
+-    | Unknown
+-
+-let uname () =
+-    let ic = Unix.open_process_in "uname" in
+-    let uname = input_line ic in
+-    let () = close_in ic in
+-    uname;;
+-
+-let get_os =
+-    match Sys.os_type with
+-    | "Win32" -> Windows
+-    | _ -> match uname () with
+-        | "Darwin" -> Mac
+-        | "Linux" -> Linux
+-        | _ -> Unknown
+-
+-let root = Sys.getenv "cur__root"
+-let c_flags = []
+-
+-let ccopt s = ["-ccopt"; s]
+-let cclib s = ["-cclib"; s]
+-
+-let flags =
+-    match get_os with
+-    | Windows ->  []
+-         @ cclib("-ldwrite")
+-         @ cclib("-lstdc++")
+-    | Linux -> []
+-         @ cclib("-lfontconfig")
+-         @ cclib("-lstdc++")
+-         @ ccopt "-I/usr/include"
+-    | Mac -> []
+-        @ ccopt("-framework CoreText")
+-        @ ccopt("-framework Foundation")
+-        @ cclib("-lstdc++")
+-    | _ -> []
+-;;
+-
+-let flags_with_sanitize =
+-    match get_os with
+-    | Linux -> flags @ ccopt("-fsanitize=address")
+-    | _ -> flags
+-;;
+-
+-let cxx_flags =
+-    match get_os with
+-    | Linux -> c_flags @ ["-fPIC"; "-lstdc++"]
+-    | Mac -> c_flags @ ["-x"; "objective-c++"; "-lstdc++"]
+-    | Windows -> c_flags @ ["-fno-exceptions"; "-fno-rtti"; "-lstdc++"]
+-    | _ -> c_flags
+-;;
+-
+-Configurator.V1.Flags.write_sexp "c_flags.sexp" c_flags;
+-Configurator.V1.Flags.write_sexp "cxx_flags.sexp" cxx_flags;
+-Configurator.V1.Flags.write_sexp "flags.sexp" flags;
+-Configurator.V1.Flags.write_sexp "flags_with_sanitize.sexp" flags_with_sanitize;
+diff --git a/config/discover.re b/config/discover.re
+new file mode 100644
+index 0000000..3fa670e
+--- /dev/null
++++ b/config/discover.re
+@@ -0,0 +1,100 @@
++type os =
++  | Android
++  | IOS
++  | Linux
++  | Mac
++  | Windows;
++
++let get_os = t => {
++  let header = {
++    let file = Filename.temp_file("discover", "os.h");
++    let fd = open_out(file);
++    output_string(
++      fd,
++      {|
++        #if defined(__APPLE__)
++          #include <TargetConditionals.h>
++          #if defined(TARGET_OS_IPHONE)
++            #define PLATFORM_NAME "ios"
++          #else
++            #define PLATFORM_NAME "mac"
++          #endif
++        #elif defined(__linux__)
++          #if defined(__ANDROID__)
++            #define PLATFORM_NAME "android"
++          #else
++            #define PLATFORM_NAME "linux"
++          #endif
++        #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
++          #define PLATFORM_NAME "windows"
++        #endif
++      |},
++    );
++    close_out(fd);
++    file;
++  };
++  let platform =
++    Configurator.V1.C_define.import(
++      t,
++      ~includes=[header],
++      [("PLATFORM_NAME", String)],
++    );
++  switch (platform) {
++  | [(_, String("android"))] => Android
++  | [(_, String("ios"))] => IOS
++  | [(_, String("linux"))] => Linux
++  | [(_, String("mac"))] => Mac
++  | [(_, String("windows"))] => Windows
++  | _ => failwith("Unknown operating system")
++  };
++};
++
++let root = Sys.getenv("cur__root");
++let c_flags = [];
++
++let ccopt = s => ["-ccopt", s];
++let cclib = s => ["-cclib", s];
++
++let flags = os =>
++  switch (os) {
++  | Android => [] @ cclib("-lstdc++")
++  | IOS
++  | Mac =>
++    []
++    @ ccopt("-framework CoreText")
++    @ ccopt("-framework Foundation")
++    @ cclib("-lstdc++")
++  | Linux =>
++    [] @ cclib("-lfontconfig") @ cclib("-lstdc++") @ ccopt("-I/usr/include")
++  | Windows => [] @ cclib("-ldwrite") @ cclib("-lstdc++")
++  };
++
++let flags_with_sanitize = os =>
++  switch (os) {
++  | Android
++  | Linux => flags(os) @ ccopt("-fsanitize=address")
++  | _ => flags(os)
++  };
++
++let cxx_flags = os =>
++  switch (os) {
++  | Android
++  | Linux => c_flags @ ["-fPIC", "-lstdc++"]
++  | IOS
++  | Mac => c_flags @ ["-x", "objective-c++", "-lstdc++"]
++  | Windows => c_flags @ ["-fno-exceptions", "-fno-rtti", "-lstdc++"]
++  };
++
++let () =
++  Configurator.V1.(
++    main(~name="c_test", t => {
++      let os = get_os(t);
++      Configurator.V1.Flags.write_sexp("c_flags.sexp", c_flags);
++      Configurator.V1.Flags.write_sexp("cxx_flags.sexp", cxx_flags(os));
++      Configurator.V1.Flags.write_sexp("flags.sexp", flags(os));
++      Configurator.V1.Flags.write_sexp(
++        "flags_with_sanitize.sexp",
++        flags_with_sanitize(os),
++      );
++    })
++  );

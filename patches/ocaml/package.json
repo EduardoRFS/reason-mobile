@@ -1,0 +1,38 @@
+{
+  "source": [
+    ["rm", "-rf", "ocaml", "$ESY_TOOLCHAIN-sysroot"],
+    [
+      "git",
+      "clone",
+      "--branch",
+      "4.8.1000+esy+cross+ios",
+      "--single-branch",
+      "--depth",
+      "1",
+      "https://github.com/EduardoRFS/ocaml.git"
+    ],
+    [
+      "mv",
+      "ocaml",
+      "$ESY_TOOLCHAIN-sysroot"
+    ]
+  ],
+  "build": [
+    [
+      "./configure",
+      "--prefix=$cur__install",
+      "--build=$ESY_TOOLCHAIN_BUILD",
+      "--host=$ESY_TOOLCHAIN_FULL_HOST",
+      "--disable-graph-lib",
+      "--disable-ocamldoc",
+      "CC=\"$ESY_TOOLCHAIN_CC\"",
+      "AS=\"$ESY_TOOLCHAIN_AS\"",
+      "ASPP=\"$ESY_TOOLCHAIN_ASPP\"",
+      "PARTIALLD=\"$ESY_TOOLCHAIN_PARTIALLD\""
+    ],
+    ["sh", "make.cross.sh"]
+  ],
+  "raw_dependencies": {
+    "@opam/ocamlfind": "*"
+  }
+}

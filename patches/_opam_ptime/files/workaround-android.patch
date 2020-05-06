@@ -1,0 +1,13 @@
+diff --git a/myocamlbuild.ml b/myocamlbuild.ml
+index 56986ab..60d75f5 100644
+--- a/myocamlbuild.ml
++++ b/myocamlbuild.ml
+@@ -4,7 +4,7 @@ open Command
+ let os = Ocamlbuild_pack.My_unix.run_and_read "uname -s"
+ 
+ let system_support_lib = match os with
+-| "Linux\n" -> [A "-cclib"; A "-lrt"]
++| "Linux\n" -> []
+ | _ -> []
+ 
+ let js_rule () =

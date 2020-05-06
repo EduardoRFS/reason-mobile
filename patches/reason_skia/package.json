@@ -1,0 +1,7 @@
+{
+  "build": [
+    ["sh", "-c", "\"patch -p1 < ./fix-discover-os.patch\""],
+    ["sh", "-c", "\"patch -p1 < ./fix-stubgen-android.patch\""],
+    ["dune", "build", "-p", "skia"]
+  ]
+}

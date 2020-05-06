@@ -1,0 +1,13 @@
+{
+  "build": [
+    ["touch","libffi.config"],
+    [
+      "make",
+      "-j6",
+      "OCAMLFIND='ocamlfind -toolchain $ESY_TOOLCHAIN'",
+      "XEN=disable",
+      "ctypes-base",
+      "ctypes-stubs"
+    ]
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "build": [
+    ["sh", "-c", "\"patch -p1 < ./workaround-android.patch\""],
+    [
+      "ocaml",
+      "pkg/pkg.ml",
+      "build",
+      "--pinned",
+      "false",
+      "--with-js_of_ocaml",
+      "false"
+    ]
+  ]
+}

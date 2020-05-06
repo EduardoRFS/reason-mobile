@@ -1,0 +1,271 @@
+diff --git a/.gitignore b/.gitignore
+index c193d91e..efd8f988 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -73,3 +73,6 @@ _esy/
+ .DS_Store
+ 
+ skia-c-example.png
++
++*.esy.lock
++.mocks
+\ No newline at end of file
+diff --git a/examples/dune b/examples/dune
+index 48d0b07c..6d6f5b1a 100644
+--- a/examples/dune
++++ b/examples/dune
+@@ -3,6 +3,7 @@
+     (preprocess (pps brisk-reconciler.ppx lwt_ppx))
+     (package Revery)
+     (public_names Examples)
++    (modes native shared_object)
+     (libraries
+         ExampleStubs
+         skia
+@@ -11,6 +12,11 @@
+         flex
+         timber
+             ))
++(rule
++ (targets examples.so)
++ (deps Examples.exe.o)
++ (action (run %{cc} -shared -Wl,-soname,%{targets} -o %{targets} -I %{ocaml_where} -I . %{deps}
++          %{ocaml-config:native_c_libraries})))
+ (install
+     (section bin)
+     (package Revery)
+diff --git a/package.json b/package.json
+index 5ac8941b..152fbf53 100644
+--- a/package.json
++++ b/package.json
+@@ -61,5 +61,11 @@
+     "@opam/dune": "^1.8.0",
+     "esy-astyle": "zbaylin/esy-astyle#59bc21a",
+     "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam#04733ed"
++  },
++  "target": {
++    "resolutions": {
++      "generate": "link-dev:../generate/esy.json",
++      "@_android/sysroot": "link-dev:../sysroot/package.json"
++    }
+   }
+ }
+diff --git a/src/Native/config/discover.ml b/src/Native/config/discover.ml
+deleted file mode 100644
+index 90e7d89b..00000000
+--- a/src/Native/config/discover.ml
++++ /dev/null
+@@ -1,54 +0,0 @@
+-module C = Configurator.V1
+-
+-type os = Windows | Mac | Linux | Unknown
+-
+-type config = {libs: string list; cflags: string list; flags: string list}
+-
+-let get_mac_config () =
+-  {cflags= ["-I"; "."; "-x"; "objective-c"]; libs= []; flags= []}
+-
+-let get_linux_config c =
+-  let default = {libs= []; cflags= []; flags= []} in
+-  match C.Pkg_config.get c with
+-  | None -> default
+-  | Some pc -> (
+-    match C.Pkg_config.query pc ~package:"gtk+-3.0" with
+-    | None -> default
+-    | Some conf -> {libs= conf.libs; cflags= conf.cflags; flags= []} )
+-
+-let ccopt s = ["-ccopt"; s]
+-let cclib s = ["-cclib"; s]
+-
+-let get_win32_config () =
+-  {
+-    cflags= [];
+-    libs= [];
+-    flags= []
+-        @ cclib("-luuid")
+-        @ cclib("-lole32")
+-  }
+-
+-let uname () =
+-  let ic = Unix.open_process_in "uname" in
+-  let uname = input_line ic in
+-  let () = close_in ic in
+-  uname
+-
+-let get_os =
+-  match Sys.os_type with
+-  | "Win32" -> Windows
+-  | _ -> (
+-    match uname () with "Darwin" -> Mac | "Linux" -> Linux | _ -> Unknown )
+-
+-let () =
+-  C.main ~name:"discover" (fun c ->
+-      let conf =
+-        match get_os with
+-        | Mac -> get_mac_config ()
+-        | Linux -> get_linux_config c
+-        | Windows -> get_win32_config ()
+-        | _ -> {libs= []; flags= []; cflags= []}
+-      in
+-      C.Flags.write_sexp "flags.sexp" conf.flags ;
+-      C.Flags.write_sexp "c_flags.sexp" conf.cflags ;
+-      C.Flags.write_sexp "c_library_flags.sexp" conf.libs )
+diff --git a/src/Native/config/discover.re b/src/Native/config/discover.re
+new file mode 100644
+index 00000000..a0f2b561
+--- /dev/null
++++ b/src/Native/config/discover.re
+@@ -0,0 +1,101 @@
++module C = Configurator.V1;
++
++type os =
++  | Android
++  | IOS
++  | Linux
++  | Mac
++  | Windows;
++
++let get_os = t => {
++  let header = {
++    let file = Filename.temp_file("discover", "os.h");
++    let fd = open_out(file);
++    output_string(
++      fd,
++      {|
++        #if defined(__APPLE__)
++          #include <TargetConditionals.h>
++          #if defined(TARGET_OS_IPHONE)
++            #define PLATFORM_NAME "ios"
++          #else
++            #define PLATFORM_NAME "mac"
++          #endif
++        #elif defined(__linux__)
++          #if defined(__ANDROID__)
++            #define PLATFORM_NAME "android"
++          #else
++            #define PLATFORM_NAME "linux"
++          #endif
++        #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
++          #define PLATFORM_NAME "windows"
++        #endif
++      |},
++    );
++    close_out(fd);
++    file;
++  };
++  let platform =
++    Configurator.V1.C_define.import(
++      t,
++      ~includes=[header],
++      [("PLATFORM_NAME", String)],
++    );
++  switch (platform) {
++  | [(_, String("android"))] => Android
++  | [(_, String("ios"))] => IOS
++  | [(_, String("linux"))] => Linux
++  | [(_, String("mac"))] => Mac
++  | [(_, String("windows"))] => Windows
++  | _ => failwith("Unknown operating system")
++  };
++};
++
++type config = {
++  libs: list(string),
++  cflags: list(string),
++  flags: list(string),
++};
++
++let get_mac_config = () => {
++  cflags: ["-I", ".", "-x", "objective-c"],
++  libs: [],
++  flags: [],
++};
++
++let get_linux_config = c => {
++  let default = {libs: [], cflags: [], flags: []};
++  switch (C.Pkg_config.get(c)) {
++  | None => default
++  | Some(pc) =>
++    switch (C.Pkg_config.query(pc, ~package="gtk+-3.0")) {
++    | None => default
++    | Some(conf) => {libs: conf.libs, cflags: conf.cflags, flags: []}
++    }
++  };
++};
++
++let ccopt = s => ["-ccopt", s];
++let cclib = s => ["-cclib", s];
++
++let get_win32_config = () => {
++  cflags: [],
++  libs: [],
++  flags: [] @ cclib("-luuid") @ cclib("-lole32"),
++};
++
++let () =
++  C.main(~name="discover", c => {
++    let conf =
++      switch (get_os(c)) {
++      | Android => {libs: [], cflags: [], flags: []}
++      | IOS
++      | Mac => get_mac_config()
++      | Linux => get_linux_config(c)
++      | Windows => get_win32_config()
++      };
++
++    C.Flags.write_sexp("flags.sexp", conf.flags);
++    C.Flags.write_sexp("c_flags.sexp", conf.cflags);
++    C.Flags.write_sexp("c_library_flags.sexp", conf.libs);
++  });
+diff --git a/src/Native/dialog.c b/src/Native/dialog.c
+index 9dba5f52..66e6d7d8 100644
+--- a/src/Native/dialog.c
++++ b/src/Native/dialog.c
+@@ -13,6 +13,8 @@
+ #include "ReveryWin32.h"
+ #elif __APPLE__
+ #include "ReveryCocoa.h"
++#elif __ANDROID
++
+ #else
+ #include "ReveryGtk.h"
+ #endif
+@@ -22,7 +24,7 @@ CAMLprim value revery_alertSupported() {
+     return Val_true;
+ #elif __APPLE__
+     return Val_true;
+-#elif __linux__
++#elif defined(__linux__) && !defined(__ANDROID__)
+     return Val_true;
+ #else
+     return Val_false;
+@@ -38,6 +40,10 @@ CAMLprim value revery_alert(value vWindow, value vMessage) {
+     revery_alert_win32(pWin, szMessage);
+ #elif __APPLE__
+     revery_alert_cocoa(pWin, szMessage);
++#elif __ANDROID__
++    printf("WARNING - Not implemented: alert\n");
++    printf("alert - message: %s\n", szMessage);
++    printf("alert - pWin: %p\n", pWin);
+ #elif __linux__
+     revery_alert_gtk(pWin, szMessage);
+ #else
+@@ -100,7 +106,7 @@ CAMLprim value revery_alertOpenFiles_native(
+     fileList = revery_open_files_cocoa(
+                    startDirectory, fileTypes, fileTypesSize, allowMultiple, canChooseFiles,
+                    canChooseDirectories, showHidden, buttonText, title);
+-#elif __linux__
++#elif defined(__linux__) && !defined(__ANDROID__)
+     fileList = revery_open_files_gtk(
+                    startDirectory, fileTypes, fileTypesSize, allowMultiple, canChooseFiles,
+                    canChooseDirectories, showHidden, buttonText, title);
+diff --git a/src/Native/dialog_gtk.c b/src/Native/dialog_gtk.c
+index d2dd60cf..da09d71a 100644
+--- a/src/Native/dialog_gtk.c
++++ b/src/Native/dialog_gtk.c
+@@ -1,4 +1,4 @@
+-#ifdef __linux__
++#if defined(__linux__) && !defined(__ANDROID__)
+ #include <gtk/gtk.h>
+ #include <string.h>
+ 

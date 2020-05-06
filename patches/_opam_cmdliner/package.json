@@ -1,0 +1,5 @@
+{
+  "build": [["ocaml", "pkg/pkg.ml", "build"]],
+  "install": [],
+  "dependencies": { "@opam/topkg": "*" }
+}

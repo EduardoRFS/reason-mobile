@@ -1,0 +1,269 @@
+diff --git a/src/config/discover.re b/src/config/discover.re
+index b743bb4..014af10 100644
+--- a/src/config/discover.re
++++ b/src/config/discover.re
+@@ -1,47 +1,96 @@
+-open Configurator.V1.Flags;
++open Configurator.V1;
+ 
+ let getenv = name =>
+   try(Sys.getenv(name)) {
+   | Not_found => failwith("Error: Undefined environment variable: " ++ name)
+   };
+ 
+-type os =
+-  | Windows
+-  | Mac
++  type os =
++  | Android
++  | IOS
+   | Linux
+-  | Unknown;
+-
+-let uname = () => {
+-  let ic = Unix.open_process_in("uname");
+-  let uname = input_line(ic);
+-  let () = close_in(ic);
+-  uname;
+-};
+-
+-let get_os =
+-  switch (Sys.os_type) {
+-  | "Win32" => Windows
+-  | _ =>
+-    switch (uname()) {
+-    | "Darwin" => Mac
+-    | "Linux" => Linux
+-    | _ => Unknown
+-    }
++  | Mac
++  | Windows;
++
++let get_os = t => {
++  let header = {
++    let file = Filename.temp_file("discover", "os.h");
++    let fd = open_out(file);
++    output_string(
++      fd,
++      {|
++        #if defined(__APPLE__)
++          #include <TargetConditionals.h>
++          #if defined(TARGET_OS_IPHONE)
++            #define PLATFORM_NAME "ios"
++          #else
++            #define PLATFORM_NAME "mac"
++          #endif
++        #elif defined(__linux__)
++          #if defined(__ANDROID__)
++            #define PLATFORM_NAME "android"
++          #else
++            #define PLATFORM_NAME "linux"
++          #endif
++        #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
++          #define PLATFORM_NAME "windows"
++        #endif
++      |},
++    );
++    close_out(fd);
++    file;
++  };
++  let platform =
++    Configurator.V1.C_define.import(
++      t,
++      ~includes=[header],
++      [("PLATFORM_NAME", String)],
++    );
++  switch (platform) {
++  | [(_, String("android"))] => Android
++  | [(_, String("ios"))] => IOS
++  | [(_, String("linux"))] => Linux
++  | [(_, String("mac"))] => Mac
++  | [(_, String("windows"))] => Windows
++  | _ => failwith("Unknown operating system")
+   };
++};
+ 
+ let () = {
+   let ccopt = s => ["-ccopt", s];
+   let cclib = s => ["-cclib", s];
+   let framework = s => ["-framework", s];
+-  let flags =
+-    switch (get_os) {
++  let flags = os =>
++    switch (os) {
++    | Android =>
++      []
++      @ ["-verbose"]
++      @ cclib("-lfreetype")
++      @ cclib("-lz")
++      @ cclib("-lskia")
++      @ cclib("-lSDL2")
++      @ cclib("-lGLESv2")
++      @ cclib("-lGLESv1_CM")
++      @ cclib("-lm")
++      @ cclib("-llog")
++      @ cclib("-landroid")
++      @ ccopt("-L" ++ getenv("FREETYPE2_LIB_PATH"))
++      @ ccopt("-L" ++ getenv("SDL2_LIB_PATH"))
++      @ ccopt("-L" ++ getenv("SKIA_LIB_PATH"))
++      @ ccopt("-L" ++ getenv("JPEG_LIB_PATH"))
++      @ ccopt("-I" ++ getenv("FREETYPE2_INCLUDE_PATH"))
++      @ ccopt("-I" ++ getenv("SKIA_INCLUDE_PATH"))
++      @ cclib("-ljpeg")
++      @ ccopt("-I/usr/include")
++      @ ccopt("-lstdc++")
++    | IOS
++    | Mac => []
+     | Linux =>
+       []
+       @ ["-verbose"]
+       @ cclib("-lfontconfig")
+       @ cclib("-lfreetype")
+       @ cclib("-lz")
+-      @ cclib("-lbz2")
+       @ cclib("-lskia")
+       @ cclib("-lSDL2")
+       @ ccopt("-L" ++ getenv("FREETYPE2_LIB_PATH"))
+@@ -53,25 +102,39 @@ let () = {
+       @ cclib("-ljpeg")
+       @ ccopt("-I/usr/include")
+       @ ccopt("-lstdc++")
+-
+     | Windows =>
+       []
+       @ cclib("-lskia")
+       @ cclib("-lSDL2")
+       @ ccopt("-L" ++ getenv("SDL2_LIB_PATH"))
+       @ ccopt("-L" ++ getenv("SKIA_LIB_PATH"))
+-
+-    | _ => []
+     };
+ 
+-  let cflags =
+-    switch (get_os) {
++  let cflags = os =>
++    switch (os) {
++    | Android =>
++      []
++      @ ["-lSDL2"]
++      @ ["-lGLESv2"]
++      @ ["-lGLESv1_CM"]
++      @ ["-lm"]
++      @ ["-llog"]
++      @ ["-landroid"]
++      @ ["-lskia"]
++      @ ["-I" ++ getenv("SDL2_INCLUDE_PATH")]
++      @ ["-I" ++ getenv("SKIA_INCLUDE_PATH")]
++      @ ["-I" ++ getenv("SKIA_INCLUDE_PATH") ++ "/c"]
++      @ ["-L" ++ getenv("SKIA_LIB_PATH")]
++      @ ["-L" ++ getenv("SDL2_LIB_PATH")]
++      @ ["-L" ++ getenv("JPEG_LIB_PATH")]
++      @ ["-lstdc++"]
++      @ ["-ljpeg"]
++    | IOS
+     | Mac =>
+       []
+       @ ["-I" ++ getenv("SDL2_INCLUDE_PATH")]
+       @ ["-I" ++ getenv("SKIA_INCLUDE_PATH")]
+       @ ["-I" ++ getenv("SKIA_INCLUDE_PATH") ++ "/c"]
+-
+     | Linux =>
+       []
+       @ ["-lSDL2"]
+@@ -84,19 +147,36 @@ let () = {
+       @ ["-L" ++ getenv("JPEG_LIB_PATH")]
+       @ ["-lstdc++"]
+       @ ["-ljpeg"]
+-
+     | Windows =>
+       []
+       @ ["-std=c++1y"]
+       @ ["-I" ++ getenv("SDL2_INCLUDE_PATH")]
+       @ ["-I" ++ getenv("SKIA_INCLUDE_PATH")]
+       @ ["-I" ++ getenv("SKIA_INCLUDE_PATH") ++ "/c"]
+-
+-    | _ => failwith("cflags: unknown platform")
+     };
+ 
+-  let libs =
+-    switch (get_os) {
++  let libs = os =>
++    switch (os) {
++    | Android =>
++      []
++      @ [
++        "-lSDL2",
++        "-lGLESv2",
++        "-lGLESv1_CM",
++        "-lm",
++        "-llog",
++        "-landroid",
++        "-lskia",
++        "-lfreetype",
++        "-lz",
++        "-L" ++ getenv("JPEG_LIB_PATH"),
++        "-ljpeg",
++        "-lstdc++",
++        "-L" ++ getenv("SDL2_LIB_PATH"),
++        "-L" ++ getenv("SKIA_LIB_PATH"),
++        "-L" ++ getenv("FREETYPE2_LIB_PATH"),
++      ]
++    | IOS
+     | Mac =>
+       []
+       @ ["-L" ++ getenv("JPEG_LIB_PATH")]
+@@ -121,7 +201,6 @@ let () = {
+       @ ["-lskia"]
+       @ ["-lstdc++"]
+       @ [getenv("JPEG_LIB_PATH") ++ "/libturbojpeg.a"]
+-
+     | Linux =>
+       []
+       @ [
+@@ -130,16 +209,13 @@ let () = {
+         "-lfreetype",
+         "-lfontconfig",
+         "-lz",
+-        "-lbz2",
+         "-L" ++ getenv("JPEG_LIB_PATH"),
+         "-ljpeg",
+-        "-lpthread",
+         "-lstdc++",
+         "-L" ++ getenv("SDL2_LIB_PATH"),
+         "-L" ++ getenv("SKIA_LIB_PATH"),
+         "-L" ++ getenv("FREETYPE2_LIB_PATH"),
+       ]
+-
+     | Windows =>
+       []
+       @ ["-luser32"]
+@@ -148,17 +224,18 @@ let () = {
+       @ ["-lstdc++"]
+       @ ["-L" ++ getenv("SDL2_LIB_PATH")]
+       @ ["-L" ++ getenv("SKIA_LIB_PATH")]
+-
+-    | _ => failwith("libs: Unknown platform")
+     };
+ 
+-  write_sexp("flags.sexp", flags);
+-  write_lines("c_flags.txt", cflags);
+-  write_sexp("c_flags.sexp", cflags);
+-  write_sexp("c_library_flags.sexp", libs);
+-  write_lines("c_library_flags.txt", libs);
+-  write_sexp(
+-    "cclib_c_library_flags.sexp",
+-    libs |> List.map(o => ["-cclib", o]) |> List.flatten,
+-  );
++  main(~name="c_test", t => {
++    let os = get_os(t);
++    Flags.write_sexp("flags.sexp", flags(os));
++    Flags.write_lines("c_flags.txt", cflags(os));
++    Flags.write_sexp("c_flags.sexp", cflags(os));
++    Flags.write_sexp("c_library_flags.sexp", libs(os));
++    Flags.write_lines("c_library_flags.txt", libs(os));
++    Flags.write_sexp(
++      "cclib_c_library_flags.sexp",
++      libs(os) |> List.map(o => ["-cclib", o]) |> List.flatten,
++    );
++  });
+ };

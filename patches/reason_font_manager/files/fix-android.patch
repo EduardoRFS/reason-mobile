@@ -1,0 +1,148 @@
+diff --git a/src/FontManager.cpp b/src/FontManager.cpp
+index a0927a4..2869f70 100644
+--- a/src/FontManager.cpp
++++ b/src/FontManager.cpp
+@@ -1,44 +1,44 @@
+-#include <stdio.h>
+-#include <caml/alloc.h>
+-#include <caml/bigarray.h>
+-#include <caml/callback.h>
+-#include <caml/memory.h>
+-#include <caml/mlvalues.h>
+-#include <caml/threads.h>
+-
+-#include "FontDescriptor.h"
+-
+-extern "C" {
+-    extern FontDescriptor *findFont(FontDescriptor *query);
+-    extern ResultSet *findFonts(FontDescriptor *query);
+-
+-    CAMLprim value fm_findFont(value family, value weight, value width, value italic, value monospace) {
+-        CAMLparam5(family, weight, width, italic, monospace);
+-        CAMLlocal1(ret);
+-
+-        char* fontFamily = String_val(family);
+-        FontWeight weightToCheck = (FontWeight)Int_val(weight);
+-        FontWidth widthToCheck = (FontWidth)Int_val(width);
+-        int isItalic = Bool_val(italic);
+-        int isMono = Bool_val(monospace);
+-
+-        caml_release_runtime_system();
+-        FontDescriptor *query = new FontDescriptor(NULL, NULL, fontFamily, NULL, weightToCheck, widthToCheck, isItalic, isMono);
+-    
+-        FontDescriptor *font = findFont(query);
+-        caml_acquire_runtime_system();
+-
+-        ret = caml_alloc(7, 0);
+-        Store_field(ret, 0, caml_copy_string(font->path));
+-        Store_field(ret, 1, caml_copy_string(font->postscriptName));
+-        Store_field(ret, 2, caml_copy_string(font->family));
+-        Store_field(ret, 3, Val_int(font->weight));
+-        Store_field(ret, 4, Val_int(font->width));
+-        Store_field(ret, 5, Val_bool(font->italic));
+-        Store_field(ret, 6, Val_bool(font->monospace));
+-
+-        delete font;
+-
+-        CAMLreturn(ret);
+-    }
+-}
++#include <stdio.h>
++#include <caml/alloc.h>
++#include <caml/bigarray.h>
++#include <caml/callback.h>
++#include <caml/memory.h>
++#include <caml/mlvalues.h>
++#include <caml/threads.h>
++
++#include "FontDescriptor.h"
++
++extern "C" {
++    extern FontDescriptor *findFont(FontDescriptor *query);
++    extern ResultSet *findFonts(FontDescriptor *query);
++
++    CAMLprim value fm_findFont(value family, value weight, value width, value italic, value monospace) {
++        CAMLparam5(family, weight, width, italic, monospace);
++        CAMLlocal1(ret);
++
++        char* fontFamily = String_val(family);
++        FontWeight weightToCheck = (FontWeight)Int_val(weight);
++        FontWidth widthToCheck = (FontWidth)Int_val(width);
++        int isItalic = Bool_val(italic);
++        int isMono = Bool_val(monospace);
++
++        caml_release_runtime_system();
++        FontDescriptor *query = new FontDescriptor(NULL, NULL, fontFamily, NULL, weightToCheck, widthToCheck, isItalic, isMono);
++
++        FontDescriptor *font = findFont(query);
++        caml_acquire_runtime_system();
++
++        ret = caml_alloc(7, 0);
++        Store_field(ret, 0, caml_copy_string(font->path));
++        Store_field(ret, 1, caml_copy_string(font->postscriptName));
++        Store_field(ret, 2, caml_copy_string(font->family));
++        Store_field(ret, 3, Val_int(font->weight));
++        Store_field(ret, 4, Val_int(font->width));
++        Store_field(ret, 5, Val_bool(font->italic));
++        Store_field(ret, 6, Val_bool(font->monospace));
++
++        delete font;
++
++        CAMLreturn(ret);
++    }
++}
+diff --git a/src/FontManagerAndroid.cpp b/src/FontManagerAndroid.cpp
+new file mode 100644
+index 0000000..7142ab3
+--- /dev/null
++++ b/src/FontManagerAndroid.cpp
+@@ -0,0 +1,25 @@
++#if defined(__ANDROID__)
++
++#include "FontDescriptor.h"
++
++FontDescriptor *createFontDescriptor() {
++  return new FontDescriptor(
++    (char *) "",
++    (char *) "",
++    (char *) "",
++    (char *) "",
++    FontWeightNormal,
++    FontWidthNormal,
++    false,
++    true
++  );
++}
++
++
++extern "C" FontDescriptor *findFont(FontDescriptor *desc) {
++  FontDescriptor *res = createFontDescriptor();
++
++  return res;
++}
++
++#endif
+\ No newline at end of file
+diff --git a/src/FontManagerLinux.cpp b/src/FontManagerLinux.cpp
+index 6699fd0..26c2dc7 100644
+--- a/src/FontManagerLinux.cpp
++++ b/src/FontManagerLinux.cpp
+@@ -1,4 +1,4 @@
+-#ifdef __linux__
++#if defined(__linux__) && !defined(__ANDROID__)
+ 
+ #include <fontconfig/fontconfig.h>
+ #include "FontDescriptor.h"
+diff --git a/src/dune b/src/dune
+index b5b883c..19a04a0 100644
+--- a/src/dune
++++ b/src/dune
+@@ -11,7 +11,7 @@
+   (language cxx)
+   (flags
+    (:include cxx_flags.sexp))
+-  (names FontManager FontManagerWindows FontManagerMac FontManagerLinux)))
++  (names FontManager FontManagerWindows FontManagerMac FontManagerLinux FontManagerAndroid)))
+ 
+ (rule
+  (targets c_flags.sexp cxx_flags.sexp flags.sexp)
