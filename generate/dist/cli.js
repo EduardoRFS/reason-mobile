@@ -103,6 +103,7 @@ const create_nodes = async () => {
                 ];
             })),
             esy: {
+                buildsInSource: true,
                 buildEnv: env_map[node.name].build_env,
                 exportedEnv,
                 build: build_map[node.name],
