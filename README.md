@@ -1,10 +1,10 @@
 # ReasonML Mobile
 
-```
-🚧 This is some heavily WIP idea / code / structure 🚧
-⚠️ if you need help contact me on twitter or discord ⚠️
-⚠️ if you wants paid help my work ... twitter or discord ⚠️
-```
+> 🚧 This is some heavily WIP idea / code / structure 🚧
+
+> ⚠️ if you need help contact me on twitter or discord ⚠️
+
+> ⚠️ if you want paid help ... twitter or discord ⚠️
 
 This repository is designed to provide some tooling to cross compile using esy to Android and iOS
 
