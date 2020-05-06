@@ -50,6 +50,14 @@
         "val": "aarch64-linux-android-as",
         "scope": "global"
       },
+      "ESY_TOOLCHAIN_AR": {
+        "val": "aarch64-linux-android-ar",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_RANLIB": {
+        "val": "aarch64-linux-android-ranlib",
+        "scope": "global"
+      },
       "ESY_TOOLCHAIN_ASPP": {
         "val": "aarch64-linux-android24-clang -c",
         "scope": "global"
