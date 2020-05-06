@@ -48,7 +48,7 @@ Right know only the compiler was tested on iOS, but it should be possible to com
 
 ### Toolchain
 
-A docker image ready to run the target binaries if needed, and with some tooling, more details at [docs/toolchain.md](./TOOLCHAIN.md)
+A docker image ready to run the target binaries if needed, and with some tooling, more details at [TOOLCHAIN.md](./TOOLCHAIN.md)
 
 ### Generate
 
