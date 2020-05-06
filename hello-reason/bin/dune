@@ -1,6 +1,4 @@
 (executable
    (name hello)
-   (libraries console.lib lwt lwt.unix)
-   (modes native object)
-   ;(flags ( -ccopt -static ))
+   (libraries console.lib)
 )
