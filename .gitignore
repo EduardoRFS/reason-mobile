@@ -1,2 +1,6 @@
 .esy
 node_modules
+_esy
+*.esy.lock
+.mocks
+.idea
