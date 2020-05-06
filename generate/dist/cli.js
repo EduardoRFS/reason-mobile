@@ -10,7 +10,12 @@ const commands_1 = require("./commands");
 const fs_1 = __importDefault(require("fs"));
 const env_1 = __importDefault(require("./env"));
 const patch_1 = __importDefault(require("./patch"));
-const targets = ['android'];
+const target = process.argv[2];
+if (!target) {
+    console.error('you should specify a target: generate <target>');
+    process.exit(1);
+}
+const targets = [target];
 const esy = esy_1.make('package.json');
 const create_nodes = async () => {
     const nodes = Object.values(esy.lock.node);
@@ -108,7 +113,7 @@ const create_nodes = async () => {
         const checksum = lib_1.sha1(JSON.stringify(mock)).slice(0, 8);
         const path = `.mocks/${checksum}`;
         const file = `${path}/esy.json`;
-        return { mock, path, file };
+        return { name: node.name, mock, path, file };
     });
     if (!fs_1.default.existsSync('.mocks')) {
         fs_1.default.mkdirSync('.mocks');
@@ -119,12 +124,15 @@ const create_nodes = async () => {
         }
         fs_1.default.writeFileSync(file, JSON.stringify(mock, null, 2));
     });
-    const dependencies_to_patch = Object.keys(esy.manifest.dependencies || {}).flatMap((key) => targets.map((target) => [lib_1.target_name(target, key), '*']));
     const resolutions_to_patch = mocks.map(({ file, mock }) => [mock.name, file]);
+    const source_name = esy.lock.node[esy.lock.root].name;
+    const root_name = lib_1.target_name(target, source_name);
+    const root = mocks.find((mock) => mock.name == root_name);
     const wrapper = {
         dependencies: {
-            ...Object.fromEntries(dependencies_to_patch),
             ...esy.manifest.dependencies,
+            ...root.mock.dependencies,
+            source_name: undefined,
             ...(esy.manifest.target && esy.manifest.target.dependencies),
         },
         resolutions: {
@@ -133,7 +141,7 @@ const create_nodes = async () => {
             ...(esy.manifest.target && esy.manifest.target.resolutions),
         },
     };
-    console.log(JSON.stringify(wrapper, null, 2));
+    fs_1.default.writeFileSync(`${process.argv[2]}.json`, JSON.stringify(wrapper, null, 2));
 })();
 /* TODO: IMPORTANT, write a script to check if the files generated are right
   comparing the filesystem to the native one and checking with objdump things */

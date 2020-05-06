@@ -7,7 +7,12 @@ import fs from 'fs';
 import env from './env';
 import get_patch from './patch';
 
-const targets = ['android'];
+const target = process.argv[2];
+if (!target) {
+  console.error('you should specify a target: generate <target>');
+  process.exit(1);
+}
+const targets = [target];
 const esy = make('package.json');
 
 const create_nodes = async () => {
@@ -149,7 +154,7 @@ const create_nodes = async () => {
     const checksum = sha1(JSON.stringify(mock)).slice(0, 8);
     const path = `.mocks/${checksum}`;
     const file = `${path}/esy.json`;
-    return { mock, path, file };
+    return { name: node.name, mock, path, file };
   });
   if (!fs.existsSync('.mocks')) {
     fs.mkdirSync('.mocks');
@@ -161,17 +166,15 @@ const create_nodes = async () => {
     fs.writeFileSync(file, JSON.stringify(mock, null, 2));
   });
 
-  const dependencies_to_patch = Object.keys(
-    esy.manifest.dependencies || {}
-  ).flatMap((key) =>
-    targets.map((target) => [target_name(target, key), '*'] as const)
-  );
-
   const resolutions_to_patch = mocks.map(({ file, mock }) => [mock.name, file]);
+  const source_name = esy.lock.node[esy.lock.root].name;
+  const root_name = target_name(target, source_name);
+  const root = mocks.find((mock) => mock.name == root_name)!;
   const wrapper = {
     dependencies: {
-      ...Object.fromEntries(dependencies_to_patch),
       ...esy.manifest.dependencies,
+      ...root.mock.dependencies,
+      source_name: undefined,
       ...(esy.manifest.target && esy.manifest.target.dependencies),
     },
     resolutions: {
@@ -181,7 +184,7 @@ const create_nodes = async () => {
     },
   };
 
-  console.log(JSON.stringify(wrapper, null, 2));
+  fs.writeFileSync(`${process.argv[2]}.json`, JSON.stringify(wrapper, null, 2));
 })();
 
 /* TODO: IMPORTANT, write a script to check if the files generated are right
