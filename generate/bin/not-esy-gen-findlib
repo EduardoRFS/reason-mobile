@@ -15,7 +15,7 @@ emit_ocamlpath () {
       LIB_PATH="$(dirname $LIB_PATH)/$TOOLCHAIN-sysroot/$(basename $LIB_PATH)"
     fi
     if [[ -d "$LIB_PATH" ]]; then
-        echo -n "$LIB_PATH:"
+        printf "%s" "$LIB_PATH:"
     fi
   done
   IFS=$STORED_IFS
@@ -49,7 +49,7 @@ ocamldep$TOOLCHAIN = "$COMPILER/bin/ocamldep"
 EOF
 }
 
-FOLDER="$cur__original_root/../findlib"
+FOLDER="$cur__target_dir/../findlib"
 
 mkdir -p "$FOLDER/findlib.conf.d"
 

@@ -36,8 +36,7 @@ exports.unresolve_string = (nodes, node, string, additional_ignore) => {
         const to_replace = Object.entries({
             [sourcePath]: `#{${name}.original_root}/${prefix}`,
             [rootPath]: `#{${name}.root}/${prefix}`,
-            // TODO: should be target_dir
-            [buildPath]: `#{${name}.original_root}/${prefix}`,
+            [buildPath]: `#{${name}.target_dir}/${prefix}`,
             /* if is building and buildsInSource; then
             #{self.install} points to stagePath; else
             #{self.install} points to installPath */

@@ -1,8 +1,10 @@
 #! /bin/sh
 
-cur__original_root=$PWD/.mocks/$ESY_TOOLCHAIN
+## that is just a hack because I'm lazy
+cur__target_dir=$cur__target_dir/$ESY_TOOLCHAIN-sysroot
 not-esy-gen-findlib android
 unset OCAMLPATH;
 unset OCAMLLIB;
-export OCAMLFIND_CONF="$PWD/.mocks/findlib/findlib.conf"
+export cur__target_dir=$cur__target_dir/..
+export OCAMLFIND_CONF="$cur__target_dir/findlib/findlib.conf"
 exec $@
