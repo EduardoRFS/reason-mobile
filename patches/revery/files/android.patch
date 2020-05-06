@@ -1,5 +1,5 @@
 diff --git a/.gitignore b/.gitignore
-index c193d91e..efd8f988 100644
+index c193d91..efd8f98 100644
 --- a/.gitignore
 +++ b/.gitignore
 @@ -73,3 +73,6 @@ _esy/
@@ -11,7 +11,7 @@ index c193d91e..efd8f988 100644
 +.mocks
 \ No newline at end of file
 diff --git a/examples/dune b/examples/dune
-index 48d0b07c..6d6f5b1a 100644
+index 48d0b07..6d6f5b1 100644
 --- a/examples/dune
 +++ b/examples/dune
 @@ -3,6 +3,7 @@
@@ -35,7 +35,7 @@ index 48d0b07c..6d6f5b1a 100644
      (section bin)
      (package Revery)
 diff --git a/package.json b/package.json
-index 5ac8941b..152fbf53 100644
+index 5ac8941..33b6ce8 100644
 --- a/package.json
 +++ b/package.json
 @@ -61,5 +61,11 @@
@@ -45,14 +45,14 @@ index 5ac8941b..152fbf53 100644
 +  },
 +  "target": {
 +    "resolutions": {
-+      "generate": "link-dev:../generate/esy.json",
-+      "@_android/sysroot": "link-dev:../sysroot/package.json"
++      "generate": "link-dev:../generate/bin/package.json",
++      "@_android/sysroot": "link-dev:../sysroot/android.aarch64/package.json"
 +    }
    }
  }
 diff --git a/src/Native/config/discover.ml b/src/Native/config/discover.ml
 deleted file mode 100644
-index 90e7d89b..00000000
+index 90e7d89..0000000
 --- a/src/Native/config/discover.ml
 +++ /dev/null
 @@ -1,54 +0,0 @@
@@ -110,115 +110,8 @@ index 90e7d89b..00000000
 -      C.Flags.write_sexp "flags.sexp" conf.flags ;
 -      C.Flags.write_sexp "c_flags.sexp" conf.cflags ;
 -      C.Flags.write_sexp "c_library_flags.sexp" conf.libs )
-diff --git a/src/Native/config/discover.re b/src/Native/config/discover.re
-new file mode 100644
-index 00000000..a0f2b561
---- /dev/null
-+++ b/src/Native/config/discover.re
-@@ -0,0 +1,101 @@
-+module C = Configurator.V1;
-+
-+type os =
-+  | Android
-+  | IOS
-+  | Linux
-+  | Mac
-+  | Windows;
-+
-+let get_os = t => {
-+  let header = {
-+    let file = Filename.temp_file("discover", "os.h");
-+    let fd = open_out(file);
-+    output_string(
-+      fd,
-+      {|
-+        #if defined(__APPLE__)
-+          #include <TargetConditionals.h>
-+          #if defined(TARGET_OS_IPHONE)
-+            #define PLATFORM_NAME "ios"
-+          #else
-+            #define PLATFORM_NAME "mac"
-+          #endif
-+        #elif defined(__linux__)
-+          #if defined(__ANDROID__)
-+            #define PLATFORM_NAME "android"
-+          #else
-+            #define PLATFORM_NAME "linux"
-+          #endif
-+        #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-+          #define PLATFORM_NAME "windows"
-+        #endif
-+      |},
-+    );
-+    close_out(fd);
-+    file;
-+  };
-+  let platform =
-+    Configurator.V1.C_define.import(
-+      t,
-+      ~includes=[header],
-+      [("PLATFORM_NAME", String)],
-+    );
-+  switch (platform) {
-+  | [(_, String("android"))] => Android
-+  | [(_, String("ios"))] => IOS
-+  | [(_, String("linux"))] => Linux
-+  | [(_, String("mac"))] => Mac
-+  | [(_, String("windows"))] => Windows
-+  | _ => failwith("Unknown operating system")
-+  };
-+};
-+
-+type config = {
-+  libs: list(string),
-+  cflags: list(string),
-+  flags: list(string),
-+};
-+
-+let get_mac_config = () => {
-+  cflags: ["-I", ".", "-x", "objective-c"],
-+  libs: [],
-+  flags: [],
-+};
-+
-+let get_linux_config = c => {
-+  let default = {libs: [], cflags: [], flags: []};
-+  switch (C.Pkg_config.get(c)) {
-+  | None => default
-+  | Some(pc) =>
-+    switch (C.Pkg_config.query(pc, ~package="gtk+-3.0")) {
-+    | None => default
-+    | Some(conf) => {libs: conf.libs, cflags: conf.cflags, flags: []}
-+    }
-+  };
-+};
-+
-+let ccopt = s => ["-ccopt", s];
-+let cclib = s => ["-cclib", s];
-+
-+let get_win32_config = () => {
-+  cflags: [],
-+  libs: [],
-+  flags: [] @ cclib("-luuid") @ cclib("-lole32"),
-+};
-+
-+let () =
-+  C.main(~name="discover", c => {
-+    let conf =
-+      switch (get_os(c)) {
-+      | Android => {libs: [], cflags: [], flags: []}
-+      | IOS
-+      | Mac => get_mac_config()
-+      | Linux => get_linux_config(c)
-+      | Windows => get_win32_config()
-+      };
-+
-+    C.Flags.write_sexp("flags.sexp", conf.flags);
-+    C.Flags.write_sexp("c_flags.sexp", conf.cflags);
-+    C.Flags.write_sexp("c_library_flags.sexp", conf.libs);
-+  });
 diff --git a/src/Native/dialog.c b/src/Native/dialog.c
-index 9dba5f52..66e6d7d8 100644
+index 9dba5f5..66e6d7d 100644
 --- a/src/Native/dialog.c
 +++ b/src/Native/dialog.c
 @@ -13,6 +13,8 @@
@@ -260,7 +153,7 @@ index 9dba5f52..66e6d7d8 100644
                     startDirectory, fileTypes, fileTypesSize, allowMultiple, canChooseFiles,
                     canChooseDirectories, showHidden, buttonText, title);
 diff --git a/src/Native/dialog_gtk.c b/src/Native/dialog_gtk.c
-index d2dd60cf..da09d71a 100644
+index d2dd60c..da09d71 100644
 --- a/src/Native/dialog_gtk.c
 +++ b/src/Native/dialog_gtk.c
 @@ -1,4 +1,4 @@
