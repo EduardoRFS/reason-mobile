@@ -1,26 +1,63 @@
 # ReasonML Mobile
 
-## Requirements
-
-- Docker
-
-There is some additional requirements for Linux look at [docs/linux-setup.md](./docs/linux-setup.md)
-
-## How to try it?
-
-```shell
-git clone git@github.com:EduardoRFS/reason-mobile.git
-cd reason-mobile
-./toolchain.sh
+```
+🚧 This is some heavily WIP idea / code / structure 🚧
+⚠️ if you need help contact me on twitter or discord ⚠️
+⚠️ if you wants paid help my work ... twitter or discord ⚠️
 ```
 
-Now you should be inside of docker
+This repository is designed to provide some tooling to cross compile using esy to Android and iOS
+
+## Example
+
+To compile the hello-reason project for android(arm64) you need to the following
+
 ```
-cd /app/hello-reason
-esy # the first time can take some time
-esy start
+# setup
+cd hello-reason
+esy
+node ../generate/dist/cli.js android
+esy @android
+
+# build
+esy @android not-esy-setup dune build -x android
+
+# shell
+esy @android not-esy-setup $SHELL
+
+# any command here will be in the right env
 ```
 
-## iOS
+## Status
 
-Right know it only works with Android, I want to make it works also on iOS but that's a lot of work
+Currently [Revery](https://github.com/revery-ui/revery) is used as a baseline and is tested compiling from Linux to other platforms
+
+Compiling from Mac should work if you allow full disk access
+
+### Android
+
+We can already cross compile to it and the bits that aren't possible to cross compile, namely `reason-skia` cstubs were patched for arm64.
+
+Only arm64 was tested, but x86_64 should also be working
+
+### iOS
+
+Right know only the compiler was tested on iOS, but it should be possible to compile light aplications without any major hassle.
+
+## What it is
+
+### Toolchain
+
+A docker image ready to run the target binaries if needed, and with some tooling, more details at [docs/toolchain.md](./TOOLCHAIN.md)
+
+### Generate
+
+A script and some helpers to assist esy when doing cross compilation, it's an ad-hoc solution to concentrate a some hacks to use packages that weren't originally designed to it.
+
+### Patches
+
+A collection of patches designed to solve packages that aren't solved by the hacks implmented on the generate or are package specific.
+
+### Sysroot
+
+An esy package, making the compiler + sysroot available to esy. Currently only Android 24 arm64 is available
