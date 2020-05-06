@@ -12,7 +12,7 @@ This repository is designed to provide some tooling to cross compile using esy t
 
 To compile the hello-reason project for android(arm64):
 
-```
+```sh
 # setup
 cd hello-reason
 esy
