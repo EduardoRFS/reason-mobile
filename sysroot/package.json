@@ -1,0 +1,67 @@
+{
+  "name": "@_android/sysroot",
+  "dependencies": {
+    "generate": "*"
+  },
+  "esy": {
+    "build": "sh setup.sh",
+    "exportedEnv": {
+      "PATH": {
+        "val": "#{self.install}/ndk/toolchains/llvm/prebuilt/#{os}-x86_64/bin:$PATH",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN": {
+        "val": "android",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_SYSTEM": {
+        "val": "android",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_SYSROOT": {
+        "val": "#{self.install}/ndk/sysroot",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CMAKE": {
+        "val": "-DCMAKE_TOOLCHAIN_FILE=#{self.install}/toolchain.cmake",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_BUILD": {
+        "val": "x86_64-pc-linux-gnu",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_HOST": {
+        "val": "aarch64-linux-android",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_FULL_HOST": {
+        "val": "aarch64-unknown-linux-android",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CC": {
+        "val": "aarch64-linux-android24-clang",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CXX": {
+        "val": "aarch64-linux-android24-clang++",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_AS": {
+        "val": "aarch64-linux-android-as",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_ASPP": {
+        "val": "aarch64-linux-android24-clang -c",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_LD": {
+        "val": "aarch64-linux-android-ld",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_PARTIALLD": {
+        "val": "aarch64-linux-android-ld -r",
+        "scope": "global"
+      }
+    }
+  }
+}
