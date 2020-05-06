@@ -27,3 +27,5 @@ create_tar_gz armeabi-v7a 21 r04
 create_tar_gz arm64-v8a 24 r07
 create_tar_gz x86 24 r08
 create_tar_gz x86_64 24 r08
+
+create_tar_gz x86 21 r05

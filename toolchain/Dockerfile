@@ -1,7 +1,7 @@
 FROM eduardorfs/reason-mobile:base
 
 # RUN echo 'Server = http://linorg.usp.br/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-RUN pacman -Sy --noconfirm unzip wget base base-devel zsh zsh-syntax-highlighting nodejs npm git
+RUN pacman -Sy --noconfirm unzip wget base base-devel zsh zsh-syntax-highlighting nodejs npm git reflector vim nano libffi
 
 # root without zsh is sad
 RUN chsh -s /usr/bin/zsh root; \
