@@ -1,0 +1,8 @@
+#! /bin/sh
+
+cur__original_root=$PWD/.mocks/$ESY_TOOLCHAIN
+not-esy-gen-findlib android
+unset OCAMLPATH;
+unset OCAMLLIB;
+export OCAMLFIND_CONF="$PWD/.mocks/findlib/findlib.conf"
+exec $@

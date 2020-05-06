@@ -1,4 +1,3 @@
-#! node
 'use strict';
 
 // TODO: it can fail because of pnp inside of esy
