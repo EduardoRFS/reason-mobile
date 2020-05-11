@@ -6,7 +6,7 @@ set -u
 NDK_ROOT=$1
 NDK_PREBUILT_BIN=$2
 
-for FILE in $NDK_BIN/aarch64-linux-android*; do
+for FILE in $NDK_PREBUILT_BIN/aarch64-linux-android*; do
 
 FILE_ALIAS="$cur__bin/$(basename $FILE)"
 cat > "$FILE_ALIAS" <<EOF
