@@ -11,6 +11,7 @@
     "@esy-ocaml/reason": "^3.5.2",
     "@opam/dune": "2.3.1",
     "@reason-native/console": "^0.1.0",
+    "@reason-native/pastel": "^0.3.0",
     "ocaml": "4.8.1000"
   },
   "target": {
