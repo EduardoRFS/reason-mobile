@@ -5,14 +5,7 @@
     "@_android/ndk": "*"
   },
   "esy": {
-    "build": [
-      [
-        "sh",
-        "setup.sh",
-        "#{@_android/ndk.install}/ndk",
-        "#{@_android/ndk.install}/ndk/toolchains/llvm/prebuilt/#{os}-x86_64/bin"
-      ]
-    ],
+    "build": "sh setup.sh",
     "exportedEnv": {
       "ESY_TOOLCHAIN": {
         "val": "android",
