@@ -2,7 +2,7 @@
 
 ## that is just a hack because I'm lazy
 cur__target_dir=$cur__target_dir/$ESY_TOOLCHAIN-sysroot
-not-esy-gen-findlib android
+not-esy-gen-findlib
 unset OCAMLPATH;
 unset OCAMLLIB;
 export cur__target_dir=$cur__target_dir/..

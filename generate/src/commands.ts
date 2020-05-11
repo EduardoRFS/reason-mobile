@@ -43,7 +43,7 @@ const needs_gen_findlib = (nodes: map<node>, node: node): boolean => {
 
 // TODO: should it be created during the generate step?
 const gen_findlib = (_nodes: map<node>, node: node) => [
-  ['not-esy-gen-findlib', node.target],
+  ['not-esy-gen-findlib'],
 ];
 const clean_env = (_nodes: map<node>, _node: node): command[] =>
   UNSET_VARS.map((key) => ['unset', key]);

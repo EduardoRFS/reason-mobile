@@ -54,4 +54,4 @@ FOLDER="$cur__target_dir/../findlib"
 mkdir -p "$FOLDER/findlib.conf.d"
 
 create_findlib "$FOLDER" "native"
-create_findlib "$FOLDER" "$1"
+create_findlib "$FOLDER" "$ESY_TOOLCHAIN"
