@@ -1,15 +1,19 @@
 {
   "name": "@_android/sysroot",
   "dependencies": {
-    "generate": "*"
+    "generate": "*",
+    "@_android/ndk": "../android.ndk/package.json"
   },
   "esy": {
-    "build": "sh setup.sh",
+    "build": [
+      [
+        "sh",
+        "setup.sh",
+        "#{@_android/ndk.install}/ndk",
+        "#{@_android/ndk.install}/ndk/toolchains/llvm/prebuilt/#{os}-x86_64/bin"
+      ]
+    ],
     "exportedEnv": {
-      "PATH": {
-        "val": "#{self.install}/ndk/toolchains/llvm/prebuilt/#{os}-x86_64/bin:$PATH",
-        "scope": "global"
-      },
       "ESY_TOOLCHAIN": {
         "val": "android",
         "scope": "global"
@@ -31,11 +35,11 @@
         "scope": "global"
       },
       "ESY_TOOLCHAIN_HOST": {
-        "val": "aarch64-linux-android",
+        "val": "aarch64-unknown-linux-android",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_FULL_HOST": {
-        "val": "aarch64-unknown-linux-android",
+        "val": "aarch64-linux-android",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_CC": {

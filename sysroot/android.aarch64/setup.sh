@@ -3,22 +3,23 @@
 set -e
 set -u
 
-NDK_LINUX="https://dl.google.com/android/repository/android-ndk-r21b-linux-x86_64.zip"
-NDK_DARWIN="https://dl.google.com/android/repository/android-ndk-r21b-darwin-x86_64.zip"
-NDK_FOLDER="android-ndk-r21b"
+NDK_ROOT=$1
+NDK_PREBUILT_BIN=$2
 
-if [[ "$(uname)" == 'Linux' ]]; then
-  curl -o $cur__target_dir/ndk.zip $NDK_LINUX
-elif [[ "$(uname)" == 'Darwin' ]]; then
-  curl -o $cur__target_dir/ndk.zip $NDK_DARWIN
-fi
+for FILE in $NDK_BIN/aarch64-linux-android*; do
 
-unzip $cur__target_dir/ndk.zip -d $cur__target_dir
-mv "$cur__target_dir/$NDK_FOLDER" $cur__install/ndk
+FILE_ALIAS="$cur__bin/$(basename $FILE)"
+cat > "$FILE_ALIAS" <<EOF
+#!/bin/sh
+$FILE "\$@"
+EOF
+chmod +x "$FILE_ALIAS"
+
+done
 
 cat > $cur__install/toolchain.cmake <<EOF
 set(ANDROID_ABI arm64-v8a)
 set(ANDROID_NATIVE_API_LEVEL 24) # API level
 
-include($cur__install/ndk/build/cmake/android.toolchain.cmake)
+include($NDK_ROOT/build/cmake/android.toolchain.cmake)
 EOF

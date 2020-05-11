@@ -1,0 +1,7 @@
+{
+  "name": "@_android/ndk",
+  "dependencies": {},
+  "esy": {
+    "build": "sh setup.sh"
+  }
+}
