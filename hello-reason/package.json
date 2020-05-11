@@ -17,7 +17,8 @@
   "target": {
     "resolutions": {
       "generate": "link:../generate/bin/package.json",
-      "@_android/sysroot": "link-dev:../sysroot/android.aarch64/package.json"
+      "@_android/sysroot": "link-dev:../sysroot/android.aarch64/package.json",
+      "@_android/ndk": "link-dev:../sysroot/android.ndk/package.json"
     }
   }
 }

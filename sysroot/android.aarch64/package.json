@@ -2,7 +2,7 @@
   "name": "@_android.aarch64/sysroot",
   "dependencies": {
     "generate": "*",
-    "@_android/ndk": "../android.ndk/package.json"
+    "@_android/ndk": "*"
   },
   "esy": {
     "build": [

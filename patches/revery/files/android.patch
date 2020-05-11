@@ -35,10 +35,10 @@ index 48d0b07..6d6f5b1 100644
      (section bin)
      (package Revery)
 diff --git a/package.json b/package.json
-index 5ac8941..33b6ce8 100644
+index f628b8d..0fc456d 100644
 --- a/package.json
 +++ b/package.json
-@@ -61,5 +61,11 @@
+@@ -58,5 +58,12 @@
      "@opam/dune": "^1.8.0",
      "esy-astyle": "zbaylin/esy-astyle#59bc21a",
      "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam#04733ed"
@@ -46,7 +46,8 @@ index 5ac8941..33b6ce8 100644
 +  "target": {
 +    "resolutions": {
 +      "generate": "link-dev:../generate/bin/package.json",
-+      "@_android/sysroot": "link-dev:../sysroot/android.aarch64/package.json"
++      "@_android/sysroot": "link-dev:../sysroot/android.aarch64/package.json",
++      "@_android/ndk": "link-dev:../sysroot/android.ndk/package.json"
 +    }
    }
  }
