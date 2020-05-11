@@ -1,5 +1,5 @@
 {
-  "name": "@_android.aarch64/sysroot",
+  "name": "@_android.x86_64/sysroot",
   "dependencies": {
     "generate": "*",
     "@_android/ndk": "../android.ndk/package.json"
@@ -35,43 +35,43 @@
         "scope": "global"
       },
       "ESY_TOOLCHAIN_HOST": {
-        "val": "aarch64-unknown-linux-android",
+        "val": "x86_64-unknown-linux-android",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_FULL_HOST": {
-        "val": "aarch64-linux-android",
+        "val": "x86_64-linux-android",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_CC": {
-        "val": "aarch64-linux-android24-clang",
+        "val": "x86_64-linux-android24-clang",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_CXX": {
-        "val": "aarch64-linux-android24-clang++",
+        "val": "x86_64-linux-android24-clang++",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_AS": {
-        "val": "aarch64-linux-android-as",
+        "val": "x86_64-linux-android-as",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_AR": {
-        "val": "aarch64-linux-android-ar",
+        "val": "x86_64-linux-android-ar",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_RANLIB": {
-        "val": "aarch64-linux-android-ranlib",
+        "val": "x86_64-linux-android-ranlib",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_ASPP": {
-        "val": "aarch64-linux-android24-clang -c",
+        "val": "x86_64-linux-android24-clang -c",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_LD": {
-        "val": "aarch64-linux-android-ld",
+        "val": "x86_64-linux-android-ld",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_PARTIALLD": {
-        "val": "aarch64-linux-android-ld -r",
+        "val": "x86_64-linux-android-ld -r",
         "scope": "global"
       }
     }
