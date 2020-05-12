@@ -30,9 +30,7 @@ esy @android not-esy-setup $SHELL
 
 ## Status
 
-Currently [Revery](https://github.com/revery-ui/revery) is used as a baseline and is tested compiling from Linux to other platforms
-
-Compiling from Mac should work if you allow full disk access
+Currently [Revery](https://github.com/revery-ui/revery) is used as a baseline and is tested compiling from Linux and Mac to other platforms
 
 ### Android
 
