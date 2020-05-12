@@ -22,3 +22,5 @@ set(ANDROID_NATIVE_API_LEVEL 24) # API level
 
 include($NDK_ROOT/build/cmake/android.toolchain.cmake)
 EOF
+
+not-esy-gen-tools android $NDK_PREBUILT/bin/aarch64-linux-android
