@@ -40,7 +40,9 @@ Only arm64 was tested, but x86_64 should also be working
 
 ### iOS
 
-Right know only the compiler was tested on iOS, but it should be possible to compile light aplications without any major hassle.
+Currently you can compile simple examples, like the `hello-reason`, you still cannot compile Revery as there is some patches missing for iOS.
+
+Only arm64 was tested, but x86_64 should also be working
 
 ## What it is
 
