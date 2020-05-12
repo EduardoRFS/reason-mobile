@@ -1,3 +1,27 @@
+diff --git a/examples/dune b/examples/dune
+index 48d0b07c..f0a3fe3b 100644
+--- a/examples/dune
++++ b/examples/dune
+@@ -3,6 +3,7 @@
+     (preprocess (pps brisk-reconciler.ppx lwt_ppx))
+     (package Revery)
+     (public_names Examples)
++    (modes native shared_object)
+     (libraries
+         ExampleStubs
+         skia
+@@ -11,6 +12,11 @@
+         flex
+         timber
+             ))
++(rule
++ (targets libexamples.so)
++ (deps Examples.exe.o)
++ (action (run %{cc} -shared -Wl,-soname,%{targets} -o %{targets} -I %{ocaml_where} -I . %{deps}
++          %{ocaml-config:native_c_libraries})))
+ (install
+     (section bin)
+     (package Revery)
 diff --git a/src/Native/config/discover.ml b/src/Native/config/discover.ml
 deleted file mode 100644
 index 90e7d89b..00000000
