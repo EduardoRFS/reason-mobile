@@ -1,0 +1,74 @@
+{
+  "name": "@_ios/sysroot",
+  "dependencies": {
+    "generate": "*"
+  },
+  "esy": {
+    "exportedEnv": {
+      "PATH": {
+        "val": "$PATH:#{self.install}/sdk/bin",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN": {
+        "val": "ios",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_SYSTEM": {
+        "val": "ios",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_SYSROOT": {
+        "val": "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CMAKE": {
+        "val": "-DCMAKE_TOOLCHAIN_FILE=#{self.install}/toolchain.cmake",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_BUILD": {
+        "val": "x86_64-pc-linux-gnu",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_HOST": {
+        "val": "arm64-apple-ios11.4.1",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_FULL_HOST": {
+        "val": "aarch64-apple-darwin17.7.0",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CC": {
+        "val": "clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk --target=arm64-apple-ios11.4.1",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CXX": {
+        "val": "clang++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk --target=arm64-apple-ios11.4.1",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_AS": {
+        "val": "as -arch arm64",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_AR": {
+        "val": "ar",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_RANLIB": {
+        "val": "ranlib",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_ASPP": {
+        "val": "clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk --target=arm64-apple-ios11.4.1 -c",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_LD": {
+        "val": "ld -arch arm64 -iphoneos_version_min 11.4.1 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_PARTIALLD": {
+        "val": "ld -arch arm64 -iphoneos_version_min 11.4.1 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk -r",
+        "scope": "global"
+      }
+    }
+  }
+}
