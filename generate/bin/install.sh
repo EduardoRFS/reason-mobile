@@ -1,6 +1,7 @@
 #! /bin/bash
 
 cp not-esy-gen-findlib $cur__bin
+cp not-esy-gen-tools $cur__bin
 cp not-esy-setup $cur__bin
 
 echo "#! $(which node)" > $cur__bin/not-esy-installer

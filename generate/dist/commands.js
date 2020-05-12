@@ -21,7 +21,7 @@ const needs_gen_findlib = (nodes, node) => {
 };
 // TODO: should it be created during the generate step?
 const gen_findlib = (_nodes, node) => [
-    ['not-esy-gen-findlib', node.target],
+    ['not-esy-gen-findlib'],
 ];
 const clean_env = (_nodes, _node) => env_1.UNSET_VARS.map((key) => ['unset', key]);
 const copy_source = (_nodes, node) => {
