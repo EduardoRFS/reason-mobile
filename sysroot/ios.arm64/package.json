@@ -1,20 +1,22 @@
 {
-  "name": "@_ios/sysroot",
+  "name": "@_ios.arm64/sysroot",
   "dependencies": {
-    "generate": "*"
+    "generate": "*",
+    "sysroot.tools": "*"
   },
   "esy": {
+    "build": "sh setup.sh",
     "exportedEnv": {
-      "PATH": {
-        "val": "$PATH:#{self.install}/sdk/bin",
-        "scope": "global"
-      },
       "ESY_TOOLCHAIN": {
-        "val": "ios",
+        "val": "ios.arm64",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_SYSTEM": {
         "val": "ios",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_PROCESSOR": {
+        "val": "arm64",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_SYSROOT": {
@@ -29,8 +31,12 @@
         "val": "x86_64-pc-linux-gnu",
         "scope": "global"
       },
+      "ESY_TOOLCHAIN_DARWIN_KERNEL": {
+        "val": "17.7.0",
+        "scope": "global"
+      },
       "ESY_TOOLCHAIN_HOST": {
-        "val": "arm64-apple-ios11.4.1",
+        "val": "aarch64-apple-darwin17.7.0",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_FULL_HOST": {
@@ -38,35 +44,35 @@
         "scope": "global"
       },
       "ESY_TOOLCHAIN_CC": {
-        "val": "clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk --target=arm64-apple-ios11.4.1",
+        "val": "aarch64-apple-darwin17.7.0-clang",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_CXX": {
-        "val": "clang++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk --target=arm64-apple-ios11.4.1",
+        "val": "aarch64-apple-darwin17.7.0-clang++",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_AS": {
-        "val": "as -arch arm64",
+        "val": "aarch64-apple-darwin17.7.0-as",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_AR": {
-        "val": "ar",
+        "val": "aarch64-apple-darwin17.7.0-ar",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_RANLIB": {
-        "val": "ranlib",
+        "val": "aarch64-apple-darwin17.7.0-ranlib",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_ASPP": {
-        "val": "clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk --target=arm64-apple-ios11.4.1 -c",
+        "val": "aarch64-apple-darwin17.7.0-clang -c",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_LD": {
-        "val": "ld -arch arm64 -iphoneos_version_min 11.4.1 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk",
+        "val": "aarch64-apple-darwin17.7.0-ld",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_PARTIALLD": {
-        "val": "ld -arch arm64 -iphoneos_version_min 11.4.1 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk -r",
+        "val": "aarch64-apple-darwin17.7.0-ld -r",
         "scope": "global"
       }
     }
