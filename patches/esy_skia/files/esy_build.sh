@@ -19,7 +19,7 @@ if [ "$ESY_TOOLCHAIN_PROCESSOR" == "x86_64" ]; then
 fi
 
 ADDITIONAL_ARGS=""
-if [ "$ESY_TOOLCHAIN_ARCH" == "android" ]; then
+if [ "$ESY_TOOLCHAIN_SYSTEM" == "android" ]; then
   ADDITIONAL_ARGS="ndk=\"$NDK_ROOT\""
 fi
 
