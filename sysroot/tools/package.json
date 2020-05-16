@@ -1,0 +1,6 @@
+{
+  "name": "sysroot.tools",
+  "esy": {
+    "build": [["cp", "sysroot-gen-tools.sh", "$cur__bin/sysroot-gen-tools"]]
+  }
+}
