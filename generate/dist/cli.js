@@ -10,13 +10,24 @@ const commands_1 = require("./commands");
 const fs_1 = __importDefault(require("fs"));
 const env_1 = __importDefault(require("./env"));
 const patch_1 = __importDefault(require("./patch"));
-const target = process.argv[2];
-if (!target) {
-    console.error('you should specify a target: generate <target>');
-    process.exit(1);
-}
-const targets = [target];
 const esy = esy_1.make('package.json');
+const targets = (() => {
+    const manifest_targets = esy.manifest.targets;
+    if (!manifest_targets) {
+        if (!process.argv[2]) {
+            console.error('you should specify a target: generate <system>.<arch>');
+            process.exit(1);
+        }
+        const [system, arch] = process.argv[2].split('.');
+        return [{ system, arch, name: `${system}.${arch}` }];
+    }
+    const systems = Object.keys(manifest_targets);
+    return systems.flatMap((system) => manifest_targets[system].map((arch) => ({
+        system,
+        arch,
+        name: `${system}.${arch}`,
+    })));
+})();
 const create_nodes = async () => {
     const nodes = Object.values(esy.lock.node);
     const config = await esy.get_config();
@@ -33,7 +44,7 @@ const create_nodes = async () => {
         ]);
         return [name, { build_map, exec_env }];
     })).then((entries) => Object.fromEntries(entries));
-    return nodes.flatMap((node) => ['native', ...targets].map((target) => {
+    return nodes.flatMap((node) => ['native', ...targets.map((target) => target.name)].map((target) => {
         const name = lib_1.target_name(target, node.name);
         const native = node.name;
         const env_plan = env_plan_map[node.name];
@@ -127,22 +138,38 @@ const create_nodes = async () => {
     });
     const resolutions_to_patch = mocks.map(({ file, mock }) => [mock.name, file]);
     const source_name = esy.lock.node[esy.lock.root].name;
-    const root_name = lib_1.target_name(target, source_name);
-    const root = mocks.find((mock) => mock.name == root_name);
-    const wrapper = {
-        dependencies: {
-            ...esy.manifest.dependencies,
-            ...root.mock.dependencies,
-            source_name: undefined,
-            ...(esy.manifest.target && esy.manifest.target.dependencies),
-        },
-        resolutions: {
-            ...Object.fromEntries(resolutions_to_patch),
-            ...esy.manifest.resolutions,
-            ...(esy.manifest.target && esy.manifest.target.resolutions),
-        },
-    };
-    fs_1.default.writeFileSync(`${process.argv[2]}.json`, JSON.stringify(wrapper, null, 2));
+    targets.forEach((target) => {
+        const root_name = lib_1.target_name(target.name, source_name);
+        const root = mocks.find((mock) => mock.name == root_name);
+        const additional_resolutions = Object.fromEntries([
+            ['generate', 'link:../generate/bin/package.json'],
+            [`sysroot.tools`, `link:../sysroot/tools/package.json`],
+            [
+                `@_${target.name}/sysroot`,
+                `link:../sysroot/${target.name}/package.json`,
+            ],
+            target.system === 'android' &&
+                [
+                    '@_android/ndk',
+                    'link:../sysroot/android.ndk/package.json',
+                ],
+        ].filter(Boolean));
+        const wrapper = {
+            dependencies: {
+                ...esy.manifest.dependencies,
+                ...root.mock.dependencies,
+                source_name: undefined,
+                ...(esy.manifest.target && esy.manifest.target.dependencies),
+            },
+            resolutions: {
+                ...Object.fromEntries(resolutions_to_patch),
+                ...esy.manifest.resolutions,
+                ...additional_resolutions,
+                ...(esy.manifest.target && esy.manifest.target.resolutions),
+            },
+        };
+        fs_1.default.writeFileSync(`${target.name}.json`, JSON.stringify(wrapper, null, 2));
+    });
 })();
 /* TODO: IMPORTANT, write a script to check if the files generated are right
   comparing the filesystem to the native one and checking with objdump things */

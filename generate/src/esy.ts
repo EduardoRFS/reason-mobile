@@ -52,6 +52,10 @@ type resolutions = map<
 export type manifest = {
   dependencies?: dependencies;
   resolutions?: map<unknown>;
+  targets?: {
+    // TODO: validate that at runtime
+    [key: string]: ('arm' | 'arm64' | 'x86' | 'x86_64')[]
+  },
   target?: {
     dependencies?: map<string>;
     resolutions?: resolutions;

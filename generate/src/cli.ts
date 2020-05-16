@@ -7,14 +7,27 @@ import fs from 'fs';
 import env from './env';
 import get_patch from './patch';
 
-const target = process.argv[2];
-if (!target) {
-  console.error('you should specify a target: generate <target>');
-  process.exit(1);
-}
-const targets = [target];
 const esy = make('package.json');
+const targets = (() => {
+  const manifest_targets = esy.manifest.targets;
+  if (!manifest_targets) {
+    if (!process.argv[2]) {
+      console.error('you should specify a target: generate <system>.<arch>');
+      process.exit(1);
+    }
+    const [system, arch] = process.argv[2].split('.');
+    return [{ system, arch, name: `${system}.${arch}` }];
+  }
 
+  const systems = Object.keys(manifest_targets);
+  return systems.flatMap((system) =>
+    manifest_targets[system].map((arch) => ({
+      system,
+      arch,
+      name: `${system}.${arch}`,
+    }))
+  );
+})();
 const create_nodes = async () => {
   const nodes = Object.values(esy.lock.node);
 
@@ -40,7 +53,7 @@ const create_nodes = async () => {
   ).then((entries) => Object.fromEntries(entries));
 
   return nodes.flatMap((node) =>
-    ['native', ...targets].map(
+    ['native', ...targets.map((target) => target.name)].map(
       (target): node_t => {
         const name = target_name(target, node.name);
         const native = node.name;
@@ -169,23 +182,44 @@ const create_nodes = async () => {
 
   const resolutions_to_patch = mocks.map(({ file, mock }) => [mock.name, file]);
   const source_name = esy.lock.node[esy.lock.root].name;
-  const root_name = target_name(target, source_name);
-  const root = mocks.find((mock) => mock.name == root_name)!;
-  const wrapper = {
-    dependencies: {
-      ...esy.manifest.dependencies,
-      ...root.mock.dependencies,
-      source_name: undefined,
-      ...(esy.manifest.target && esy.manifest.target.dependencies),
-    },
-    resolutions: {
-      ...Object.fromEntries(resolutions_to_patch),
-      ...esy.manifest.resolutions,
-      ...(esy.manifest.target && esy.manifest.target.resolutions),
-    },
-  };
 
-  fs.writeFileSync(`${process.argv[2]}.json`, JSON.stringify(wrapper, null, 2));
+  targets.forEach((target) => {
+    const root_name = target_name(target.name, source_name);
+    const root = mocks.find((mock) => mock.name == root_name)!;
+
+    const additional_resolutions = Object.fromEntries(
+      [
+        ['generate', 'link:../generate/bin/package.json'] as const,
+        [`sysroot.tools`, `link:../sysroot/tools/package.json`] as const,
+        [
+          `@_${target.name}/sysroot`,
+          `link:../sysroot/${target.name}/package.json`,
+        ] as const,
+        target.system === 'android' &&
+          ([
+            '@_android/ndk',
+            'link:../sysroot/android.ndk/package.json',
+          ] as const),
+      ].filter(Boolean) as [string, string][]
+    );
+
+    const wrapper = {
+      dependencies: {
+        ...esy.manifest.dependencies,
+        ...root.mock.dependencies,
+        source_name: undefined,
+        ...(esy.manifest.target && esy.manifest.target.dependencies),
+      },
+      resolutions: {
+        ...Object.fromEntries(resolutions_to_patch),
+        ...esy.manifest.resolutions,
+        ...additional_resolutions,
+        ...(esy.manifest.target && esy.manifest.target.resolutions),
+      },
+    };
+
+    fs.writeFileSync(`${target.name}.json`, JSON.stringify(wrapper, null, 2));
+  });
 })();
 
 /* TODO: IMPORTANT, write a script to check if the files generated are right
