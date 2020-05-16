@@ -53,6 +53,8 @@ cat > $cur__install/toolchain.cmake <<EOF
 set(CMAKE_SYSTEM_NAME Darwin)
 set(CMAKE_SYSTEM_PROCESSOR $DARWIN_ARCH)
 
+set(CMAKE_OSX_SYSROOT $SDK_SYSROOT)
+
 set(CMAKE_AR $DARWIN_TRIPLE-ar)
 set(CMAKE_ $DARWIN_TRIPLE-ranlib)
 set(CMAKE_C_COMPILER $DARWIN_TRIPLE-clang)
