@@ -30,7 +30,7 @@ import os
 import sys
 
 ar, output, rspfile = sys.argv[1:]
-os.system(f'rm -f {output}; {ar} rcs {output} \$(cat {rspfile})')
+os.system('rm -f %s; %s rcs %s \$(cat %s)' % (output, ar, output, rspfile))
 EOF
 
 bin/gn gen $cur__target_dir/out/Static \
