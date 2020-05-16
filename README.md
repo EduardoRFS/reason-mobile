@@ -10,22 +10,22 @@ This repository is designed to provide some tooling to cross compile using esy t
 
 ## Example
 
-To compile the hello-reason project for android(arm64):
+To compile the hello-reason project for android arm64:
 
 ```sh
 # setup
 cd hello-reason
 esy
-node ../generate/dist/cli.js android
-esy @android
+node ../generate/dist/cli.js android.arm64
+esy @android.arm64
 
 # build
-esy @android not-esy-setup dune build -x android
+esy @android.arm64 not-esy-setup dune build -x android.arm64
 
 # shell
-esy @android not-esy-setup $SHELL
+esy @android.arm64 not-esy-setup $SHELL
 
-# any command here will be in the right env
+## any command here will be in the env capable of building for android and host
 ```
 
 ## Status
