@@ -2,21 +2,29 @@
   "name": "@_android.aarch64/sysroot",
   "dependencies": {
     "generate": "*",
+    "sysroot.tools": "*",
     "@_android/ndk": "*"
   },
   "esy": {
+    "buildEnv": {
+      "PATH": "$PATH:#{@_android/ndk.install}/ndk/toolchains/llvm/prebuilt/#{os}-x86_64/bin"
+    },
     "build": "sh setup.sh",
     "exportedEnv": {
       "ESY_TOOLCHAIN": {
-        "val": "android",
+        "val": "android.arm64",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_SYSTEM": {
         "val": "android",
         "scope": "global"
       },
+      "ESY_TOOLCHAIN_PROCESSOR": {
+        "val": "arm64",
+        "scope": "global"
+      },
       "ESY_TOOLCHAIN_SYSROOT": {
-        "val": "#{self.install}/ndk/sysroot",
+        "val": "#{@_android/ndk.install}/ndk",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_CMAKE": {
@@ -32,7 +40,7 @@
         "scope": "global"
       },
       "ESY_TOOLCHAIN_FULL_HOST": {
-        "val": "aarch64-linux-android",
+        "val": "aarch64-linux-android24",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_CC": {
@@ -44,15 +52,15 @@
         "scope": "global"
       },
       "ESY_TOOLCHAIN_AS": {
-        "val": "aarch64-linux-android-as",
+        "val": "aarch64-linux-android24-as",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_AR": {
-        "val": "aarch64-linux-android-ar",
+        "val": "aarch64-linux-android24-ar",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_RANLIB": {
-        "val": "aarch64-linux-android-ranlib",
+        "val": "aarch64-linux-android24-ranlib",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_ASPP": {
@@ -60,11 +68,11 @@
         "scope": "global"
       },
       "ESY_TOOLCHAIN_LD": {
-        "val": "aarch64-linux-android-ld",
+        "val": "aarch64-linux-android24-ld",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_PARTIALLD": {
-        "val": "aarch64-linux-android-ld -r",
+        "val": "aarch64-linux-android24-ld -r",
         "scope": "global"
       }
     }
