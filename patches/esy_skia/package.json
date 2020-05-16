@@ -1,5 +1,5 @@
 {
   "build": [
-    ["sh", "esy_skia_build.sh"]
+    ["sh", "esy_build.sh"]
   ]
 }
