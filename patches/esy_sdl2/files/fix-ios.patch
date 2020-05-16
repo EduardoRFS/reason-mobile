@@ -1,0 +1,92 @@
+diff --git a/configure b/configure
+index ab7b658..78dc19e 100755
+--- a/configure
++++ b/configure
+@@ -21572,15 +21572,11 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+         CFLAGS="$save_CFLAGS"
+         { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_metal" >&5
+ $as_echo "$have_metal" >&6; }
+-        if test x$have_metal = xyes; then
+ 
+ $as_echo "#define SDL_VIDEO_RENDER_METAL 1" >>confdefs.h
+ 
+-            SOURCES="$SOURCES $srcdir/src/render/metal/*.m"
+-            SUMMARY_video="${SUMMARY_video} metal"
+-        else
+-            enable_render_metal=no
+-        fi
++        SOURCES="$SOURCES $srcdir/src/render/metal/*.m"
++        SUMMARY_video="${SUMMARY_video} metal"
+     fi
+ }
+ 
+@@ -24965,6 +24961,15 @@ $as_echo "#define SDL_JOYSTICK_MFI 1" >>confdefs.h
+             SOURCES="$SOURCES $srcdir/src/joystick/steam/*.c"
+             have_joystick=yes
+         fi
++        # coremotion
++         if test x$enable_sensor = xyes; then
++
++$as_echo "#define SDL_SENSOR_COREMOTION 1" >>confdefs.h
++
++            SOURCES="$SOURCES $srcdir/src/sensor/coremotion/*.m"
++            have_sensor=yes
++        fi
++
+         # Set up files for the haptic library
+         #if test x$enable_haptic = xyes; then
+         #    SOURCES="$SOURCES $srcdir/src/haptic/darwin/*.c"
+diff --git a/configure.ac b/configure.ac
+index 9e782c6..0d675d8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2071,13 +2071,9 @@ AS_HELP_STRING([--enable-render-metal], [enable the Metal render driver [[defaul
+         ])
+         CFLAGS="$save_CFLAGS"
+         AC_MSG_RESULT($have_metal)
+-        if test x$have_metal = xyes; then
+-            AC_DEFINE(SDL_VIDEO_RENDER_METAL, 1, [ ])
+-            SOURCES="$SOURCES $srcdir/src/render/metal/*.m"
+-            SUMMARY_video="${SUMMARY_video} metal"
+-        else
+-            enable_render_metal=no
+-        fi
++        AC_DEFINE(SDL_VIDEO_RENDER_METAL, 1, [ ])
++        SOURCES="$SOURCES $srcdir/src/render/metal/*.m"
++        SUMMARY_video="${SUMMARY_video} metal"
+     fi
+ }
+ 
+@@ -3750,6 +3746,13 @@ AS_HELP_STRING([--enable-render-d3d], [enable the Direct3D render driver [[defau
+             SOURCES="$SOURCES $srcdir/src/joystick/steam/*.c"
+             have_joystick=yes
+         fi
++        # coremotion
++         if test x$enable_sensor = xyes; then
++            AC_DEFINE(SDL_SENSOR_COREMOTION, 1, [ ])
++            SOURCES="$SOURCES $srcdir/src/sensor/coremotion/*.m"
++            have_sensor=yes
++        fi
++
+         # Set up files for the haptic library
+         #if test x$enable_haptic = xyes; then
+         #    SOURCES="$SOURCES $srcdir/src/haptic/darwin/*.c"
+diff --git a/src/video/uikit/SDL_uikitappdelegate.m b/src/video/uikit/SDL_uikitappdelegate.m
+index ecc695d..dd36cb0 100644
+--- a/src/video/uikit/SDL_uikitappdelegate.m
++++ b/src/video/uikit/SDL_uikitappdelegate.m
+@@ -43,14 +43,6 @@ static int forward_argc;
+ static char **forward_argv;
+ static int exit_status;
+ 
+-#if defined(SDL_MAIN_NEEDED) && !defined(IOS_DYLIB)
+-/* SDL is being built as a static library, include main() */
+-int main(int argc, char *argv[])
+-{
+-	return SDL_UIKitRunApp(argc, argv, SDL_main);
+-}
+-#endif /* SDL_MAIN_NEEDED && !IOS_DYLIB */
+-
+ int SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
+ {
+     int i;
