@@ -1,4 +1,7 @@
 {
+  "exported_env": {
+    "OCAML_TOPLEVEL_PATH": "#{@opam/ocamlfind.install}/toplevel"
+  },
   "source": [
     ["rm", "-rf", "ocaml", "$ESY_TOOLCHAIN-sysroot"],
     [
