@@ -1,0 +1,5 @@
+(executable
+  (name HelloServerless)
+  (public_name hello-serverless)
+  (flags (-ccopt %{env:CCOPT=}))
+  (libraries opium lwt lwt.unix))
