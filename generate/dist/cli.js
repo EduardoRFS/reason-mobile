@@ -18,7 +18,9 @@ const targets = (() => {
             console.error('you should specify a target: generate <system>.<arch>');
             process.exit(1);
         }
-        const [system, arch] = process.argv[2].split('.');
+        const parts = process.argv[2].split('.');
+        const [arch] = parts.slice(-1);
+        const system = parts.slice(0, -1).join('.');
         return [{ system, arch, name: `${system}.${arch}` }];
     }
     const systems = Object.keys(manifest_targets);
