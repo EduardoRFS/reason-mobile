@@ -3,7 +3,7 @@
 set -e
 set -u
 
-TOOLCHAIN="ios"
+TOOLCHAIN="ios.arm64"
 
 SDK_VERSION="13.2"
 SDK_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk"
