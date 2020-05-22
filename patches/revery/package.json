@@ -1,1 +1,6 @@
-{}
+{
+  "build": [
+    ["sh", "-c", "\"patch -p1 < ./android+ios.patch\""],
+    ["dune", "build", "-p", "Revery"]
+  ]
+}
