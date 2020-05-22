@@ -1,6 +1,6 @@
-# hello-serverless
+# hello-server
 
-This is just an example, on how to build on macOS to Linux using musl, useful to run on serverless platforms like AWS Lambda.
+This is just an example, on how to build on macOS to Linux using musl, it's also useful to run on serverless platforms like AWS Lambda.
 
 ## Requirements
 
@@ -19,7 +19,7 @@ brew install FiloSottile/musl-cross/musl-cross
 
 ```sh
 # setup
-cd hello-serverless
+cd hello-server
 esy
 node ../generate/dist/cli.js linux.musl.x86_64
 esy @linux.musl.x86_64
