@@ -3,17 +3,17 @@
     [
       "make",
       "-j6",
-      "OCAMLC=ocamlfind -toolchain $ESY_TOOLCHAIN ocamlc",
-      "OCAMLOPT=ocamlfind -toolchain $ESY_TOOLCHAIN ocamlopt",
-      "OCAMLDEP=ocamlfind-toolchain $ESY_TOOLCHAIN ocamldep",
-      "OCAMLMKLIB=ocamlfind -toolchain $ESY_TOOLCHAIN ocamlmklib",
-      "OCAMLFIND=ocamlfind -toolchain $ESY_TOOLCHAIN"
+      "OCAMLC=\"ocamlfind -toolchain $ESY_TOOLCHAIN ocamlc\"",
+      "OCAMLOPT=\"ocamlfind -toolchain $ESY_TOOLCHAIN ocamlopt\"",
+      "OCAMLDEP=\"ocamlfind-toolchain $ESY_TOOLCHAIN ocamldep\"",
+      "OCAMLMKLIB=\"ocamlfind -toolchain $ESY_TOOLCHAIN ocamlmklib\"",
+      "OCAMLFIND=\"ocamlfind -toolchain $ESY_TOOLCHAIN\""
     ]
   ],
   "install": [
     [
       "make",
-      "OCAMLFIND=ocamlfind -toolchain $ESY_TOOLCHAIN",
+      "OCAMLFIND=\"ocamlfind -toolchain $ESY_TOOLCHAIN\"",
       "OUR_FAULT=no",
       "findlib-install"
     ]
