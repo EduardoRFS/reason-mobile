@@ -10,7 +10,9 @@ const commands_1 = require("./commands");
 const fs_1 = __importDefault(require("fs"));
 const env_1 = __importDefault(require("./env"));
 const patch_1 = __importDefault(require("./patch"));
-const esy = esy_1.make('package.json');
+const esy = fs_1.default.existsSync('./esy.json')
+    ? esy_1.make('esy.json')
+    : esy_1.make('package.json');
 const targets = (() => {
     const manifest_targets = esy.manifest.targets;
     if (!manifest_targets) {
@@ -156,11 +158,13 @@ const create_nodes = async () => {
                     'link:../sysroot/android.ndk/package.json',
                 ],
         ].filter(Boolean));
+        const host_root_name = esy.lock.node[esy.lock.root].name;
         const wrapper = {
             dependencies: {
                 ...esy.manifest.dependencies,
                 ...root.mock.dependencies,
                 source_name: undefined,
+                [host_root_name]: undefined,
                 ...(esy.manifest.target && esy.manifest.target.dependencies),
             },
             resolutions: {

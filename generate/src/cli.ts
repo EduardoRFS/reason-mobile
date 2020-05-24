@@ -7,7 +7,9 @@ import fs from 'fs';
 import env from './env';
 import get_patch from './patch';
 
-const esy = make('package.json');
+const esy = fs.existsSync('./esy.json')
+  ? make('esy.json')
+  : make('package.json');
 const targets = (() => {
   const manifest_targets = esy.manifest.targets;
   if (!manifest_targets) {
@@ -205,11 +207,13 @@ const create_nodes = async () => {
       ].filter(Boolean) as [string, string][]
     );
 
+    const host_root_name = esy.lock.node[esy.lock.root].name;
     const wrapper = {
       dependencies: {
         ...esy.manifest.dependencies,
         ...root.mock.dependencies,
         source_name: undefined,
+        [host_root_name]: undefined,
         ...(esy.manifest.target && esy.manifest.target.dependencies),
       },
       resolutions: {
