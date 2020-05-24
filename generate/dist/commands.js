@@ -51,7 +51,9 @@ const patch_dune = (node, command) => {
     // TODO: test
     // dune build -p pkg
     // refmterr dune build -p pkg
-    const is_dune_build = () => command.slice(0, 2).includes('dune') && command.includes('build');
+    const is_dune_build = () => (command.slice(0, 2).includes('dune') ||
+        command.slice(0, 2).includes('jbuilder')) &&
+        command.includes('build');
     return is_dune_build()
         ? command.concat(['-x', node.target, '@install'])
         : command;
