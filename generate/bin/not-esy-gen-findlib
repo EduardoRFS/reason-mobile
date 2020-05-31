@@ -35,12 +35,17 @@ create_findlib () {
     TOOLCHAIN="($TOOLCHAIN)"
   fi
 
+  OCAMLOPT="$COMPILER/bin/ocamlopt"
+  if [[ ! -f "$OCAMLOPT" ]]; then
+    OCAMLOPT=""
+  fi
+
 cat > $FILE <<EOF
 path$TOOLCHAIN = "$TOOLCHAIN_OCAMLPATH"
 destdir$TOOLCHAIN = "$COMPILER/lib"
 stdlib$TOOLCHAIN = "$COMPILER/lib/ocaml"
 ocamlc$TOOLCHAIN = "$COMPILER/bin/ocamlc"
-ocamlopt$TOOLCHAIN = "$COMPILER/bin/ocamlopt"
+ocamlopt$TOOLCHAIN = "$OCAMLOPT"
 ocamlcp$TOOLCHAIN = "$COMPILER/bin/ocamlcp"
 ocamlmklib$TOOLCHAIN = "$COMPILER/bin/ocamlmklib"
 ocamlmktop$TOOLCHAIN = "$COMPILER/bin/ocamlmktop"
