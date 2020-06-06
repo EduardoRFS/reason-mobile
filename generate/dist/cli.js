@@ -159,14 +159,15 @@ const create_nodes = async () => {
                 ],
         ].filter(Boolean));
         const host_root_name = esy.lock.node[esy.lock.root].name;
+        const dependencies = Object.entries({
+            ...esy.manifest.dependencies,
+            ...root.mock.dependencies,
+            source_name: undefined,
+            [host_root_name]: undefined,
+            ...(esy.manifest.target && esy.manifest.target.dependencies),
+        }).filter(([_, value]) => value);
         const wrapper = {
-            dependencies: {
-                ...esy.manifest.dependencies,
-                ...root.mock.dependencies,
-                source_name: undefined,
-                [host_root_name]: undefined,
-                ...(esy.manifest.target && esy.manifest.target.dependencies),
-            },
+            dependencies: Object.fromEntries(dependencies),
             resolutions: {
                 ...Object.fromEntries(resolutions_to_patch),
                 ...esy.manifest.resolutions,
