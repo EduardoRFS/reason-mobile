@@ -100,6 +100,7 @@ export const unresolve_string = (
 
   string = replace(node, 'self', true, string);
 
+  // TODO: js of ocaml
   return node_dependencies(nodes, node).reduce(
     (string, dep) =>
       replace(dep, target_name(node.target, dep.name), false, string),

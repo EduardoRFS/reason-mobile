@@ -1,9 +1,8 @@
 #! /bin/bash
 
-cp not-esy-gen-findlib $cur__bin
-cp not-esy-gen-tools $cur__bin
-cp not-esy-setup $cur__bin
+set -e
+set -u
 
-echo "#! $(which node)" > $cur__bin/not-esy-installer
-cat not-esy-installer >> $cur__bin/not-esy-installer
-chmod +x $cur__bin/not-esy-installer
+cp not-esy-gen-findlib $cur__bin
+cp not-esy-setup $cur__bin
+cp not-esy-installer $cur__bin
