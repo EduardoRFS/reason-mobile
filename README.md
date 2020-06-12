@@ -40,7 +40,7 @@ Only arm64 was tested, but x86_64 should also be working
 
 ### iOS
 
-Currently you can compile simple examples, like the `hello-reason`, you still cannot compile Revery as there is some patches missing for iOS.
+Revery is working now, same as Android the `reason-skia` cstubs were patched for arm64.
 
 Only arm64 was tested, but x86_64 should also be working
 
@@ -60,4 +60,10 @@ A collection of patches designed to solve packages that aren't solved by the hac
 
 ### Sysroot
 
-An esy package, making the compiler + sysroot available to esy. Currently only Android 24 arm64 is available
+An esy package, making the compiler + sysroot available to esy. Currently we target the following environments
+
+| OS      | ARCH   | ENV    |
+| ------- | ------ | ------ |
+| Android | arm64  | 24     |
+| iOS     | arm64  | 17.7.0 |
+| Linux   | x86_64 | musl   |
