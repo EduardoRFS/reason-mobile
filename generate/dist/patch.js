@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const lib_1 = require("./lib");
 const root_folder = path_1.default.resolve('../patches');
 const folders = fs_1.default.readdirSync(root_folder);
 const get_patch_folder = (name, version) => {
@@ -18,7 +19,7 @@ const get_patch_folder = (name, version) => {
     }
     return null;
 };
-const get_patch = (name, version) => {
+const get_patch = async (name, version) => {
     const folder = get_patch_folder(name, version);
     if (!folder) {
         return null;
@@ -26,8 +27,12 @@ const get_patch = (name, version) => {
     const files_folder = path_1.default.resolve(folder, 'files');
     const manifest = path_1.default.join(folder, 'package.json');
     const data = fs_1.default.readFileSync(manifest);
+    const checksum_files_folder = fs_1.default.existsSync(files_folder)
+        ? await lib_1.folder_sha1(files_folder)
+        : '';
     return {
         ...JSON.parse(data.toString()),
+        checksum_files_folder: checksum_files_folder,
         files_folder: fs_1.default.existsSync(files_folder) && files_folder,
     };
 };

@@ -48,7 +48,7 @@ const create_nodes = async () => {
         ]);
         return [name, { build_map, exec_env }];
     })).then((entries) => Object.fromEntries(entries));
-    return nodes.flatMap((node) => ['native', ...targets.map((target) => target.name)].map((target) => {
+    const promises = nodes.flatMap((node) => ['native', ...targets.map((target) => target.name)].map(async (target) => {
         const name = lib_1.target_name(target, node.name);
         const native = node.name;
         const env_plan = env_plan_map[node.name];
@@ -59,7 +59,8 @@ const create_nodes = async () => {
                 return [key, new_value];
             }));
         })();
-        const override_build_plan = patch_1.default(lib_1.escape_name(node.name), exec_env.cur__version) || {};
+        const override_build_plan = (await patch_1.default(lib_1.escape_name(node.name), exec_env.cur__version)) ||
+            {};
         const build_plan = {
             ...env_plan.build_map,
             ...override_build_plan,
@@ -80,6 +81,13 @@ const create_nodes = async () => {
             patch: override_build_plan,
         };
     }));
+    return Promise.all(promises);
+};
+const add_as_mock = async (name, folder) => {
+    const hash = (await lib_1.folder_sha1(folder)).slice(0, 8);
+    const mock_folder = `.mocks/${hash}`;
+    await lib_1.exec(`cp -a ${folder} ${mock_folder}`);
+    return [name, `${mock_folder}/package.json`];
 };
 (async () => {
     const nodes = await create_nodes();
@@ -125,8 +133,7 @@ const create_nodes = async () => {
                 install: install_map[node.name],
             },
         };
-        // TODO: checksum patch files
-        const checksum = lib_1.sha1(JSON.stringify(mock)).slice(0, 8);
+        const checksum = lib_1.sha1(JSON.stringify(mock) + (node.patch && node.patch.checksum_files_folder)).slice(0, 8);
         const path = `.mocks/${checksum}`;
         const file = `${path}/esy.json`;
         return { name: node.name, mock, path, file };
@@ -142,21 +149,15 @@ const create_nodes = async () => {
     });
     const resolutions_to_patch = mocks.map(({ file, mock }) => [mock.name, file]);
     const source_name = esy.lock.node[esy.lock.root].name;
-    targets.forEach((target) => {
+    targets.forEach(async (target) => {
         const root_name = lib_1.target_name(target.name, source_name);
         const root = mocks.find((mock) => mock.name == root_name);
         const additional_resolutions = Object.fromEntries([
-            ['generate', 'link:../generate/bin/package.json'],
-            [`sysroot.tools`, `link:../sysroot/tools/package.json`],
-            [
-                `@_${target.name}/sysroot`,
-                `link:../sysroot/${target.name}/package.json`,
-            ],
+            await add_as_mock('generate', '../generate/bin'),
+            await add_as_mock('sysroot.tools', '../sysroot/tools'),
+            await add_as_mock(`@_${target.name}/sysroot`, `../sysroot/${target.name}`),
             target.system === 'android' &&
-                [
-                    '@_android/ndk',
-                    'link:../sysroot/android.ndk/package.json',
-                ],
+                (await add_as_mock('@_android/ndk', '../sysroot/android.ndk')),
         ].filter(Boolean));
         const host_root_name = esy.lock.node[esy.lock.root].name;
         const dependencies = Object.entries({

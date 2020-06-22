@@ -9,6 +9,7 @@ export type t = {
   exec_env: map<string>;
   dependencies: string[];
   patch?: {
+    checksum_files_folder: string;
     files_folder?: string;
     source: string[][];
     build: string[][];

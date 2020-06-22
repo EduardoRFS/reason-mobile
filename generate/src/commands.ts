@@ -1,3 +1,4 @@
+import fs from 'fs';
 import {
   t as node,
   prefix as node_prefix,
@@ -84,10 +85,54 @@ const patch_dune = (node: node, command: command) => {
     : command;
 };
 
+const _patch_autoconf = (node: node, command: command) => {
+  // TODO: what if
+  // sh configure
+  // ../configure
+
+  if (command[0] !== './configure') {
+    return command;
+  }
+
+  const configure_path = `${node.build_plan.sourcePath}/configure`;
+  const configure = fs.readFileSync(configure_path).toString();
+
+  if (!configure.includes('GNU Autoconf')) {
+    return command;
+  }
+
+  const args_template = {
+    '--build': '$ESY_TOOLCHAIN_BUILD',
+    '--host': '$ESY_TOOLCHAIN_HOST',
+    CC: '$ESY_TOOLCHAIN_CC',
+    CXX: '$ESY_TOOLCHAIN_CXX',
+    OCAMLFIND: 'ocamlfind -toolchain $ESY_TOOLCHAIN',
+    OCAMLBUILD: 'ocamlbuild -use-ocamlfind -toolchain $ESY_TOOLCHAIN',
+    OCAMLMKLIB: '$ESY_TOOLCHAIN_OCAML/bin/ocamlmklib',
+    OCAMLMKTOP: '$ESY_TOOLCHAIN_OCAML/bin/ocamlmktop',
+    OCAMLDEPDOTOPT: '$ESY_TOOLCHAIN_OCAML/bin/ocamldep',
+    OCAMLDEP: '$ESY_TOOLCHAIN_OCAML/bin/ocamldep',
+    OCAMLOPTDOTOPT: '$ESY_TOOLCHAIN_OCAML/bin/ocamlopt',
+    OCAMLCDOTOPT: '$ESY_TOOLCHAIN_OCAML/bin/ocamlc',
+    OCAMLOPT: '$ESY_TOOLCHAIN_OCAML/bin/ocamlc',
+    OCAMLLIB: '$ESY_TOOLCHAIN_OCAML/lib/ocaml',
+    OCAMLC: '$ESY_TOOLCHAIN_OCAML/bin/ocamlc.opt',
+    OCAMLOBJINFO: '$ESY_TOOLCHAIN_OCAML/bin/ocamlobjinfo',
+  };
+
+  const additional_args = Object.entries(args_template)
+    .filter(([key]) => configure.includes(`${key}=`))
+    .map(([key, value]) => `${key}="${value}"`)
+    .sort();
+
+  return [...command, ...additional_args];
+};
+
 export const build = (nodes: map<node>, node: node): command[] => {
   const source_build = node.build_plan.build || [];
   const commands = unresolve_commands(nodes, node, source_build)
     .map((command) => patch_dune(node, command))
+    // .map((command) => patch_autoconf(node, command))
     .filter((command) => !is_installer(command));
 
   return [
