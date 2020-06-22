@@ -1,4 +1,4 @@
-#! /bin/env -i node
+#! /bin/env node
 
 'use strict';
 
