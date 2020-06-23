@@ -1,4 +1,3 @@
 (executable
-   (name hello)
-   (libraries console.lib pastel.lib)
-)
+ (name hello)
+ (libraries console.lib pastel.lib))
