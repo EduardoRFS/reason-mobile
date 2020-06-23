@@ -1,6 +1,0 @@
-{
-  "build": [
-    ["sh", "-c", "\"patch -p1 < ./fix-langinfo-android.patch\""],
-    ["dune", "build", "-p", "lambda-term", "-j", "4"]
-  ]
-}
