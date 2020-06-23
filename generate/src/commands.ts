@@ -21,8 +21,13 @@ const unresolve_commands = (
   );
 
 const to_script = (commands: command[]): command[] => {
-  // TODO: escape this properly
-  const script = commands.map((command) => command.join(' ')).join('\n');
+  const escape_arg = (arg: string) => {
+    const escaped = arg.replace(/"/g, '\\\\"');
+    return `"${escaped}"`;
+  };
+  const script = commands
+    .map((command) => command.map(escape_arg).join(' '))
+    .join('\n');
 
   return [['sh', '-c', `set -e\n${script}`]];
 };

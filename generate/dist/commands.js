@@ -8,8 +8,13 @@ const node_1 = require("./node");
 const env_1 = require("./env");
 const unresolve_commands = (nodes, node, commands) => commands.map((command) => command.map((part) => env_1.unresolve_string(nodes, node, part)));
 const to_script = (commands) => {
-    // TODO: escape this properly
-    const script = commands.map((command) => command.join(' ')).join('\n');
+    const escape_arg = (arg) => {
+        const escaped = arg.replace(/"/g, '\\\\"');
+        return `"${escaped}"`;
+    };
+    const script = commands
+        .map((command) => command.map(escape_arg).join(' '))
+        .join('\n');
     return [['sh', '-c', `set -e\n${script}`]];
 };
 // TODO: check that against a huge base of packages
