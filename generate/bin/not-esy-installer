@@ -117,8 +117,20 @@ const parse = (pkg_name, opam_install) => {
 const sorted_uniq = (list) =>
   list.reduce((list, el) => (list[0] === el ? list : [el, ...list]), []);
 
-const files = fs
-  .readdirSync(process.cwd())
+const readdir = (path) => {
+  try {
+    return fs.readdirSync(path);
+  } catch (err) {
+    return [];
+  }
+};
+
+const dirs = [process.cwd(), path.resolve(process.cwd(), `default.${target}`)];
+const files = dirs
+  .flatMap((dir) => {
+    const files = readdir(dir);
+    return files.map((file) => path.join(dir, file));
+  })
   .filter((file) => file.endsWith('.install'))
   .sort()
   .reverse()
