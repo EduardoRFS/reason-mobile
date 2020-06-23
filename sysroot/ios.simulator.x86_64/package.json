@@ -1,0 +1,80 @@
+{
+  "name": "@_ios.simulator.x86_64/sysroot",
+  "dependencies": {
+    "generate": "*",
+    "sysroot.tools": "*"
+  },
+  "esy": {
+    "build": "sh setup.sh",
+    "exportedEnv": {
+      "ESY_TOOLCHAIN": {
+        "val": "ios.simulator.x86_64",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_SYSTEM": {
+        "val": "ios",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_PROCESSOR": {
+        "val": "x86_64",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_SYSROOT": {
+        "val": "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CMAKE": {
+        "val": "-DCMAKE_TOOLCHAIN_FILE=#{self.install}/toolchain.cmake",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_BUILD": {
+        "val": "x86_64-pc-linux-gnu",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_DARWIN_KERNEL": {
+        "val": "17.7.0",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_HOST": {
+        "val": "x86_64-apple-darwin17.7.0",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_FULL_HOST": {
+        "val": "x86_64-apple-darwin17.7.0",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CC": {
+        "val": "x86_64-apple-darwin17.7.0-clang",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CXX": {
+        "val": "x86_64-apple-darwin17.7.0-clang++",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_AS": {
+        "val": "x86_64-apple-darwin17.7.0-as",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_AR": {
+        "val": "x86_64-apple-darwin17.7.0-ar",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_RANLIB": {
+        "val": "x86_64-apple-darwin17.7.0-ranlib",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_ASPP": {
+        "val": "x86_64-apple-darwin17.7.0-clang -c",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_LD": {
+        "val": "x86_64-apple-darwin17.7.0-ld",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_PARTIALLD": {
+        "val": "x86_64-apple-darwin17.7.0-ld -r",
+        "scope": "global"
+      }
+    }
+  }
+}
