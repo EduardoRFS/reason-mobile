@@ -1,10 +1,11 @@
 {
   "build": [
     ["touch","libffi.config"],
+    ["sh", "-c", "echo \"as_needed_flags=\" > asneeded.config"],
     [
       "make",
       "-j6",
-      "OCAMLFIND='ocamlfind -toolchain $ESY_TOOLCHAIN'",
+      "OCAMLFIND=ocamlfind -toolchain $ESY_TOOLCHAIN",
       "XEN=disable",
       "ctypes-base",
       "ctypes-stubs"

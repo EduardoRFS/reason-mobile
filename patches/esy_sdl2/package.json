@@ -1,6 +1,6 @@
 {
   "build": [
-    ["sh", "-c", "\"patch -p1 < ./fix-ios.patch\""],
+    ["sh", "-c", "patch -p1 < ./fix-ios.patch"],
     ["sh", "esy_setup.sh"],
     ["make", "-j6"]
   ],

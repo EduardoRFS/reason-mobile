@@ -1,7 +1,7 @@
 {
   "build": [
-    ["sh", "-c", "\"patch -p1 < ./fix-android.patch\""],
-    ["sh", "-c", "\"patch -p1 < ./fix-discover-os.patch\""],
+    ["sh", "-c", "patch -p1 < ./fix-android.patch"],
+    ["sh", "-c", "patch -p1 < ./fix-discover-os.patch"],
     ["dune", "build", "-p", "reason-font-manager"]
   ]
 }

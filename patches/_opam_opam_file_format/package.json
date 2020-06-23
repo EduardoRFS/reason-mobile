@@ -1,6 +1,6 @@
 {
   "build": [
-    ["sh", "-c", "\"patch -p1 < ./add-ocamlfind.patch\""],
+    ["sh", "-c", "patch -p1 < ./add-ocamlfind.patch"],
     ["OCAMLFIND_TOOLCHAIN=$ESY_TOOLCHAIN", "make", "all"]
   ],
   "dependencies": {

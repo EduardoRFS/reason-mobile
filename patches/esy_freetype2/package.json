@@ -6,7 +6,7 @@
     ["cd", "_build"],
     [
       "cmake",
-      "-G\"Unix Makefiles\"",
+      "-GUnix Makefiles",
       "../",
       "-DCMAKE_INSTALL_PREFIX=$cur__install",
       "-DCMAKE_BUILD_TYPE=Release",
@@ -17,6 +17,6 @@
     ["make", "-j6"]
   ],
   "install": [
-    ["make", "-C _build", "install"]
+    ["make", "-C", "_build", "install"]
   ]
 }

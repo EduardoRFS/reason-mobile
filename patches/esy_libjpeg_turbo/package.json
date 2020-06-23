@@ -4,12 +4,12 @@
     ["export", "PKG_CONFIG_LIBDIR="],
     [
       "cmake",
-      "-G\"Unix Makefiles\"",
+      "-GUnix Makefiles",
       "-DCMAKE_BUILD_TYPE=Release",
       "-DCMAKE_INSTALL_PREFIX=$cur__install",
       "-DCMAKE_INSTALL_DEFAULT_LIBDIR=lib",
-      "-S $cur__root",
-      "-B $cur__target_dir",
+      "-S", "$cur__root",
+      "-B", "$cur__target_dir",
       "$ESY_TOOLCHAIN_CMAKE"
     ],
     ["make", "-j6", "-C", "$cur__target_dir"]
