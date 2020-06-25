@@ -3,9 +3,10 @@
 set -e
 set -u
 
+ARCH="x86_64"
 TOOLCHAIN="linux.musl.x86_64"
-BASE_TRIPLE="x86_64-linux-musl"
-TARGET_TRIPLE="x86_64-unknown-linux-musl"
+BASE_TRIPLE="$ARCH-linux-musl"
+TARGET_TRIPLE="$ARCH-unknown-linux-musl"
 
 gen_tools () {
   TOOL_NAME="$1"
@@ -28,3 +29,13 @@ gen_tools nm
 gen_tools objdump
 gen_tools ranlib
 gen_tools strip
+
+cat > $cur__install/toolchain.cmake <<EOF
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR $ARCH)
+
+set(CMAKE_AR $DARWIN_TRIPLE-ar)
+set(CMAKE_RANLIB $DARWIN_TRIPLE-ranlib)
+set(CMAKE_C_COMPILER $DARWIN_TRIPLE-gcc)
+set(CMAKE_CXX_COMPILER $DARWIN_TRIPLE-g++)
+EOF

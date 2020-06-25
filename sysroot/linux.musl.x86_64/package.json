@@ -24,7 +24,7 @@
         "scope": "global"
       },
       "ESY_TOOLCHAIN_CMAKE": {
-        "val": " ",
+        "val": "-DCMAKE_TOOLCHAIN_FILE=#{self.install}/toolchain.cmake",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_BUILD": {
