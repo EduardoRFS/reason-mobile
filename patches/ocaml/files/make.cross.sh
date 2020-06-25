@@ -35,10 +35,27 @@ write_wrapper () {
   TARGET="$1"
   RUN="$2"
 
+  ARGS='for ARG in "$@"; do NEW_ARGS="$NEW_ARGS \"$ARG\""; done'
+
+  if [[ "$(uname)" != 'Linux' ]]; then
+    ARGS='
+for ARG in "$@"
+do
+  if (
+    [ "$ARG" != "-function-sections" ]
+  ); then
+    NEW_ARGS="$NEW_ARGS \"$ARG\""
+  fi
+done'
+  fi
+
 cat > $TARGET <<EOF
 #! /bin/sh
 
-eval $RUN '"\$@"'  
+NEW_ARGS=""
+$ARGS
+
+eval "$RUN \$NEW_ARGS"  
 EOF
 
   chmod +x $TARGET
