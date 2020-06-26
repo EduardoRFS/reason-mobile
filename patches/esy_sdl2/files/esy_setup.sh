@@ -23,6 +23,11 @@ if [ "$ESY_TOOLCHAIN_SYSTEM" == "ios" ]; then
   HOST="$PROCESSOR-ios-darwin$ESY_TOOLCHAIN_DARWIN_KERNEL"
 fi
 
+CLANGS=""
+if [ "$ESY_TOOLCHAIN_SYSTEM" == "ios" ]; then
+  CLANGS="-fobjc-weak"
+fi
+
 ./configure \
   --prefix=$cur__install \
   --build=$ESY_TOOLCHAIN_BUILD \
@@ -32,7 +37,7 @@ fi
   --with-sysroot=$ESY_TOOLCHAIN_SYSROOT \
   CC=$ESY_TOOLCHAIN_CC \
   CXX=$ESY_TOOLCHAIN_CXX \
-  CFLAGS="-fobjc-weak"
+  CFLAGS="$CLANGS"
 
 if [ "$ESY_TOOLCHAIN_SYSTEM" == "ios" ]; then
   cp include/SDL_config_iphoneos.h include/SDL_config.h

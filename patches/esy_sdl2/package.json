@@ -6,5 +6,8 @@
   ],
   "install": [
     ["make", "install"]
-  ]
+  ],
+  "exported_env": {
+    "PKG_CONFIG_PATH": "#{self.install}/$ESY_TOOLCHAIN-sysroot/lib/pkgconfig:$PKG_CONFIG_PATH"
+  }
 }
