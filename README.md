@@ -46,10 +46,6 @@ Only arm64 was tested, but x86_64 should also be working
 
 ## What it is
 
-### Toolchain
-
-A docker image ready to run the target binaries if needed, and with some tooling, more details at [TOOLCHAIN.md](./TOOLCHAIN.md)
-
 ### Generate
 
 A script and some helpers to assist esy when doing cross compilation, it's an ad-hoc solution to concentrate a some hacks to use packages that weren't originally designed to it.
