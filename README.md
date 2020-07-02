@@ -58,8 +58,9 @@ A collection of patches designed to solve packages that aren't solved by the hac
 
 An esy package, making the compiler + sysroot available to esy. Currently we target the following environments
 
-| OS      | ARCH   | ENV    |
-| ------- | ------ | ------ |
-| Android | arm64  | 24     |
-| iOS     | arm64  | 17.7.0 |
-| Linux   | x86_64 | musl   |
+| OS            | ARCH   | ENV    |
+| ------------- | ------ | ------ |
+| Android       | arm64  | 24     |
+| iOS           | arm64  | 17.7.0 |
+| iOS.simulator | x86_64 | 17.7.0 |
+| Linux         | x86_64 | musl   |
