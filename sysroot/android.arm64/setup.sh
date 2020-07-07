@@ -3,6 +3,8 @@
 set -e
 set -u
 
+export PATH="$PATH:$1"
+
 TOOLCHAIN="android.arm64"
 BASE_TRIPLE="aarch64-linux-android"
 TARGET_TRIPLE="aarch64-linux-android24"

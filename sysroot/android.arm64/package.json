@@ -6,10 +6,13 @@
     "@_android/ndk": "*"
   },
   "esy": {
-    "buildEnv": {
-      "PATH": "$PATH:#{@_android/ndk.install}/ndk/toolchains/llvm/prebuilt/#{os}-x86_64/bin"
-    },
-    "build": "sh setup.sh",
+    "build": [
+      [
+        "sh",
+        "setup.sh",
+        "#{@_android/ndk.install}/ndk/toolchains/llvm/prebuilt/#{os}-x86_64/bin"
+      ]
+    ],
     "exportedEnv": {
       "ESY_TOOLCHAIN": {
         "val": "android.arm64",
