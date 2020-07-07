@@ -1,6 +1,11 @@
 {
+  "build_env": {
+    "HOST_REVERY": "#{revery.target_dir}"
+  },
   "build": [
-    ["sh", "-c", "patch -p1 < ./android+ios.patch"],
-    ["dune", "build", "-p", "Revery"]
-  ]
+    ["sh", "copy_skia_stubs.sh"],
+    ["sh", "-c", "patch -p1 < ./skia-remove-cstubs-from-dune.patch"],
+    ["dune", "build", "-p", "harfbuzz,skia,sdl2,Revery"]
+  ],
+  "install": []
 }
