@@ -45,7 +45,9 @@ exports.unresolve_string = (nodes, node, string, additional_ignore) => {
             [installPath]: `#{${name}.install}/${prefix}`,
         }).map(([key, value]) => [value, key]);
         const variables = Object.entries(env)
-            .filter(([key]) => !exports.IGNORE_VARS.includes(key) && !(additional_ignore === null || additional_ignore === void 0 ? void 0 : additional_ignore.includes(key)))
+            .filter(([key, value]) => value.length >= 3 &&
+            !exports.IGNORE_VARS.includes(key) &&
+            !(additional_ignore === null || additional_ignore === void 0 ? void 0 : additional_ignore.includes(key)))
             .map(([key, value]) => [`$${key}`, value]);
         const cur_variables = variables.filter(([key]) => key.startsWith('cur__'));
         const non_cur_variables = variables.filter(([key]) => !key.startsWith('cur__'));

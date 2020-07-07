@@ -78,8 +78,10 @@ export const unresolve_string = (
 
     const variables = Object.entries(env)
       .filter(
-        ([key]) =>
-          !IGNORE_VARS.includes(key) && !additional_ignore?.includes(key)
+        ([key, value]) =>
+          value.length >= 3 &&
+          !IGNORE_VARS.includes(key) &&
+          !additional_ignore?.includes(key)
       )
       .map(([key, value]) => [`$${key}`, value]);
     const cur_variables = variables.filter(([key]) => key.startsWith('cur__'));
