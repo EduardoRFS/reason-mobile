@@ -4,16 +4,7 @@
   },
   "source": [
     ["rm", "-rf", "ocaml", "$ESY_TOOLCHAIN-sysroot"],
-    [
-      "git",
-      "clone",
-      "--branch",
-      "4.10+ios",
-      "--single-branch",
-      "--depth",
-      "1",
-      "https://github.com/EduardoRFS/ocaml.git"
-    ],
+    ["sh", "git.clone.sh"],
     [
       "mv",
       "ocaml",
