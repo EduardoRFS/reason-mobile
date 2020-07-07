@@ -4,6 +4,7 @@ const node_1 = require("./node");
 const lib_1 = require("./lib");
 // TODO: there is a bunch of -lpthread in the wild
 // TODO: what I was trying to say? /\
+// TODO: HAHAHA
 exports.ESY_VARS = [
     'SHELL',
     'PATH',
@@ -81,7 +82,7 @@ const build_env_ocamlfind = (_nodes, node) => [
     ['TOPKG_CONF_TOOLCHAIN', node.target],
 ];
 const env = (nodes, node) => {
-    var _a;
+    var _a, _b;
     const native = nodes[node.native];
     // TODO: it should be checked against the native one
     const manifest = find_node_manifest_env(nodes, native);
@@ -90,11 +91,12 @@ const env = (nodes, node) => {
         ...unresolve_env(nodes, node, manifest.build_env),
         ...unresolve_env(nodes, node, cur_env),
         ...build_env_ocamlfind(nodes, node),
+        ...Object.entries(((_a = node.patch) === null || _a === void 0 ? void 0 : _a.build_env) || {}),
     ]);
     // TODO: test exported variables like XXX_INCLUDE_PATH XXX_LIB_PATH
     const exported_env = to_exported_env([
         ...unresolve_env(nodes, node, manifest.exported_env),
-        ...Object.entries(((_a = node.patch) === null || _a === void 0 ? void 0 : _a.exported_env) || {}),
+        ...Object.entries(((_b = node.patch) === null || _b === void 0 ? void 0 : _b.exported_env) || {}),
     ]);
     return { build_env, exported_env };
 };

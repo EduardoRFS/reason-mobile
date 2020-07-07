@@ -14,6 +14,7 @@ export type t = {
     source: string[][];
     build: string[][];
     install: string[][];
+    build_env?: map<string>;
     exported_env?: map<string>;
     dependencies: map<string>;
     raw_dependencies?: map<string>;

@@ -8,6 +8,7 @@ import { map, replace_all, target_name } from './lib';
 
 // TODO: there is a bunch of -lpthread in the wild
 // TODO: what I was trying to say? /\
+// TODO: HAHAHA
 
 export const ESY_VARS = [
   'SHELL',
@@ -148,6 +149,7 @@ const env = (nodes: map<node>, node: node) => {
     ...unresolve_env(nodes, node, manifest.build_env),
     ...unresolve_env(nodes, node, cur_env),
     ...build_env_ocamlfind(nodes, node),
+    ...Object.entries(node.patch?.build_env || {}),
   ]);
 
   // TODO: test exported variables like XXX_INCLUDE_PATH XXX_LIB_PATH
