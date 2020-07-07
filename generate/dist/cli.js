@@ -108,6 +108,7 @@ const add_as_mock = async (name, folder) => {
         .map((node) => [node.name, node.build_plan.version]));
     const nodes_to_patch = nodes.filter((node) => node.target !== 'native');
     const mocks = nodes_to_patch.map((node) => {
+        var _a;
         const exportedEnv = env_map[node.name].exported_env;
         if (node.name === lib_1.target_name(node.target, 'ocaml')) {
             exportedEnv.ESY_TOOLCHAIN_OCAML = {
@@ -136,14 +137,28 @@ const add_as_mock = async (name, folder) => {
         const checksum = lib_1.sha1(JSON.stringify(mock) + (node.patch && node.patch.checksum_files_folder)).slice(0, 8);
         const path = `.mocks/${checksum}`;
         const file = `${path}/esy.json`;
-        return { name: node.name, mock, path, file };
+        return {
+            name: node.name,
+            mock,
+            path,
+            file,
+            files_folder: (_a = node.patch) === null || _a === void 0 ? void 0 : _a.files_folder,
+        };
     });
     if (!fs_1.default.existsSync('.mocks')) {
         fs_1.default.mkdirSync('.mocks');
     }
-    mocks.forEach(({ path, file, mock }) => {
+    mocks.forEach(({ path, file, mock, files_folder }) => {
         if (!fs_1.default.existsSync(path)) {
             fs_1.default.mkdirSync(path);
+        }
+        if (files_folder) {
+            const { join } = require('path');
+            const new_files_folder = join(path, 'files');
+            if (!fs_1.default.existsSync(new_files_folder)) {
+                fs_1.default.mkdirSync(new_files_folder);
+                lib_1.exec(`cp -r ${files_folder}/. ${new_files_folder}`);
+            }
         }
         fs_1.default.writeFileSync(file, JSON.stringify(mock, null, 2));
     });

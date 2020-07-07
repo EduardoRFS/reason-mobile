@@ -190,14 +190,29 @@ const add_as_mock = async (name: string, folder: string) => {
     ).slice(0, 8);
     const path = `.mocks/${checksum}`;
     const file = `${path}/esy.json`;
-    return { name: node.name, mock, path, file };
+    return {
+      name: node.name,
+      mock,
+      path,
+      file,
+      files_folder: node.patch?.files_folder,
+    };
   });
   if (!fs.existsSync('.mocks')) {
     fs.mkdirSync('.mocks');
   }
-  mocks.forEach(({ path, file, mock }) => {
+  mocks.forEach(({ path, file, mock, files_folder }) => {
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path);
+    }
+
+    if (files_folder) {
+      const { join } = require('path');
+      const new_files_folder = join(path, 'files');
+      if (!fs.existsSync(new_files_folder)) {
+        fs.mkdirSync(new_files_folder);
+        exec(`cp -r ${files_folder}/. ${new_files_folder}`);
+      }
     }
     fs.writeFileSync(file, JSON.stringify(mock, null, 2));
   });

@@ -49,7 +49,7 @@ const copy_patch_files = (_nodes, node) => {
         return [];
     }
     const to = `#{self.root}/${node_1.prefix(node)}`;
-    return [['cp', '-r', `${node.patch.files_folder}/.`, to]];
+    return [['cp', '-r', `#{self.original_root}/files/.`, to]];
 };
 const setup_install = (_nodes, node) => [
     ['mv', '#{self.install}', 'install'],
