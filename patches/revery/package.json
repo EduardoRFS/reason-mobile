@@ -5,6 +5,7 @@
   "build": [
     ["sh", "copy_skia_stubs.sh"],
     ["sh", "-c", "patch -p1 < ./skia-remove-cstubs-from-dune.patch"],
+    ["sh", "fix_dune_workspace.sh"],
     ["dune", "build", "-p", "harfbuzz,skia,sdl2,Revery"]
   ],
   "install": []
