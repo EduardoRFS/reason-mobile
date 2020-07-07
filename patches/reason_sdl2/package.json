@@ -1,6 +1,0 @@
-{
-  "build": [
-    ["sh", "-c", "patch -p1 < ./android+ios+32bits.patch"],
-    ["dune", "build", "-p", "sdl2"]
-  ]
-}
