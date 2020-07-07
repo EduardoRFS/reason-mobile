@@ -1,7 +1,7 @@
 #! /bin/sh
 
 set -e
-set -x
+set -u
 
 BRANCH="4.10"
 if [ "$ESY_TOOLCHAIN_SYSTEM" == "android" ]; then

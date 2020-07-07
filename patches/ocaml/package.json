@@ -4,12 +4,8 @@
   },
   "source": [
     ["rm", "-rf", "ocaml", "$ESY_TOOLCHAIN-sysroot"],
-    ["sh", "git.clone.sh"],
-    [
-      "mv",
-      "ocaml",
-      "$ESY_TOOLCHAIN-sysroot"
-    ]
+    ["sh", "#{self.original_root}/files/git.clone.sh"],
+    ["mv", "ocaml", "$ESY_TOOLCHAIN-sysroot"]
   ],
   "build": [
     [
