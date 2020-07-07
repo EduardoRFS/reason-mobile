@@ -2,6 +2,7 @@
   "name": "@_android.x86_64/sysroot",
   "dependencies": {
     "generate": "*",
+    "sysroot.tools": "*",
     "@_android/ndk": "*"
   },
   "esy": {
@@ -9,17 +10,20 @@
       [
         "sh",
         "setup.sh",
-        "#{@_android/ndk.install}/ndk",
         "#{@_android/ndk.install}/ndk/toolchains/llvm/prebuilt/#{os}-x86_64/bin"
       ]
     ],
     "exportedEnv": {
       "ESY_TOOLCHAIN": {
-        "val": "android",
+        "val": "android.x86_64",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_SYSTEM": {
         "val": "android",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_PROCESSOR": {
+        "val": "x86_64",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_SYSROOT": {
@@ -39,7 +43,7 @@
         "scope": "global"
       },
       "ESY_TOOLCHAIN_FULL_HOST": {
-        "val": "x86_64-linux-android",
+        "val": "x86_64-linux-android24",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_CC": {
@@ -51,15 +55,15 @@
         "scope": "global"
       },
       "ESY_TOOLCHAIN_AS": {
-        "val": "x86_64-linux-android-as",
+        "val": "x86_64-linux-android24-as",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_AR": {
-        "val": "x86_64-linux-android-ar",
+        "val": "x86_64-linux-android24-ar",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_RANLIB": {
-        "val": "x86_64-linux-android-ranlib",
+        "val": "x86_64-linux-android24-ranlib",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_ASPP": {
@@ -67,11 +71,11 @@
         "scope": "global"
       },
       "ESY_TOOLCHAIN_LD": {
-        "val": "x86_64-linux-android-ld",
+        "val": "x86_64-linux-android24-ld",
         "scope": "global"
       },
       "ESY_TOOLCHAIN_PARTIALLD": {
-        "val": "x86_64-linux-android-ld -r",
+        "val": "x86_64-linux-android24-ld -r",
         "scope": "global"
       }
     }

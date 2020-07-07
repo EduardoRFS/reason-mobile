@@ -3,19 +3,29 @@
 set -e
 set -u
 
-NDK_ROOT=$1
-NDK_PREBUILT_BIN=$2
+export PATH="$PATH:$1"
 
-for FILE in $NDK_PREBUILT_BIN/x86_64-linux-android*; do
+TOOLCHAIN="android.x86_64"
+BASE_TRIPLE="x86_64-linux-android"
+TARGET_TRIPLE="x86_64-linux-android24"
 
-FILE_ALIAS="$cur__bin/$(basename $FILE)"
-cat > "$FILE_ALIAS" <<EOF
-#!/bin/sh
-$FILE "\$@"
-EOF
-chmod +x "$FILE_ALIAS"
+gen_tools () {
+  TOOL_NAME="$1"
+  HOST="$(which $TOOL_NAME)"
+  TARGET="$(which $TARGET_TRIPLE-$TOOL_NAME || which $BASE_TRIPLE-$TOOL_NAME)"
 
-done
+  sysroot-gen-tools "$TOOLCHAIN" "$TARGET_TRIPLE" "$TOOL_NAME" "$TARGET" "$HOST"
+}
+
+gen_tools ar
+gen_tools as
+gen_tools clang
+gen_tools clang++
+gen_tools ld
+gen_tools nm
+gen_tools objdump
+gen_tools ranlib
+gen_tools strip
 
 cat > $cur__install/toolchain.cmake <<EOF
 set(ANDROID_ABI x86_64)
@@ -23,5 +33,3 @@ set(ANDROID_NATIVE_API_LEVEL 24) # API level
 
 include($NDK_ROOT/build/cmake/android.toolchain.cmake)
 EOF
-
-not-esy-gen-tools android $NDK_PREBUILT/bin/x86_64-linux-android
