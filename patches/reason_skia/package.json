@@ -1,7 +1,0 @@
-{
-  "build": [
-    ["sh", "-c", "patch -p1 < ./proper-os-discover.patch"],
-    ["sh", "patch_stubs.sh"],
-    ["dune", "build", "-p", "skia"]
-  ]
-}
