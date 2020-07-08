@@ -14,7 +14,13 @@ exports.ESY_VARS = [
     'CAML_LD_LIBRARY_PATH',
     'ESY__ROOT_PACKAGE_CONFIG_PATH',
 ];
-exports.IGNORE_VARS = [...exports.ESY_VARS, 'PWD', 'cur__version', 'cur__name'];
+exports.IGNORE_VARS = [
+    ...exports.ESY_VARS,
+    'PWD',
+    'cur__version',
+    'cur__name',
+    'LD_LIBRARY_PATH',
+];
 exports.UNSET_VARS = ['OCAMLLIB', 'OCAMLPATH'];
 // TODO: esy already emits a compatible env because the native package is also added
 // TODO: OCAML_TOPLEVEL_PATH is a patch to @toolchain/ocamlfind

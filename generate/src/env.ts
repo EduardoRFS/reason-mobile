@@ -19,7 +19,13 @@ export const ESY_VARS = [
   'CAML_LD_LIBRARY_PATH',
   'ESY__ROOT_PACKAGE_CONFIG_PATH',
 ];
-export const IGNORE_VARS = [...ESY_VARS, 'PWD', 'cur__version', 'cur__name'];
+export const IGNORE_VARS = [
+  ...ESY_VARS,
+  'PWD',
+  'cur__version',
+  'cur__name',
+  'LD_LIBRARY_PATH',
+];
 export const UNSET_VARS = ['OCAMLLIB', 'OCAMLPATH'];
 // TODO: esy already emits a compatible env because the native package is also added
 
