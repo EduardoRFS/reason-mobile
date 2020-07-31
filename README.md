@@ -42,7 +42,7 @@ Only arm64 was tested, but x86_64 should also be working
 
 Revery is working now, same as Android the `reason-skia` cstubs were patched for arm64.
 
-Only arm64 was tested, but x86_64 should also be working
+Only arm64 was tested, the simulator currently is not working
 
 ## What it is
 
