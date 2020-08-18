@@ -25,6 +25,7 @@ export const IGNORE_VARS = [
   'cur__version',
   'cur__name',
   'LD_LIBRARY_PATH',
+  'OCAML_SECONDARY_COMPILER_PREFIX'
 ];
 export const UNSET_VARS = ['OCAMLLIB', 'OCAMLPATH'];
 // TODO: esy already emits a compatible env because the native package is also added
