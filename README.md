@@ -6,6 +6,12 @@
 
 This repository is designed to provide some tooling to cross compile using esy to Android and iOS
 
+## Requirements
+
+- esy
+
+To see if node is working try `/usr/bin/env -i node`
+
 ## Example
 
 To compile the hello-reason project for android arm64:
