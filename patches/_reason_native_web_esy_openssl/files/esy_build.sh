@@ -17,8 +17,13 @@ if [ "$ESY_TOOLCHAIN_SYSTEM" == "android" ]; then
     android-$ESY_TOOLCHAIN_PROCESSOR \
     -D__ANDROID_API__=$ANDROID_API
 elif [ "$ESY_TOOLCHAIN_SYSTEM" == "ios" ]; then
-  export CROSS_TOP="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer"
-  export CROSS_SDK="iPhoneOS.sdk"
+  if [ "$ESY_TOOLCHAIN_PROCESSOR" == "x86_64" ]; then
+    export CROSS_TOP="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer"
+    export CROSS_SDK="iPhoneSimulator.sdk"
+  else
+    export CROSS_TOP="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer"
+    export CROSS_SDK="iPhoneOS.sdk"
+  fi
   export CC="$ESY_TOOLCHAIN_CC"
 
   ./openssl/Configure \
