@@ -1,7 +1,32 @@
-diff --git a/src/reason-skia/wrapped/bindings/dune b/src/reason-skia/wrapped/bindings/dune
-index 4bff6ade..68932b29 100644
---- a/src/reason-skia/wrapped/bindings/dune
-+++ b/src/reason-skia/wrapped/bindings/dune
+diff --git a/packages/reason-harfbuzz/src/config/discover.re b/packages/reason-harfbuzz/src/config/discover.re
+index e94b95bc..64b62ac2 100644
+--- a/packages/reason-harfbuzz/src/config/discover.re
++++ b/packages/reason-harfbuzz/src/config/discover.re
+@@ -27,19 +27,12 @@ let c_flags = ["-fPIC", "-I", Sys.getenv("HARFBUZZ_INCLUDE_PATH")];
+ let ccopt = s => ["-ccopt", s];
+ let cclib = s => ["-cclib", s];
+ 
+-let extraFlags =
+-  switch (get_os) {
+-  | Windows => cclib("-lpthread")
+-  | Linux => ccopt("-L/usr/lib")
+-  | _ => []
+-  };
+-
+ let lib_path_flags =
+   switch (get_os) {
+   | _ => [] @ ccopt("-L" ++ Sys.getenv("HARFBUZZ_LIB_PATH"))
+   };
+ 
+-let flags = [] @ cclib("-lharfbuzz") @ extraFlags @ lib_path_flags;
++let flags = [] @ cclib("-lharfbuzz") @ lib_path_flags;
+ 
+ let cxx_flags =
+   switch (get_os) {
+diff --git a/packages/reason-skia/src/wrapped/bindings/dune b/packages/reason-skia/src/wrapped/bindings/dune
+index 149dd9e5..8bfee7af 100644
+--- a/packages/reason-skia/src/wrapped/bindings/dune
++++ b/packages/reason-skia/src/wrapped/bindings/dune
 @@ -1,8 +1,3 @@
 -(rule
 - (targets skia_generated_type_stubs.ml)
@@ -11,10 +36,10 @@ index 4bff6ade..68932b29 100644
  (library
   (name SkiaWrappedBindings)
   (flags -w -9)
-diff --git a/src/reason-skia/wrapped/lib/dune b/src/reason-skia/wrapped/lib/dune
-index 1201c8f9..d60c1d71 100644
---- a/src/reason-skia/wrapped/lib/dune
-+++ b/src/reason-skia/wrapped/lib/dune
+diff --git a/packages/reason-skia/src/wrapped/lib/dune b/packages/reason-skia/src/wrapped/lib/dune
+index f732b097..3d1abc2b 100644
+--- a/packages/reason-skia/src/wrapped/lib/dune
++++ b/packages/reason-skia/src/wrapped/lib/dune
 @@ -1,13 +1,3 @@
 -(rule
 - (targets skia_generated_stubs.ml)
@@ -29,24 +54,24 @@ index 1201c8f9..d60c1d71 100644
  (library
    (name SkiaWrapped)
    (flags (-w -40 -w +26))
-diff --git a/src/reason-skia/wrapped/stubgen/dune b/src/reason-skia/wrapped/stubgen/dune
-index 83556d88..d5062ce7 100644
---- a/src/reason-skia/wrapped/stubgen/dune
-+++ b/src/reason-skia/wrapped/stubgen/dune
+diff --git a/packages/reason-skia/src/wrapped/stubgen/dune b/packages/reason-skia/src/wrapped/stubgen/dune
+index c90625aa..d5062ce7 100644
+--- a/packages/reason-skia/src/wrapped/stubgen/dune
++++ b/packages/reason-skia/src/wrapped/stubgen/dune
 @@ -1,17 +1,3 @@
 -(executable
 - (name stubgen)
-- (package skia)
+- (package reason-skia)
 - (modules stubgen)
 - (public_name stubgen.exe)
-- (libraries skia.wrapped.bindings ctypes))
+- (libraries reason-skia.wrapped.bindings ctypes))
 -
 -(executable
 - (name types_stubgen)
-- (package skia)
+- (package reason-skia)
 - (modules types_stubgen)
 - (public_name types_stubgen.exe)
-- (libraries skia.wrapped.types ctypes.stubs ctypes))
+- (libraries reason-skia.wrapped.types ctypes.stubs ctypes))
 -
  (rule
   (targets ml_types_stubgen.c)
