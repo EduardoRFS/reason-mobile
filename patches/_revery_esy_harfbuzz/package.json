@@ -12,6 +12,7 @@
       "--build=$ESY_TOOLCHAIN_BUILD",
       "--host=$ESY_TOOLCHAIN_HOST",
       "--with-icu=no",
+      "--disable-dependency-tracking",
       "CC=$ESY_TOOLCHAIN_CC",
       "CXX=$ESY_TOOLCHAIN_CXX"
     ],
