@@ -1,9 +1,5 @@
 # ReasonML Mobile
 
-> 🚧 This is some heavily WIP idea / code / structure 🚧
-
-> ⚠️ if you need help contact me on twitter or discord ⚠️
-
 This repository is designed to provide some tooling to cross compile using esy to Android and iOS
 
 ## Requirements
@@ -38,15 +34,11 @@ Currently [Revery](https://github.com/revery-ui/revery) is used as a baseline an
 
 ### Android
 
-We can already cross compile to it and the bits that aren't possible to cross compile, namely `reason-skia` cstubs were patched for arm64.
-
 Only arm64 was tested, but x86_64 should also be working
 
 ### iOS
 
-Revery is working now, same as Android the `reason-skia` cstubs were patched for arm64.
-
-Only arm64 was tested, the simulator currently is not working
+Revery is working now, on both platforms `ios.arm64` for iPhone and `ios.simulator.x86_64` for the simulator
 
 ## What it is
 
@@ -56,7 +48,7 @@ A script and some helpers to assist esy when doing cross compilation, it's an ad
 
 ### Patches
 
-A collection of patches designed to solve packages that aren't solved by the hacks implmented on the generate or are package specific.
+A collection of patches designed to solve packages that aren't solved by the hacks implmented on the generate or are package specific, like the cstubs who cannot be generated in a cross compilation environment, we use the host ones to solve the problem.
 
 ### Sysroot
 
@@ -65,6 +57,7 @@ An esy package, making the compiler + sysroot available to esy. Currently we tar
 | OS            | ARCH   | ENV    |
 | ------------- | ------ | ------ |
 | Android       | arm64  | 24     |
+| Android       | x86_64 | 24     |
 | iOS           | arm64  | 17.7.0 |
 | iOS.simulator | x86_64 | 17.7.0 |
 | Linux         | x86_64 | musl   |
