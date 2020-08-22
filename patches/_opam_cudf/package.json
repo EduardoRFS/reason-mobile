@@ -1,0 +1,11 @@
+{
+  "build": [
+    [
+      "make",
+      "OCAMLFIND=\"ocamlfind -toolchain $ESY_TOOLCHAIN\"",
+      "OCAMLBUILD=\"ocamlbuild -use-ocamlfind -toolchain $ESY_TOOLCHAIN\"",
+      "all",
+      "opt"
+    ]
+  ]
+}
