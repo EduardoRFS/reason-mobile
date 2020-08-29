@@ -20,7 +20,7 @@ exports.IGNORE_VARS = [
     'cur__version',
     'cur__name',
     'LD_LIBRARY_PATH',
-    'OCAML_SECONDARY_COMPILER_PREFIX'
+    'OCAML_SECONDARY_COMPILER_PREFIX',
 ];
 exports.UNSET_VARS = ['OCAMLLIB', 'OCAMLPATH'];
 // TODO: esy already emits a compatible env because the native package is also added
@@ -71,7 +71,7 @@ exports.unresolve_string = (nodes, node, string, additional_ignore) => {
 const unresolve_env = (nodes, node, env) => env
     .filter(([key]) => !exports.IGNORE_VARS.includes(key))
     .map(([key, value]) => {
-    const new_value = exports.unresolve_string(nodes, node, value, [key]);
+    const new_value = value && exports.unresolve_string(nodes, node, value, [key]);
     return new_value !== value ? [key, new_value] : null;
 })
     .filter(Boolean);
@@ -97,6 +97,8 @@ const env = (nodes, node) => {
     const manifest = find_node_manifest_env(nodes, native);
     const cur_env = Object.entries(native.build_plan.env).filter(([key]) => key.startsWith('cur__'));
     const build_env = Object.fromEntries([
+        ['NOT_OCAMLPATH', '$OCAMLPATH'],
+        ...exports.UNSET_VARS.map((key) => [key, null]),
         ...unresolve_env(nodes, node, manifest.build_env),
         ...unresolve_env(nodes, node, cur_env),
         ...build_env_ocamlfind(nodes, node),

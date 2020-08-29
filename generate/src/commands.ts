@@ -51,8 +51,6 @@ const needs_gen_findlib = (nodes: map<node>, node: node): boolean => {
 const gen_findlib = (_nodes: map<node>, node: node) => [
   ['not-esy-gen-findlib'],
 ];
-const clean_env = (_nodes: map<node>, _node: node): command[] =>
-  UNSET_VARS.map((key) => ['unset', key]);
 const copy_source = (_nodes: map<node>, node: node): command[] => {
   if (node.patch && node.patch.source) {
     return node.patch.source;
@@ -145,11 +143,7 @@ export const build = (nodes: map<node>, node: node): command[] => {
     ...copy_patch_files(nodes, node),
     ...setup_install(nodes, node),
     ...(needs_gen_findlib(nodes, node) ? gen_findlib(nodes, node) : []),
-    ...to_script([
-      ...clean_env(nodes, node),
-      ['cd', node_prefix(node)],
-      ...commands,
-    ]),
+    ...to_script([['cd', node_prefix(node)], ...commands]),
   ];
 };
 export const install = (nodes: map<node>, node: node): command[] => {
@@ -157,9 +151,5 @@ export const install = (nodes: map<node>, node: node): command[] => {
   const commands = unresolve_commands(nodes, node, source_install)
     .filter((command) => !is_installer(command))
     .concat([['not-esy-installer', node.target]]);
-  return to_script([
-    ...clean_env(nodes, node),
-    ['cd', node_prefix(node)],
-    ...commands,
-  ]);
+  return to_script([['cd', node_prefix(node)], ...commands]);
 };

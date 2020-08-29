@@ -25,7 +25,7 @@ export const IGNORE_VARS = [
   'cur__version',
   'cur__name',
   'LD_LIBRARY_PATH',
-  'OCAML_SECONDARY_COMPILER_PREFIX'
+  'OCAML_SECONDARY_COMPILER_PREFIX',
 ];
 export const UNSET_VARS = ['OCAMLLIB', 'OCAMLPATH'];
 // TODO: esy already emits a compatible env because the native package is also added
@@ -117,11 +117,15 @@ export const unresolve_string = (
   );
 };
 // TODO: can lead to self recursion
-const unresolve_env = (nodes: map<node>, node: node, env: [string, string][]) =>
+const unresolve_env = (
+  nodes: map<node>,
+  node: node,
+  env: [string, string | null][]
+) =>
   env
     .filter(([key]) => !IGNORE_VARS.includes(key))
     .map(([key, value]) => {
-      const new_value = unresolve_string(nodes, node, value, [key]);
+      const new_value = value && unresolve_string(nodes, node, value, [key]);
       return new_value !== value ? ([key, new_value] as const) : null;
     })
     .filter(Boolean) as [string, string][];
@@ -155,6 +159,8 @@ const env = (nodes: map<node>, node: node) => {
     key.startsWith('cur__')
   );
   const build_env = Object.fromEntries([
+    ['NOT_OCAMLPATH', '$OCAMLPATH'],
+    ...UNSET_VARS.map((key) => [key, null] as [string, null]),
     ...unresolve_env(nodes, node, manifest.build_env),
     ...unresolve_env(nodes, node, cur_env),
     ...build_env_ocamlfind(nodes, node),
