@@ -13,11 +13,15 @@ module StringMap = {
 
 [@deriving yojson]
 type manifest = {
+  source: [@default None] option(string),
   build: [@default None] option(list(list(string))),
   install: [@default None] option(list(list(string))),
   build_env: [@default None] option(StringMap.t(string)),
   exported_env: [@default None] option(StringMap.t(string)),
+  dependencies: [@default None] option(StringMap.t(string)),
+  raw_dependencies: [@default None] option(StringMap.t(string)),
 };
+
 type t = {
   manifest,
   checksum: option(string),
