@@ -1,0 +1,4 @@
+(executable
+ (name generate)
+ (public_name generate)
+ (libraries lwt lwt.unix mirage-crypto re))
