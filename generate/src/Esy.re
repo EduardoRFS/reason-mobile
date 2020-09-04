@@ -50,6 +50,7 @@ type t = {
   lock,
   manifest,
   build_plan: string => Lwt.t(build_plan),
+  exec_env: string => Lwt.t(StringMap.t(string)),
   get_config: config,
 };
 
@@ -71,6 +72,13 @@ let run = (name, args) => {
 let run_build_plan = (name, pkg) => {
   let+await output = run(name, ["build-plan", "-p", pkg]);
   output |> Yojson.Safe.from_string |> build_plan_of_yojson |> Result.get_ok;
+};
+let run_exec_env = (name, pkg) => {
+  let+await output = run(name, ["exec-env", "-p", pkg, "--json"]);
+  output
+  |> Yojson.Safe.from_string
+  |> StringMap.of_yojson([%of_yojson: string])
+  |> Result.get_ok;
 };
 // TODO: use exec_env without json for env recreation
 
@@ -103,6 +111,8 @@ let make = manifest_path => {
     |> await;
   };
   let build_plan = run_build_plan(name);
+  let exec_env = run_exec_env(name);
+
   let.await get_config = {
     let variables = ["project", "store", "localStore", "globalStorePrefix"];
     let.await values =
@@ -120,5 +130,5 @@ let make = manifest_path => {
     };
   };
 
-  {name, lock, manifest, build_plan, get_config} |> await;
+  {name, lock, manifest, build_plan, exec_env, get_config} |> await;
 };
