@@ -6,6 +6,8 @@ let read_file = path => {
   let.await file = Lwt_io.open_file(~mode=Input, path);
   Lwt_io.read(file);
 };
+let exec = cmd => cmd |> Lwt_process.shell |> Lwt_process.pread;
+
 let sha1 = str =>
   Cstruct.of_string(str)
   |> Mirage_crypto.Hash.SHA1.digest
@@ -14,7 +16,7 @@ let sha1 = str =>
 // TODO: use Path.t
 let folder_sha1 = path => {
   // TODO: exclude .mocks to keep performance
-  let.await find = Lwt_process.shell("find " ++ path) |> Lwt_process.pread;
+  let.await find = exec("find " ++ path);
   let.await hashes =
     find
     |> String.split_on_char('\n')
