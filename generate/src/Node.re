@@ -3,6 +3,7 @@ type t = {
   native: string,
   target: string,
   build_plan: Esy.build_plan,
+  exec_env: StringMap.t(string),
   dependencies: list(string),
   patch: option(Patch.t),
 };
