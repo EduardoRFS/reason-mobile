@@ -2,7 +2,7 @@ open Helper;
 
 [@deriving yojson]
 type manifest = {
-  source: [@default None] option(string),
+  source: [@default None] option(list(list(string))),
   build: [@default None] option(list(list(string))),
   install: [@default None] option(list(list(string))),
   build_env: [@default None] option(StringMap.t(option(string))),

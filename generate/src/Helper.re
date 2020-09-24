@@ -17,3 +17,5 @@ let (let+none) = (v, f) =>
   | Some(v) => Some(v)
   | None => f()
   };
+
+let (let.apply) = (v, f) => v(f());

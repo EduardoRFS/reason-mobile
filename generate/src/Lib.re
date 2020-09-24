@@ -40,7 +40,7 @@ let folder_sha1 = path => {
   |> Lwt.return;
 };
 
-let replace_all = (pattern, by, str) =>
+let replace_all = (~pattern, ~by, str) =>
   Re.Str.global_replace(Re.Str.regexp_string(pattern), by, str);
 let escape_name = Re.replace(~f=_ => "_", Re.Pcre.regexp("@|\\/|:|-"));
 let target_name = (target, name) =>

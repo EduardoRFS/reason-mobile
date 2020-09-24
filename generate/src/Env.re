@@ -65,7 +65,7 @@ let unresolve_string = (~additional_ignore=[], nodes, node, string) => {
     @ non_cur_variables
     @ (use_cur ? cur_variables : [])
     |> List.fold_left(
-         (value, (by, pattern)) => Lib.replace_all(pattern, by, value),
+         (value, (by, pattern)) => Lib.replace_all(~pattern, ~by, value),
          value,
        );
   };
