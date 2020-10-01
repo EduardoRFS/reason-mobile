@@ -17,18 +17,20 @@ type build_plan = {
   env: StringMap.t(string),
 };
 
-[@deriving yojson({strict: false})]
-type node = {
-  id: string,
-  name: string,
-  dependencies: list(string),
-  devDependencies: list(string),
+module Node = {
+  [@deriving yojson({strict: false})]
+  type t = {
+    id: string,
+    name: string,
+    dependencies: list(string),
+    devDependencies: list(string),
+  };
 };
 
 [@deriving yojson({strict: false})]
 type lock = {
   root: string,
-  node: StringMap.t(node),
+  node: StringMap.t(Node.t),
 };
 
 [@deriving yojson({strict: false})]

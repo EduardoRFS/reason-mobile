@@ -76,7 +76,9 @@ let patch_dune = (node, command) => {
     | [_, "dune" | "jbuilder", "build", ..._] => true
     | _ => false
     };
-  is_dune_build() ? command @ ["-x", node.Node.target, "@install"] : command;
+  is_dune_build()
+    ? command @ ["-x", node.Node.target |> Node.target_to_string, "@install"]
+    : command;
 };
 // TODO: autoconf
 
@@ -100,6 +102,8 @@ let install = (nodes, node) => {
   let commands =
     unresolve_commands(nodes, node, source_install)
     |> List.filter(command => !is_installer(command));
-  let commands = commands @ [["not-esy-installer", node.Node.target]];
+  let commands =
+    commands
+    @ [["not-esy-installer", node.Node.target |> Node.target_to_string]];
   to_script([["cd", node |> Node.prefix]] @ commands);
 };

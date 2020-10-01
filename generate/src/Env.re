@@ -76,7 +76,7 @@ let unresolve_string = (~additional_ignore=[], nodes, node, string) => {
        (string, dep) =>
          replace(
            dep,
-           Lib.target_name(`Target(node.Node.target), dep.Node.name),
+           Lib.target_name(node.Node.target, dep.Node.name),
            false,
            string,
          ),
@@ -131,7 +131,10 @@ let find_node_manifest_env = (nodes, node) => {
 let build_env_ocamlfind = (_nodes, node) => [
   ("OCAMLFIND_CONF", `String("#{self.root}/findlib/findlib.conf")),
   ("OCAMLFIND_DESTDIR", `String("#{self.install}/${node_prefix(node)}/lib")),
-  ("TOPKG_CONF_TOOLCHAIN", `String(node.Node.target)),
+  (
+    "TOPKG_CONF_TOOLCHAIN",
+    `String(node.Node.target |> Node.target_to_string),
+  ),
 ];
 
 let patch_env_to_json = env =>

@@ -1,14 +1,19 @@
 type t = {
   name: string,
   native: string,
-  target: string,
+  target: [ | `Host | `Target(string)],
   build_plan: Esy.build_plan,
   exec_env: StringMap.t(string),
   dependencies: list(string),
   patch: option(Patch.t),
 };
 
-let prefix = t => t.target ++ "-sysroot";
+let target_to_string =
+  fun
+  | `Host => "native"
+  | `Target(target) => target;
+let prefix = t => target_to_string(t.target) ++ "-sysroot";
+
 let children = (nodes, t) =>
   nodes
   |> StringMap.bindings
