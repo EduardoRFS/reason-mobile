@@ -2,6 +2,7 @@ open Helper;
 
 // TODO: validate if things were installed in install/prefix and not only install/
 
+[@deriving yojson]
 type command = list(string);
 
 let unresolve_commands = (nodes, node, commands) =>

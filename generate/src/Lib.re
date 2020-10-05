@@ -6,7 +6,15 @@ let read_file = path => {
   let.await file = Lwt_io.open_file(~mode=Input, path);
   Lwt_io.read(file);
 };
+let write_file = (~file, data) => {
+  // TODO: do I need to close it?
+  let.await file = Lwt_io.open_file(~mode=Output, file);
+  Lwt_io.write(file, data);
+};
+
 let exec = cmd => cmd |> Lwt_process.shell |> Lwt_process.pread;
+
+let mkdirp = folder => exec("mkdir -p " ++ folder) |> Lwt.map(_ => ());
 
 let sha1 = str =>
   Cstruct.of_string(str)
@@ -15,7 +23,7 @@ let sha1 = str =>
 
 // TODO: use Path.t
 let folder_sha1 = path => {
-  // TODO: exclude .mocks to keep performance
+  // TODO: exclude .mocks and _esy to keep performance
   let.await find = exec("find " ++ path);
   let.await hashes =
     find
