@@ -17,7 +17,11 @@ type t = {
   files_folder: option(string),
 };
 
-let root_folder = Filename.concat(Filename.current_dir_name, "patches");
+let root_folder =
+  Filename.concat(
+    Filename.current_dir_name,
+    Filename.concat("..", "patches"),
+  );
 let folders = Sys.readdir(root_folder) |> Array.to_list;
 
 // TODO: think a little bit better if using .none as early return is the best idea
