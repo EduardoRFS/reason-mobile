@@ -88,6 +88,7 @@ let create_nodes = () => {
        let name = Lib.target_name(target, node.Esy.Node.name);
        let native = node.Esy.Node.name;
        let env_plan = env_plan_map |> StringMap.find(node.Esy.Node.name);
+       let ({Esy.env: build_env, _}, _) = env_plan;
        let exec_env = {
          let fix_variable = value =>
            value
@@ -107,7 +108,10 @@ let create_nodes = () => {
        let.await patch =
          Patch.get_path(
            Lib.escape_name(node.name),
-           exec_env |> StringMap.find("cur__version"),
+           switch (build_env |> StringMap.find_opt("cur__version")) {
+           | Some(version) => version
+           | None => failwith("cur__version missing at: " ++ node.name)
+           },
          );
        let build_plan = env_plan |> fst;
        let dependencies = dependencies_map |> StringMap.find(node.name);
