@@ -171,9 +171,9 @@ let env = (nodes, node) => {
       | _ => []
       },
     ]);
-  let build_env = `Assoc(build_env);
+  let build_env: Yojson.Safe.t = `Assoc(build_env);
 
-  let exported_env =
+  let exported_env: Yojson.Safe.t =
     List.concat([
       unresolve_env(nodes, node, exported_env),
       switch (node.Node.patch) {
@@ -183,6 +183,5 @@ let env = (nodes, node) => {
       },
     ])
     |> to_exported_env;
-  let exported_env = `Assoc(exported_env);
   (`Exported(exported_env), `Build(build_env));
 };
