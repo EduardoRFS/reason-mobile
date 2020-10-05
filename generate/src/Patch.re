@@ -39,11 +39,10 @@ let get_path = (name, version) => {
   switch (get_patch_folder(name, version)) {
   | Some(folder) =>
     let files_folder = Filename.concat(folder, "files");
-
+    let.await files_folder_exists = Lwt_unix.file_exists(files_folder);
     let.await checksum = {
-      let.await files_folder_exists = Lwt_unix.file_exists(files_folder);
       files_folder_exists
-        ? Lib.folder_sha1(files_folder) |> Lwt.map(some) : await(none);
+        ? Lib.folder_sha1(files_folder) |> Lwt.map(some) : await(None);
     };
 
     let.await manifest = {
@@ -55,7 +54,13 @@ let get_path = (name, version) => {
       |> await;
     };
 
-    {manifest, checksum, files_folder: Some(files_folder)} |> some |> await;
+    {
+      manifest,
+      checksum,
+      files_folder: files_folder_exists ? Some(files_folder) : None,
+    }
+    |> some
+    |> await;
   | None => await(none)
   };
 };
