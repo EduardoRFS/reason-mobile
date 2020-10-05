@@ -56,5 +56,5 @@ let escape_name = Re.replace(~f=_ => "_", Re.Pcre.regexp("@|\\/|:|-"));
 let target_name = (target, name) =>
   switch (target) {
   | `Host => name
-  | `Target(name) => "@_" ++ name ++ "/" ++ escape_name(name)
+  | `Target(target_name) => "@_" ++ target_name ++ "/" ++ escape_name(name)
   };
