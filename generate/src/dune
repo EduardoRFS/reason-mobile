@@ -1,6 +1,6 @@
 (executable
  (name generate)
  (public_name generate)
- (libraries lwt lwt.unix mirage-crypto re)
+ (libraries lwt lwt.unix mirage-crypto re hex)
  (preprocess
   (pps ppx_deriving_yojson)))

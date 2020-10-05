@@ -19,7 +19,9 @@ let mkdirp = folder => exec("mkdir -p " ++ folder) |> Lwt.map(_ => ());
 let sha1 = str =>
   Cstruct.of_string(str)
   |> Mirage_crypto.Hash.SHA1.digest
-  |> Cstruct.to_string;
+  |> Cstruct.to_string
+  |> Hex.of_string
+  |> Hex.show;
 
 // TODO: use Path.t
 let folder_sha1 = path => {
@@ -29,7 +31,7 @@ let folder_sha1 = path => {
     find
     |> String.split_on_char('\n')
     |> List.map(String.trim)
-    |> List.filter((==)(""))
+    |> List.filter((!=)(""))
     |> List.map(file => {
          let.await stats = Lwt_unix.stat(file);
          switch (stats) {
