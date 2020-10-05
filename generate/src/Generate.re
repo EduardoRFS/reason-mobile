@@ -39,7 +39,7 @@ let esy = esy |> Lwt_main.run;
 // TODO: multiple targets
 let target = {
   // TODO: can crash
-  let parts = Sys.argv[2] |> String.split_on_char('.');
+  let parts = Sys.argv[1] |> String.split_on_char('.');
   switch (parts |> List.rev) {
   | [arch, ...system] =>
     let system = system |> List.rev |> String.concat(".");
@@ -250,7 +250,7 @@ let main = () => {
            copy_files_folder,
            manifest
            |> mock_manifest_to_yojson
-           |> Yojson.Safe.to_string
+           |> Yojson.Safe.pretty_to_string
            |> Lib.write_file(~file),
          );
        })
