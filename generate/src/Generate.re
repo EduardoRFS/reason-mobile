@@ -113,7 +113,14 @@ let create_nodes = () => {
            | None => failwith("cur__version missing at: " ++ node.name)
            },
          );
+
        let build_plan = env_plan |> fst;
+       let build_plan =
+         switch (patch) {
+         | Some({Patch.manifest: {build, install, _}, _}) =>
+           Esy.{...build_plan, build, install}
+         | None => build_plan
+         };
        let dependencies = dependencies_map |> StringMap.find(node.name);
        // TODO: apply patch to build_plan and dependencies
        Lwt.return({
@@ -286,7 +293,7 @@ let main = () => {
       |> List.map(({file, manifest, _}) => (manifest.name, `String(file))),
       esy.Esy.manifest.resolutions |> StringMap.bindings,
       additional_resolutions
-      |> List.map(((file, manifest)) => (manifest, `String(file))),
+      |> List.map(((manifest, file)) => (manifest, `String(file))),
       // TODO: support target on the manifest
     ]
     |> List.concat;
