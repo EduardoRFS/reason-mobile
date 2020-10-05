@@ -1,6 +1,6 @@
 let includes = (t, list) =>
   list |> List.find_opt((==)(t)) |> Option.is_some;
-let is_cur = s => String.sub(s, 0, 5) == "cur__";
+let is_cur = s => String.length(s) >= 5 && String.sub(s, 0, 5) == "cur__";
 
 module Known_vars = {
   let esy = [
@@ -116,9 +116,12 @@ let find_node_manifest_env = (nodes, node) => {
   let exported_env =
     node.Node.exec_env
     |> StringMap.bindings
-    |> List.filter(((key, value)) =>
-         node.Node.build_plan.env |> StringMap.find(key) != value
-       )
+    |> List.filter(((key, value)) => {
+         switch (node.Node.build_plan.env |> StringMap.find_opt(key)) {
+         | Some(found_value) => found_value != value
+         | None => false
+         }
+       })
     |> List.map(((key, value)) => (key, `String(value)));
 
   let build_env =
