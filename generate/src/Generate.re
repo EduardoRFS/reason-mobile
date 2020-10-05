@@ -166,7 +166,7 @@ let main = () => {
     |> List.filter(node => node.Node.target != `Host)
     |> List.map(node => {
          let env = env_map |> StringMap.find(node.Node.name);
-         let (`Exported(buildEnv), `Build(exportedEnv)) = env;
+         let (`Exported(exportedEnv), `Build(buildEnv)) = env;
          let build = build_map |> StringMap.find(node.Node.name);
          let install = install_map |> StringMap.find(node.Node.name);
 
