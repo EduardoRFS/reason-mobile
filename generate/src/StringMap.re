@@ -5,8 +5,7 @@ open Helper;
 // TODO: remove all to_seq |> of_seq
 let of_list = l => l |> List.fold_left((m, (k, v)) => add(k, v, m), empty);
 
-let to_yojson = (f, map) =>
-  map |> bindings |> [%to_yojson: list((string, 'a))](f);
+let to_yojson = (f, t) => `Assoc(t |> map(f) |> bindings);
 let of_yojson = (f, json: Yojson.Safe.t) => {
   let.ok content =
     switch (json) {
@@ -27,6 +26,3 @@ let of_yojson = (f, json: Yojson.Safe.t) => {
 
   Ok(of_list(content));
 };
-
-[@deriving yojson]
-type x = string;
