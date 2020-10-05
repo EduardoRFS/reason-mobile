@@ -133,7 +133,10 @@ let find_node_manifest_env = (nodes, node) => {
 
 let build_env_ocamlfind = (_nodes, node) => [
   ("OCAMLFIND_CONF", `String("#{self.root}/findlib/findlib.conf")),
-  ("OCAMLFIND_DESTDIR", `String("#{self.install}/${node_prefix(node)}/lib")),
+  (
+    "OCAMLFIND_DESTDIR",
+    `String("#{self.install}/" ++ Node.prefix(node) ++ "/lib"),
+  ),
   (
     "TOPKG_CONF_TOOLCHAIN",
     `String(node.Node.target |> Node.target_to_string),
