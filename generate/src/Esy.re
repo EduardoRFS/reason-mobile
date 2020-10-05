@@ -94,17 +94,17 @@ let make = manifest_path => {
     |> Result.get_ok
     |> await;
   };
-  let (name, dir) =
+  let name =
     switch (manifest_path |> String.split_on_char('/') |> List.rev) {
-    | [name, ...dir] => (name, List.rev(dir) |> String.concat("/"))
+    | [name, ..._] => Filename.remove_extension(name)
     | [] => assert(false)
     };
   let.await lock = {
     let lock_path =
       switch (name) {
       | "package"
-      | "esy" => dir ++ "/esy.lock/index.json"
-      | name => dir ++ "/" ++ name ++ ".esy.lock/index.json"
+      | "esy" => "esy.lock/index.json"
+      | name => name ++ ".esy.lock/index.json"
       };
     let.await lock_data = Lib.read_file(lock_path);
     lock_data
