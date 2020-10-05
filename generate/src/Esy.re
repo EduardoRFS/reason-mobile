@@ -35,9 +35,10 @@ type lock = {
 
 [@deriving yojson({strict: false})]
 type manifest = {
-  dependencies: [@default None] option(StringMap.t(string)),
+  dependencies: [@default StringMap.empty] StringMap.t(string),
   // TODO: ensure we're copying devDependencies
-  devDependencies: [@default None] option(StringMap.t(string)),
+  devDependencies: [@default StringMap.empty] StringMap.t(string),
+  resolutions: [@default StringMap.empty] StringMap.t(Yojson.Safe.t),
 };
 
 type config = {
