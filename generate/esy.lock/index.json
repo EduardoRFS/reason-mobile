@@ -1,5 +1,5 @@
 {
-  "checksum": "7afce78032de34d6b55ac2ab889feb2a",
+  "checksum": "946c92eb3ab0b0cee5a9c3c0723b887c",
   "root": "generate@link-dev:./package.json",
   "node": {
     "yarn-pkg-config@github:esy-ocaml/yarn-pkg-config#db3a0b63883606dd57c54a7158d560d6cba8cd79@d41d8cd9": {
@@ -47,11 +47,11 @@
         "@opam/ppx_deriving_yojson@opam:3.5.3@253e094d",
         "@opam/ppx_deriving@opam:4.5@d89f2934",
         "@opam/mirage-crypto@opam:0.8.5@b090f03e",
-        "@opam/lwt@opam:5.3.0@0c09f517", "@opam/dune@opam:2.7.1@f5f493bc",
-        "@esy-ocaml/reason@3.6.2@d41d8cd9"
+        "@opam/lwt@opam:5.3.0@0c09f517", "@opam/hex@opam:1.4.0@96b78cfa",
+        "@opam/dune@opam:2.7.1@f5f493bc", "@esy-ocaml/reason@3.6.2@d41d8cd9"
       ],
       "devDependencies": [
-        "@opam/ocaml-lsp-server@github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#b264d8f97fd6da1b670bdf80cc9c51f5b27e0955@d41d8cd9"
+        "@opam/ocaml-lsp-server@github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#a66d82aff86b162423b1657b38f7c4dcc5867ff1@d41d8cd9"
       ]
     },
     "@opam/yojson@opam:1.7.0@7056d985": {
@@ -433,16 +433,16 @@
         "@opam/dune@opam:2.7.1@f5f493bc"
       ]
     },
-    "@opam/ocaml-lsp-server@github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#b264d8f97fd6da1b670bdf80cc9c51f5b27e0955@d41d8cd9": {
+    "@opam/ocaml-lsp-server@github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#a66d82aff86b162423b1657b38f7c4dcc5867ff1@d41d8cd9": {
       "id":
-        "@opam/ocaml-lsp-server@github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#b264d8f97fd6da1b670bdf80cc9c51f5b27e0955@d41d8cd9",
+        "@opam/ocaml-lsp-server@github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#a66d82aff86b162423b1657b38f7c4dcc5867ff1@d41d8cd9",
       "name": "@opam/ocaml-lsp-server",
       "version":
-        "github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#b264d8f97fd6da1b670bdf80cc9c51f5b27e0955",
+        "github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#a66d82aff86b162423b1657b38f7c4dcc5867ff1",
       "source": {
         "type": "install",
         "source": [
-          "github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#b264d8f97fd6da1b670bdf80cc9c51f5b27e0955"
+          "github:ocaml/ocaml-lsp:ocaml-lsp-server.opam#a66d82aff86b162423b1657b38f7c4dcc5867ff1"
         ]
       },
       "overrides": [],
@@ -662,6 +662,35 @@
         "@opam/mmap@opam:1.1.0@b85334ff",
         "@opam/dune-configurator@opam:2.7.1@96307faa",
         "@opam/dune@opam:2.7.1@f5f493bc"
+      ]
+    },
+    "@opam/hex@opam:1.4.0@96b78cfa": {
+      "id": "@opam/hex@opam:1.4.0@96b78cfa",
+      "name": "@opam/hex",
+      "version": "opam:1.4.0",
+      "source": {
+        "type": "install",
+        "source": [
+          "archive:https://opam.ocaml.org/cache/md5/57/57103ff33e70f14171c46d88f5452d11#md5:57103ff33e70f14171c46d88f5452d11",
+          "archive:https://github.com/mirage/ocaml-hex/releases/download/v1.4.0/hex-v1.4.0.tbz#md5:57103ff33e70f14171c46d88f5452d11"
+        ],
+        "opam": {
+          "name": "hex",
+          "version": "1.4.0",
+          "path": "esy.lock/opam/hex.1.4.0"
+        }
+      },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@4.10.1002@d41d8cd9", "@opam/dune@opam:2.7.1@f5f493bc",
+        "@opam/cstruct@opam:6.0.0@a7534811",
+        "@opam/bigarray-compat@opam:1.0.0@1faefa97",
+        "@esy-ocaml/substs@0.0.1@d41d8cd9"
+      ],
+      "devDependencies": [
+        "ocaml@4.10.1002@d41d8cd9", "@opam/dune@opam:2.7.1@f5f493bc",
+        "@opam/cstruct@opam:6.0.0@a7534811",
+        "@opam/bigarray-compat@opam:1.0.0@1faefa97"
       ]
     },
     "@opam/fix@opam:20200131@0ecd2f01": {
