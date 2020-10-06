@@ -50,7 +50,6 @@ let target = {
 
 let create_nodes = () => {
   let nodes = esy.Esy.lock.node |> StringMap.bindings |> List.map(snd);
-  let config = esy.Esy.get_config;
 
   let dependencies_map =
     nodes
@@ -73,9 +72,13 @@ let create_nodes = () => {
     |> List.map(node => {
          let name = node.Esy.Node.name;
          let.await build_map = esy.Esy.build_plan(name)
+         and.await build_env = esy.Esy.build_env(name)
          and.await exec_env = esy.Esy.exec_env(name);
 
-         Lwt.return((name, (build_map, exec_env)));
+         Lwt.return((
+           name,
+           (build_map, `Build(build_env), `Exec(exec_env)),
+         ));
        })
     |> Lwt.all;
   let env_plan_map = env_plan_map |> List.to_seq |> StringMap.of_seq;
@@ -88,33 +91,17 @@ let create_nodes = () => {
        let name = Lib.target_name(target, node.Esy.Node.name);
        let native = node.Esy.Node.name;
        let env_plan = env_plan_map |> StringMap.find(node.Esy.Node.name);
-       let ({Esy.env: build_env, _}, _) = env_plan;
-       let exec_env = {
-         let fix_variable = value =>
-           value
-           |> Lib.replace_all(
-                ~pattern=config.Esy.globalStorePrefix,
-                ~by="globalStorePrefix",
-              )
-           |> Lib.replace_all(~pattern=config.Esy.project, ~by="project")
-           |> Lib.replace_all(~pattern=config.Esy.store, ~by="store")
-           |> Lib.replace_all(
-                ~pattern=config.Esy.localStore,
-                ~by="localStore",
-              );
-         let (_, exec_env) = env_plan;
-         exec_env |> StringMap.map(value => fix_variable(value));
-       };
+       let (build_plan, `Build(build_env), `Exec(exec_env)) = env_plan;
        let.await patch =
          Patch.get_path(
            Lib.escape_name(node.name),
-           switch (build_env |> StringMap.find_opt("cur__version")) {
-           | Some(version) => version
-           | None => failwith("cur__version missing at: " ++ node.name)
+           switch (build_plan.Esy.version |> String.split_on_char(':')) {
+           | [version] => version
+           | [_, ...version] => String.concat(":", version)
+           | [] => ""
            },
          );
 
-       let build_plan = env_plan |> fst;
        let build_plan =
          switch (patch) {
          | Some({Patch.manifest: {build, install, _}, _}) =>
@@ -128,6 +115,7 @@ let create_nodes = () => {
          native,
          target,
          build_plan,
+         build_env,
          exec_env,
          dependencies,
          patch,
@@ -314,6 +302,7 @@ let main = () => {
       ("resolutions", `Assoc(resolutions)),
     ]);
 
+  let json_file = target.name ++ ".json";
   let.await () =
     Lib.write_file(
       ~file=target.name ++ ".json",

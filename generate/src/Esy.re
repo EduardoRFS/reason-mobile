@@ -48,13 +48,19 @@ type config = {
   localStore: string,
 };
 
+type env =
+  | Set(string, string)
+  | Unset(string)
+  | Label(string);
+
 type t = {
   name: string,
   lock,
   manifest,
   build_plan: string => Lwt.t(build_plan),
-  exec_env: string => Lwt.t(StringMap.t(string)),
-  get_config: config,
+  build_env: string => Lwt.t(list(env)),
+  exec_env: string => Lwt.t(list(env)),
+  config,
 };
 
 let run = (name, args) => {
@@ -76,14 +82,36 @@ let run_build_plan = (name, pkg) => {
   let+await output = run(name, ["build-plan", "-p", pkg]);
   output |> Yojson.Safe.from_string |> build_plan_of_yojson |> Result.get_ok;
 };
-let run_exec_env = (name, pkg) => {
-  let+await output = run(name, ["exec-env", "-p", pkg, "--json"]);
+
+let get_esy_env = (kind, name, pkg) => {
+  let command =
+    switch (kind) {
+    | `Exec => "exec-env"
+    | `Build => "build-env"
+    };
+  let+await output = run(name, [command, "-p", pkg]);
   output
-  |> Yojson.Safe.from_string
-  |> StringMap.of_yojson([%of_yojson: string])
-  |> Result.get_ok;
+  |> String.split_on_char('\n')
+  |> List.map(String.trim)
+  |> List.filter(line => line != "" && line != "#")
+  |> List.filter_map(line =>
+       switch (line |> String.split_on_char(' ')) {
+       | ["export", ...assignment] =>
+         let (key, value) =
+           switch (
+             assignment |> String.concat(" ") |> String.split_on_char('=')
+           ) {
+           | [key, ...value] => (key, value |> String.concat("="))
+           | _ => failwith("invalid export")
+           };
+         Some(Set(key, value));
+       | ["unset", name] => Some(Unset(name))
+       | ["#", label] => Some(Label(label))
+       | ["#", ..._] => None
+       | _ => failwith("unknown declaration on env")
+       }
+     );
 };
-// TODO: use exec_env without json for env recreation
 
 let make = manifest_path => {
   let.await manifest = {
@@ -114,14 +142,16 @@ let make = manifest_path => {
     |> await;
   };
   let build_plan = run_build_plan(name);
-  let exec_env = run_exec_env(name);
+  let build_env = get_esy_env(`Build, name);
+  let exec_env = get_esy_env(`Exec, name);
 
-  let.await get_config = {
+  let.await config = {
     let variables = ["project", "store", "localStore", "globalStorePrefix"];
     let.await values =
       run(
         name,
         [
+          "exec-command",
           "echo",
           variables |> List.map(v => "%{" ++ v ++ "}%") |> String.concat(":"),
         ],
@@ -133,5 +163,5 @@ let make = manifest_path => {
     };
   };
 
-  {name, lock, manifest, build_plan, exec_env, get_config} |> await;
+  {name, lock, manifest, build_plan, build_env, exec_env, config} |> await;
 };

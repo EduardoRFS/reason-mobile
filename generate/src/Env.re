@@ -13,25 +13,17 @@ module Known_vars = {
     "ESY__ROOT_PACKAGE_CONFIG_PATH",
   ];
 
-  let ignore = [
-    "PWD",
-    "cur__version",
-    "cur__name",
-    "LD_LIBRARY_PATH",
-    "OCAML_SECONDARY_COMPILER_PREFIX",
-    ...esy,
-  ];
-
   let unset = ["OCAMLLIB", "OCAMLPATH"];
-};
-
-// TODO: probably this could be removed by using exec-env without --json
-let var_is_missing_in_deps = (nodes, node) => {
-  let deps_variable =
-    Node.dependencies(nodes, node)
-    |> List.concat_map(dep => dep.Node.exec_env |> StringMap.bindings);
-  // TODO: that may cause a bug if we have A: B -> A: C -> A: B
-  variable => !List.exists((==)(variable), deps_variable);
+  let ignore =
+    [
+      "PWD",
+      "cur__version",
+      "cur__name",
+      "LD_LIBRARY_PATH",
+      "OCAML_SECONDARY_COMPILER_PREFIX",
+    ]
+    @ esy
+    @ unset;
 };
 
 let unresolve_string = (~additional_ignore=[], nodes, node, string) => {
@@ -106,33 +98,47 @@ let to_exported_env = (env): Yojson.Safe.t =>
        ),
   );
 
-let find_node_manifest_env = (nodes, node) => {
-  let node_variables =
-    node.Node.build_plan.env
-    |> StringMap.bindings
-    |> List.filter(((key, _)) =>
-         !includes(key, Known_vars.ignore) && !is_cur(key)
-       );
-  let exported_env =
-    node.Node.exec_env
-    |> StringMap.bindings
-    |> List.filter(((key, value)) => {
-         switch (node.Node.build_plan.env |> StringMap.find_opt(key)) {
-         | Some(found_value) => found_value != value
-         | None => false
+let find_node_manifest_env = node => {
+  let rec filter_all_after_label = (label, env) => {
+    let pattern = node.Node.name ++ "@";
+    let rec all_until_label = (acc, env) =>
+      switch (env) {
+      | [Esy.Label(_), ..._] => acc
+      | [entry, ...env] => all_until_label([entry, ...acc], env)
+      | [] => []
+      };
+    switch (env) {
+    | [Esy.Label(name), ...env] when Lib.starts_with(~pattern, name) =>
+      all_until_label([], env)
+    | [_, ...env] => filter_all_after_label(label, env)
+    | [] => []
+    };
+  };
+  let extract_env = (label, env) =>
+    env
+    |> filter_all_after_label(label)
+    |> List.filter_map(entry =>
+         switch (entry) {
+         | Esy.Set(key, value) => Some((key, `String(value)))
+         | Esy.Unset(key) => Some((key, `Null))
+         | _ => None
          }
-       })
-    |> List.map(((key, value)) => (key, `String(value)));
+       )
+    |> List.filter(((key, _)) => !includes(key, Known_vars.ignore));
 
-  let build_env =
-    node_variables
-    |> List.filter(var_is_missing_in_deps(nodes, node))
-    |> List.map(((key, value)) => (key, `String(value)));
-  (`Exported(exported_env), `Build(build_env));
+  let exported_env = node.Node.exec_env |> extract_env(node.Node.name ++ "@");
+  let build_env = node.Node.build_env |> extract_env(node.Node.name ++ "@");
+  // TODO: Probably I can remove cur_env by buildPlan patch only
+  let cur_env =
+    node.Node.build_env
+    |> extract_env("Built-in")
+    |> List.filter(((key, _)) => is_cur(key));
+
+  (`Cur(cur_env), `Exported(exported_env), `Build(build_env));
 };
 
 let build_env_ocamlfind = (_nodes, node) => [
-  ("OCAMLFIND_CONF", `String("#{self.root}/findlib/findlib.conf")),
+  ("OCAMLFIND_CONF", `String("#{self.original_root}/findlib/findlib.conf")),
   (
     "OCAMLFIND_DESTDIR",
     `String("#{self.install}/" ++ Node.prefix(node) ++ "/lib"),
@@ -157,17 +163,10 @@ let patch_env_to_json = env =>
      );
 let env = (nodes, node) => {
   let native = nodes |> StringMap.find(node.Node.native);
-  let (`Exported(exported_env), `Build(build_env)) =
-    find_node_manifest_env(nodes, native);
-  let cur_env =
-    native.Node.build_plan.env
-    |> StringMap.bindings
-    |> List.filter(((key, _)) => is_cur(key))
-    |> List.map(((key, value)) => (key, `String(value)));
+  let (`Cur(cur_env), `Exported(exported_env), `Build(build_env)) =
+    find_node_manifest_env(native);
   let build_env =
     List.concat([
-      [("NOT_OCAMLPATH", `String("$OCAMLPATH"))],
-      Known_vars.unset |> List.map(key => (key, `Null)),
       unresolve_env(nodes, node, build_env),
       unresolve_env(nodes, node, cur_env),
       build_env_ocamlfind(nodes, node),
@@ -176,6 +175,7 @@ let env = (nodes, node) => {
         patch_env_to_json(build_env)
       | _ => []
       },
+      Known_vars.unset |> List.map(key => (key, `Null)),
     ]);
   let build_env: Yojson.Safe.t = `Assoc(build_env);
 

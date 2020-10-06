@@ -52,6 +52,11 @@ let folder_sha1 = path => {
 
 let replace_all = (~pattern, ~by, str) =>
   Re.Str.global_replace(Re.Str.regexp_string(pattern), by, str);
+let starts_with = (~pattern, name) => {
+  let length = String.length(pattern);
+  String.length(name) >= length && String.sub(name, 0, length) == pattern;
+};
+
 let escape_name = Re.replace(~f=_ => "_", Re.Pcre.regexp("@|\\/|:|-"));
 let target_name = (target, name) =>
   switch (target) {
