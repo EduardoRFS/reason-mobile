@@ -32,16 +32,6 @@ let is_installer =
   | [] => false
   | [cmd, ..._] => cmd == "esy-installer";
 
-let gen_findlib = (nodes, node) => {
-  let rec needs_gen_findlib = (nodes, node) => {
-    let is_ocaml = () => node.Node.name == "ocaml";
-    let dep_needs_gen_findlib = () =>
-      Node.dependencies(nodes, node)
-      |> List.exists(needs_gen_findlib(nodes));
-    is_ocaml() || dep_needs_gen_findlib();
-  };
-  needs_gen_findlib(nodes, node) ? [["not-esy-gen-findlib"]] : [];
-};
 let copy_source = node => {
   let patchSource = {
     let.some patch = node.Node.patch;
@@ -94,7 +84,6 @@ let build = (nodes, node) => {
   copy_source(node)
   @ copy_patch_files(node)
   @ setup_install(node)
-  @ gen_findlib(nodes, node)
   @ to_script([["cd", node |> Node.prefix]] @ commands);
 };
 let install = (nodes, node) => {

@@ -309,6 +309,28 @@ let main = () => {
       wrapper |> Yojson.Safe.pretty_to_string,
     );
 
+  let.await _ = Lib.exec("esy @" ++ target.name ++ " install");
+  let.await new_lock = Esy.make(json_file);
+  let.await _ =
+    mocks
+    |> List.filter(mock => mock.manifest.name != root_name)
+    |> List.map(mock => {
+         let.await build_plan = new_lock.Esy.build_plan(mock.manifest.name);
+         let root = build_plan.Esy.sourcePath ++ "/findlib";
+         let conf_d = root ++ "/findlib.conf.d";
+         let.await () = Lib.mkdirp(conf_d);
+         let.await (host_findlib, target_findlib) =
+           Findlib.emit(new_lock, target.name, mock.manifest.name);
+         let.await () =
+           Lib.write_file(~file=root ++ "/findlib.conf", host_findlib)
+         and.await () =
+           Lib.write_file(
+             ~file=conf_d ++ "/" ++ target.name ++ ".conf",
+             target_findlib,
+           );
+         await();
+       })
+    |> Lwt.all;
   await();
 };
 
