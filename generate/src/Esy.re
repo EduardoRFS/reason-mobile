@@ -48,6 +48,7 @@ type config = {
   localStore: string,
 };
 
+[@deriving yojson]
 type env =
   | Set(string, string)
   | Unset(string)
@@ -78,9 +79,37 @@ let run = (name, args) => {
   let+await stdout = Lib.exec(cmd);
   stdout |> String.trim;
 };
-let run_build_plan = (name, pkg) => {
+
+let apply_config = (config, value) => {
+  let dict =
+    [
+      ("globalStorePrefix", config.globalStorePrefix),
+      ("project", config.project),
+      ("store", config.store),
+      ("localStore", config.localStore),
+    ]
+    |> List.concat_map(((pattern, by)) =>
+         [("%{" ++ pattern ++ "}%", by), (pattern, by)]
+       );
+  dict
+  |> List.fold_left(
+       (value, (pattern, by)) => value |> Lib.replace_all(~pattern, ~by),
+       value,
+     );
+};
+
+let run_build_plan = (name, config, pkg) => {
   let+await output = run(name, ["build-plan", "-p", pkg]);
-  output |> Yojson.Safe.from_string |> build_plan_of_yojson |> Result.get_ok;
+  let build_plan =
+    output |> Yojson.Safe.from_string |> build_plan_of_yojson |> Result.get_ok;
+  {
+    ...build_plan,
+    sourcePath: apply_config(config, build_plan.sourcePath),
+    rootPath: apply_config(config, build_plan.rootPath),
+    buildPath: apply_config(config, build_plan.buildPath),
+    stagePath: apply_config(config, build_plan.stagePath),
+    installPath: apply_config(config, build_plan.installPath),
+  };
 };
 
 let get_esy_env = (kind, name, pkg) => {
@@ -141,9 +170,6 @@ let make = manifest_path => {
     |> Result.get_ok
     |> await;
   };
-  let build_plan = run_build_plan(name);
-  let build_env = get_esy_env(`Build, name);
-  let exec_env = get_esy_env(`Exec, name);
 
   let.await config = {
     let variables = ["project", "store", "localStore", "globalStorePrefix"];
@@ -162,6 +188,9 @@ let make = manifest_path => {
     | _ => assert(false)
     };
   };
+  let build_plan = run_build_plan(name, config);
+  let build_env = get_esy_env(`Build, name);
+  let exec_env = get_esy_env(`Exec, name);
 
   {name, lock, manifest, build_plan, build_env, exec_env, config} |> await;
 };

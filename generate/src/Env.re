@@ -19,11 +19,51 @@ module Known_vars = {
       "PWD",
       "cur__version",
       "cur__name",
+      "cur__root",
+      "cur__target_dir",
       "LD_LIBRARY_PATH",
       "OCAML_SECONDARY_COMPILER_PREFIX",
     ]
     @ esy
     @ unset;
+};
+
+let find_node_manifest_env = node => {
+  let rec filter_all_after_label = (label, env) => {
+    let rec all_until_label = (acc, env) =>
+      switch (env) {
+      | [Esy.Label(_), ..._] => acc
+      | [entry, ...env] => all_until_label([entry, ...acc], env)
+      | [] => acc
+      };
+    switch (env) {
+    | [Esy.Label(name), ...env] when Lib.starts_with(~pattern=label, name) =>
+      all_until_label([], env)
+    | [_, ...env] => filter_all_after_label(label, env)
+    | [] => []
+    };
+  };
+  let extract_env = (label, env) =>
+    env
+    |> filter_all_after_label(label)
+    |> List.filter_map(entry =>
+         switch (entry) {
+         | Esy.Set(key, value) => Some((key, `String(value)))
+         | Esy.Unset(key) => Some((key, `Null))
+         | _ => None
+         }
+       )
+    |> List.filter(((key, _)) => !includes(key, Known_vars.ignore));
+
+  let exported_env = node.Node.exec_env |> extract_env(node.Node.name ++ "@");
+  let build_env = node.Node.build_env |> extract_env(node.Node.name ++ "@");
+  // TODO: Probably I can remove cur_env by buildPlan patch only
+  let cur_env =
+    node.Node.build_env
+    |> extract_env("Built-in")
+    |> List.filter(((key, _)) => is_cur(key));
+
+  (`Cur(cur_env), `Exported(exported_env), `Build(build_env));
 };
 
 let unresolve_string = (~additional_ignore=[], nodes, node, string) => {
@@ -41,21 +81,29 @@ let unresolve_string = (~additional_ignore=[], nodes, node, string) => {
       ]
       |> List.map(((key, value)) => ("#{" ++ key ++ "}/" ++ prefix, value));
 
-    let (cur_variables, non_cur_variables) =
-      env
-      |> StringMap.bindings
+    let variables = env |> StringMap.bindings;
+
+    let (`Cur(cur_env), _, _) = find_node_manifest_env(node);
+    let cur_variables =
+      cur_env
+      |> List.filter_map(((key, value)) =>
+           switch (value) {
+           | `Null => None
+           | `String(value) => Some((key, value))
+           }
+         );
+    let variables =
+      (use_cur ? variables @ cur_variables : variables)
       |> List.filter(((key, value)) => {
            let has_minimum_size = String.length(value) >= 3;
            let is_ignored = Known_vars.ignore |> includes(key);
            let is_additionally_ignored = additional_ignore |> includes(key);
            has_minimum_size && !is_ignored && !is_additionally_ignored;
          })
-      |> List.partition(((key, _)) => is_cur(key));
-
+      |> List.map(((key, value)) => ("${" ++ key ++ "}", value));
     // TODO: this may be a problem for some characters
     to_replace
-    @ non_cur_variables
-    @ (use_cur ? cur_variables : [])
+    @ variables
     |> List.fold_left(
          (value, (by, pattern)) => Lib.replace_all(~pattern, ~by, value),
          value,
@@ -97,45 +145,6 @@ let to_exported_env = (env): Yojson.Safe.t =>
          (key, `Assoc([("scope", `String("global")), ("val", value)]))
        ),
   );
-
-let find_node_manifest_env = node => {
-  let rec filter_all_after_label = (label, env) => {
-    let pattern = node.Node.name ++ "@";
-    let rec all_until_label = (acc, env) =>
-      switch (env) {
-      | [Esy.Label(_), ..._] => acc
-      | [entry, ...env] => all_until_label([entry, ...acc], env)
-      | [] => []
-      };
-    switch (env) {
-    | [Esy.Label(name), ...env] when Lib.starts_with(~pattern, name) =>
-      all_until_label([], env)
-    | [_, ...env] => filter_all_after_label(label, env)
-    | [] => []
-    };
-  };
-  let extract_env = (label, env) =>
-    env
-    |> filter_all_after_label(label)
-    |> List.filter_map(entry =>
-         switch (entry) {
-         | Esy.Set(key, value) => Some((key, `String(value)))
-         | Esy.Unset(key) => Some((key, `Null))
-         | _ => None
-         }
-       )
-    |> List.filter(((key, _)) => !includes(key, Known_vars.ignore));
-
-  let exported_env = node.Node.exec_env |> extract_env(node.Node.name ++ "@");
-  let build_env = node.Node.build_env |> extract_env(node.Node.name ++ "@");
-  // TODO: Probably I can remove cur_env by buildPlan patch only
-  let cur_env =
-    node.Node.build_env
-    |> extract_env("Built-in")
-    |> List.filter(((key, _)) => is_cur(key));
-
-  (`Cur(cur_env), `Exported(exported_env), `Build(build_env));
-};
 
 let build_env_ocamlfind = (_nodes, node) => [
   ("OCAMLFIND_CONF", `String("#{self.original_root}/findlib/findlib.conf")),
