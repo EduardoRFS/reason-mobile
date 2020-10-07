@@ -299,10 +299,21 @@ let main = () => {
     |> List.map(((key, value)) => (key, `String(value)));
   // TODO: support target on the manifest
 
+  let root_mock = mocks |> List.find(mock => mock.manifest.name == root_name);
   let wrapper =
     `Assoc([
       ("dependencies", `Assoc(dependencies)),
       ("resolutions", `Assoc(resolutions)),
+      (
+        "esy",
+        {
+          ...root_mock.manifest.esy,
+          buildsInSource: false,
+          build: [],
+          install: [],
+        }
+        |> mock_esy_manifest_to_yojson,
+      ),
     ]);
 
   let json_file = target.name ++ ".json";
@@ -316,14 +327,20 @@ let main = () => {
   let.await new_lock = Esy.make(json_file);
   let.await _ =
     mocks
-    |> List.filter(mock => mock.manifest.name != root_name)
-    |> List.map(mock => {
-         let.await build_plan = new_lock.Esy.build_plan(mock.manifest.name);
+    |> List.map(mock =>
+         mock.manifest.name == root_name
+           ? (
+               new_lock.Esy.lock.node |> StringMap.find(new_lock.Esy.lock.root)
+             ).Esy.Node.name
+           : mock.manifest.name
+       )
+    |> List.map(name => {
+         let.await build_plan = new_lock.Esy.build_plan(name);
          let root = build_plan.Esy.sourcePath ++ "/findlib";
          let conf_d = root ++ "/findlib.conf.d";
          let.await () = Lib.mkdirp(conf_d);
          let.await (host_findlib, target_findlib) =
-           Findlib.emit(new_lock, target.name, mock.manifest.name);
+           Findlib.emit(new_lock, target.name, name);
          let.await () =
            Lib.write_file(~file=root ++ "/findlib.conf", host_findlib)
          and.await () =
