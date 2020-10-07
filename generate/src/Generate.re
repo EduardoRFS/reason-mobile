@@ -276,18 +276,15 @@ let main = () => {
   let root = mocks |> List.find(mock => mock.manifest.name == root_name);
 
   let.await additional_resolutions = {
-    let.await generate = add_as_mock("generate", "../generate/bin")
     // TODO: avoid copying ndk when not needed
-    and.await tools = add_as_mock("sysroot.tools", "../sysroot/tools")
+    let.await tools = add_as_mock("sysroot.tools", "../sysroot/tools")
     and.await sysroot =
       add_as_mock(
         "@_" ++ target.name ++ "/sysroot",
         "../sysroot/" ++ target.name,
       )
     and.await ndk = add_as_mock("@_android/ndk", "../sysroot/android.ndk");
-    await(
-      [generate, tools, sysroot] @ (target.system == "android" ? [ndk] : []),
-    );
+    await([tools, sysroot] @ (target.system == "android" ? [ndk] : []));
   };
   let resolutions =
     [

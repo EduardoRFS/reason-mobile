@@ -1,7 +1,0 @@
-{
-  "name": "generate.bin",
-  "dependencies": {},
-  "esy": {
-    "install": "sh install.sh"
-  }
-}
