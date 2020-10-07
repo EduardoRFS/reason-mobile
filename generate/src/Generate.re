@@ -105,7 +105,10 @@ let create_nodes = () => {
        let build_plan =
          switch (patch) {
          | Some({Patch.manifest: {build, install, _}, _}) =>
-           Esy.{...build_plan, build, install}
+           let build = build |> Option.is_some ? build : build_plan.Esy.build;
+           let install =
+             install |> Option.is_some ? install : build_plan.Esy.install;
+           Esy.{...build_plan, build, install};
          | None => build_plan
          };
        let dependencies = dependencies_map |> StringMap.find(node.name);
