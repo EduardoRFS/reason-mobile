@@ -122,8 +122,18 @@ let create_nodes = () => {
            Esy.{...build_plan, build, install};
          | None => build_plan
          };
+
        let dependencies = dependencies_map |> StringMap.find(node.name);
-       // TODO: apply patch to build_plan and dependencies
+       let dependencies =
+         switch (patch) {
+         | Some({
+             Patch.manifest: {dependencies: Some(patch_dependencies), _},
+             _,
+           }) =>
+           dependencies
+           @ (patch_dependencies |> StringMap.bindings |> List.map(fst))
+         | _ => dependencies
+         };
        Lwt.return({
          Node.name,
          native,
