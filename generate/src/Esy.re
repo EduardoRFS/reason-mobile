@@ -133,6 +133,14 @@ let get_esy_env = (kind, name, pkg) => {
            | [key, ...value] => (key, value |> String.concat("="))
            | _ => failwith("invalid export")
            };
+         let value =
+           value |> String.length >= 2
+             ? switch (value.[0], value.[String.length(value) - 1]) {
+               | ('"', '"') =>
+                 String.sub(value, 1, String.length(value) - 2)
+               | _ => value
+               }
+             : value;
          Some(Set(key, value));
        | ["unset", name] => Some(Unset(name))
        | ["#", label] => Some(Label(label))

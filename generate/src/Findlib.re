@@ -88,7 +88,8 @@ let emit = (esy, target, name) => {
     build_env
     |> List.filter_map(
          fun
-         | Esy.Set(key, value) => Some("export " ++ key ++ "=" ++ value)
+         | Esy.Set(key, value) =>
+           Some("export " ++ key ++ "=\"" ++ value ++ "\"")
          | Esy.Unset(key) => Some("unset " ++ key)
          | _ => None,
        );
