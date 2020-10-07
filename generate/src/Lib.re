@@ -57,6 +57,11 @@ let starts_with = (~pattern, name) => {
   String.length(name) >= length && String.sub(name, 0, length) == pattern;
 };
 
+let rev_string = s =>
+  s |> String.to_seq |> List.of_seq |> List.rev |> List.to_seq |> String.of_seq;
+let ends_with = (~pattern, name) =>
+  starts_with(~pattern=rev_string(pattern), rev_string(name));
+
 let escape_name = Re.replace(~f=_ => "_", Re.Pcre.regexp("@|\\/|:|-"));
 let target_name = (target, name) =>
   switch (target) {

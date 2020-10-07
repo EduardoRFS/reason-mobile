@@ -22,11 +22,11 @@ let root_folder =
     Filename.current_dir_name,
     Filename.concat("..", "patches"),
   );
-let folders = Sys.readdir(root_folder) |> Array.to_list;
 
 // TODO: think a little bit better if using .none as early return is the best idea
 let get_patch_folder = (name, version) => {
   let name_and_version = name ++ "." ++ version;
+  let folders = Sys.readdir(root_folder) |> Array.to_list;
   let.some name = {
     // TODO: read the version from the original manifest
     let.none () = folders |> List.find_opt((==)(name_and_version));

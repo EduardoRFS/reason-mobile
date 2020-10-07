@@ -86,6 +86,9 @@ let build = (nodes, node) => {
   @ setup_install(node)
   @ to_script([["cd", node |> Node.prefix]] @ commands);
 };
+
+let generateBin = Sys.argv[0];
+
 let install = (nodes, node) => {
   let source_install =
     node.Node.build_plan.install |> Option.value(~default=[]);
@@ -94,6 +97,6 @@ let install = (nodes, node) => {
     |> List.filter(command => !is_installer(command));
   let commands =
     commands
-    @ [["not-esy-installer", node.Node.target |> Node.target_to_string]];
+    @ [[generateBin, "--install", node.Node.target |> Node.target_to_string]];
   to_script([["cd", node |> Node.prefix]] @ commands);
 };

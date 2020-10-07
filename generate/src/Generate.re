@@ -30,6 +30,17 @@ type target = {
   name: string,
 };
 
+module type Installer = {let main: unit => Lwt.t(unit);};
+if (Sys.argv[1] == "--install") {
+  module Installer =
+    Installer.Make({
+      let install_folder = Sys.getenv("cur__install");
+      let target = Sys.argv[2];
+    });
+  Installer.main() |> Lwt_main.run;
+  exit(0);
+};
+
 let esy = {
   let.await exists = Lwt_unix.file_exists("./esy.json");
   exists ? Esy.make("esy.json") : Esy.make("package.json");
