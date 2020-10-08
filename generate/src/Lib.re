@@ -12,6 +12,7 @@ let write_file = (~file, data) => {
   Lwt_io.write(file, data);
 };
 
+// TODO: sh -c will fail when cmd length > MAX_ARG_STRLEN
 let exec = cmd => cmd |> Lwt_process.shell |> Lwt_process.pread;
 
 let mkdirp = folder => exec("mkdir -p " ++ folder) |> Lwt.map(_ => ());

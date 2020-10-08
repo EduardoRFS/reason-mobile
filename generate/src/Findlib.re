@@ -59,15 +59,10 @@ let run_command_at_env = (env, cmd) => {
   let command = String.concat("\n", env @ [cmd]);
   Lib.exec(command);
 };
-let get_variable_value_at_env = (env, var) => {
-  // TODO: multiple variable per command
-  let+await output = run_command_at_env(env, "echo ${" ++ var ++ "}");
-  output |> String.trim;
-};
 let get_ocamlpath = build_env => {
   // TODO: filter only the last one
   let env = build_env |> List.filter((!=)(Esy.Unset("OCAMLPATH")));
-  let+await ocamlpath = get_variable_value_at_env(env, "OCAMLPATH");
+  let ocamlpath = Esy.find_variable_at_env_list(env, "OCAMLPATH");
   ocamlpath |> String.split_on_char(':');
 };
 
@@ -77,7 +72,13 @@ let find_ocaml_install = (build_env, target) => {
     let+await ocamlrun_path =
       run_command_at_env(build_env, "dirname $(dirname $(which ocamlrun))");
     ocamlrun_path |> String.trim;
-  | `Target(_) => get_variable_value_at_env(build_env, "ESY_TOOLCHAIN_OCAML")
+  | `Target(_) =>
+    Esy.find_variable_at_env_list(
+      ~optional=true,
+      build_env,
+      "ESY_TOOLCHAIN_OCAML",
+    )
+    |> await
   };
 };
 
@@ -85,9 +86,8 @@ let emit = (esy, target, name) => {
   let target = `Target(target);
 
   let.await build_env = esy.Esy.build_env(name);
-  let.await path = get_ocamlpath(build_env);
-  let.await destdir =
-    get_variable_value_at_env(build_env, "OCAMLFIND_DESTDIR");
+  let path = get_ocamlpath(build_env);
+  let destdir = Esy.find_variable_at_env_list(build_env, "OCAMLFIND_DESTDIR");
 
   let.await host_findlib = {
     let target = `Host;

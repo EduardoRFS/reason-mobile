@@ -53,6 +53,40 @@ type env =
   | Set(string, string)
   | Unset(string)
   | Label(string);
+let find_variable_at_env_list = (~optional=false, env_list, var) => {
+  // TODO: find a proper solution for this
+  let apply_env = (env, value) =>
+    env
+    |> StringMap.bindings
+    |> List.sort_uniq(((left, _), (right, _)) =>
+         String.length(right) - String.length(left)
+       )
+    |> List.concat_map(((key, value)) =>
+         [("${" ++ key ++ "}", value), ("$" ++ key, value)]
+       )
+    |> List.fold_left(
+         (value, (pattern, by)) => value |> Lib.replace_all(~pattern, ~by),
+         value,
+       );
+  let value =
+    env_list
+    |> List.fold_left(
+         (env, op) =>
+           switch (op) {
+           | Set(key, value) =>
+             env |> StringMap.add(key, apply_env(env, value))
+           | Unset(key) => env |> StringMap.remove(key)
+           | _ => env
+           },
+         StringMap.empty,
+       )
+    |> StringMap.find_opt(var);
+  switch (value, optional) {
+  | (Some(value), _) => value
+  | (None, true) => ""
+  | (None, false) => failwith("couldn't found $" ++ var)
+  };
+};
 
 type t = {
   name: string,
