@@ -197,6 +197,19 @@ let env = (nodes, node) => {
       | _ => []
       },
     ])
+    // TODO: this is a workaround for a esy bug
+    /* it did show on @opam/dune_configurator */
+    |> List.map(((key, value)) => {
+         let value =
+           switch (node.Node.target, value) {
+           | (`Target(target), `String(value)) =>
+             `String(
+               Lib.replace_all(~pattern="$ESY_TOOLCHAIN", ~by=target, value),
+             )
+           | _ => value
+           };
+         (key, value);
+       })
     |> to_exported_env;
   (`Exported(exported_env), `Build(build_env));
 };
