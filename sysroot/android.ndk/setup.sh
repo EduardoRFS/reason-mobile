@@ -3,9 +3,9 @@
 set -e
 set -u
 
-NDK_LINUX="https://dl.google.com/android/repository/android-ndk-r21b-linux-x86_64.zip"
-NDK_DARWIN="https://dl.google.com/android/repository/android-ndk-r21b-darwin-x86_64.zip"
-NDK_FOLDER="android-ndk-r21b"
+NDK_LINUX="https://dl.google.com/android/repository/android-ndk-r21d-linux-x86_64.zip"
+NDK_DARWIN="https://dl.google.com/android/repository/android-ndk-r21d-darwin-x86_64.zip"
+NDK_FOLDER="android-ndk-r21d"
 
 OS=""
 if [[ "$(uname)" == 'Linux' ]]; then
