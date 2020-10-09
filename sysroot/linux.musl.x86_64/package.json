@@ -1,7 +1,6 @@
 {
   "name": "@_linux.musl.x86_64/sysroot",
   "dependencies": {
-    "generate": "*",
     "sysroot.tools": "*"
   },
   "esy": {

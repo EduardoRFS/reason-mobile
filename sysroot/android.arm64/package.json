@@ -1,7 +1,6 @@
 {
   "name": "@_android.aarch64/sysroot",
   "dependencies": {
-    "generate": "*",
     "sysroot.tools": "*",
     "@_android/ndk": "*"
   },

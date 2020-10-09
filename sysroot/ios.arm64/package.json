@@ -1,7 +1,6 @@
 {
   "name": "@_ios.arm64/sysroot",
   "dependencies": {
-    "generate": "*",
     "sysroot.tools": "*"
   },
   "esy": {

@@ -1,7 +1,6 @@
 {
   "name": "@_ios.simulator.x86_64/sysroot",
   "dependencies": {
-    "generate": "*",
     "sysroot.tools": "*"
   },
   "esy": {
