@@ -1,0 +1,129 @@
+diff --git a/algo/depsolver_int.mli b/algo/depsolver_int.mli
+index e28441f..684949c 100644
+--- a/algo/depsolver_int.mli
++++ b/algo/depsolver_int.mli
+@@ -96,7 +96,7 @@ val solve :
+    This function is used to "distcheck" a list of packages 
+    *)
+ val pkgcheck :
+-	(Diagnostic.result_int * Diagnostic.request_int -> 'a) option -> 
++	(Diagnostic.result_int * Diagnostic.request_int -> unit) option -> 
+ 	bool -> solver -> bool array -> int -> 
+ 		bool
+ 
+diff --git a/algo/dune b/algo/dune
+new file mode 100644
+index 0000000..1331b95
+--- /dev/null
++++ b/algo/dune
+@@ -0,0 +1,10 @@
++(library
++ (name algo)
++ (public_name dose3.algo)
++ (modules :standard \ tests bench)
++ (flags :standard -w -3-9-27-32-33-34-50)
++ (libraries dose3.common ocamlgraph)
++ (preprocess
++  (action
++   (run %{bin:cppo} -D "OCAMLGRAPHVERSION 188" -V OCAML:%{ocaml_version}
++     %{input-file}))))
+diff --git a/common/criteria_lexer.mll b/common/criteria_lexer.mll
+index 71f9178..5518fa0 100644
+--- a/common/criteria_lexer.mll
++++ b/common/criteria_lexer.mll
+@@ -18,7 +18,7 @@
+     let c = Lexing.lexeme_char lexbuf 2 in (* the delimiter can be any character *)
+     (* find the terminating delimiter *)
+     let endpos =
+-      try String.index_from lexbuf.lex_buffer (lexbuf.lex_start_pos + 3) c with
++      try Bytes.index_from lexbuf.lex_buffer (lexbuf.lex_start_pos + 3) c with
+       |Invalid_argument _ ->
+           raise (Format822.Syntax_error (
+             Format822.error lexbuf "String too short"))
+@@ -27,7 +27,7 @@
+             Format822.error lexbuf (Printf.sprintf "cannot find: %c" c)))
+     in
+     let len = endpos - (lexbuf.lex_start_pos + 3) in
+-    let s = String.sub lexbuf.lex_buffer (lexbuf.lex_start_pos + 3) len in
++    let s = Bytes.sub_string lexbuf.lex_buffer (lexbuf.lex_start_pos + 3) len in
+     lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_start_pos + ((String.length s)+4);
+     s
+ 
+diff --git a/common/dune b/common/dune
+new file mode 100644
+index 0000000..f0f806f
+--- /dev/null
++++ b/common/dune
+@@ -0,0 +1,13 @@
++(library
++ (name common)
++ (public_name dose3.common)
++ (libraries extlib re.pcre cudf)
++ (flags :standard -w -3-9-27-32-33-50)
++ (modules :standard \ extBenchmark minisatSolver tests)
++ (preprocess
++  (action
++   (run %{bin:cppo} -V OCAML:%{ocaml_version} %{input-file}))))
++
++(ocamllex criteria_lexer format822_lexer shell_lexer)
++
++(ocamlyacc criteria_parser format822_parser)
+diff --git a/common/input.ml b/common/input.ml
+index 9bd639b..7706147 100644
+--- a/common/input.ml
++++ b/common/input.ml
+@@ -42,7 +42,7 @@ let bzip_open_file file =
+     with End_of_file -> raise IO.No_more_input
+   in
+   let read ch s pos len =
+-    try Bz2.read ch s pos len 
++    try Bz2.read ch (Bytes.unsafe_to_string s) pos len 
+     with End_of_file -> raise IO.No_more_input
+   in
+   IO.create_in
+diff --git a/dose3.opam b/dose3.opam
+new file mode 100644
+index 0000000..de73e2b
+--- /dev/null
++++ b/dose3.opam
+@@ -0,0 +1,32 @@
++opam-version: "2.0"
++maintainer: "pietro.abate@inria.fr"
++authors: [
++  "Pietro Abate"
++  "Jaap Boender"
++  "Roberto Di Cosmo"
++  "Johannes Schauer"
++  "Ralf Treinen"
++  "Stefano Zacchiroli"
++  "Jakub Zwolakowski"
++  "Olivier Rosello"
++]
++homepage: "http://www.mancoosi.org/software/"
++bug-reports: "https://gforge.inria.fr/tracker/?group_id=4395"
++license: "LGPL-v3+ with OCaml linking exception"
++dev-repo: "git+https://github.com/dune-universe/dose3.git"
++depends: [
++  "dune"
++  "ocaml"
++  "ocamlgraph" {>= "1.8.6"}
++  "cudf" {>= "0.7"}
++  "conf-perl" {build}
++  ("extlib" {>= "1.7.0"} | "extlib-compat" {>= "1.7.0"})
++  "re" {>= "1.2.2"}
++  "cppo" {build & >= "1.1.2"}
++]
++conflicts: "dose"
++synopsis: "Dose library (part of Mancoosi tools)"
++build: [[ "dune" "build" "-p" name ]]
++url {
++  src: "git://github.com/dune-universe/dose3.git#duniverse-5.0.1"
++}
+diff --git a/dune-project b/dune-project
+new file mode 100644
+index 0000000..e36d49e
+--- /dev/null
++++ b/dune-project
+@@ -0,0 +1,2 @@
++(lang dune 1.0)
++(name dose3)

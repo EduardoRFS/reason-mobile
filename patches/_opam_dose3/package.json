@@ -1,0 +1,7 @@
+{
+  "build": [
+    ["sh", "-c", "patch -p1 < dune.patch"],
+    ["dune", "build", "-p", "dose3"]
+  ],
+  "install": []
+}
