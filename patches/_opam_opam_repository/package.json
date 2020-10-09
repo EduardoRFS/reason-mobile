@@ -1,0 +1,21 @@
+{
+  "build": [
+    [
+      "./configure",
+      "--disable-checks",
+      "--prefix", "$cur__install",
+      "--host", "$ESY_TOOLCHAIN_HOST",
+      "OCAMLFIND_TOOLCHAIN=$ESY_TOOLCHAIN",
+      "OCAMLMKLIB=$ESY_TOOLCHAIN_OCAML/bin/ocamlmklib",
+      "OCAMLMKTOP=$ESY_TOOLCHAIN_OCAML/bin/ocamlmklib",
+      "OCAMLDEPDOTOPT=$ESY_TOOLCHAIN_OCAML/bin/ocamldep",
+      "OCAMLDEP=$ESY_TOOLCHAIN_OCAML/bin/ocamldep",
+      "OCAMLOPTDOTOPT=$ESY_TOOLCHAIN_OCAML/bin/ocamlopt",
+      "OCAMLCDOTOPT=$ESY_TOOLCHAIN_OCAML/bin/ocamlc",
+      "OCAMLOPT=$ESY_TOOLCHAIN_OCAML/bin/ocamlc",
+      "OCAMLC=$ESY_TOOLCHAIN_OCAML/bin/ocamlc.opt",
+      "OCAMLOBJINFO=$ESY_TOOLCHAIN_OCAML/bin/ocamlobjinfo"
+    ],
+    ["dune", "build", "-p", "opam-repository"]
+  ]
+}
