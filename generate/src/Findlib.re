@@ -1,7 +1,7 @@
 open Helper;
 
 type findlib = {
-  target: [ | `Host | `Target(string)],
+  target: [ | `Host(string) | `Target(string)],
   path: list(string),
   destdir: string,
   ocaml_install: string,
@@ -9,7 +9,7 @@ type findlib = {
 let serialize_findlib = findlib => {
   let append_prefix_to_ocamlpath = path => {
     switch (findlib.target) {
-    | `Host => path
+    | `Host(_) => path
     | `Target(toolchain) =>
       Filename.dirname(path)
       ++ "/"
@@ -38,7 +38,7 @@ let serialize_findlib = findlib => {
   |> List.map(((key, value)) => {
        let key =
          switch (findlib.target) {
-         | `Host => key
+         | `Host(_) => key
          | `Target(name) => key ++ "(" ++ name ++ ")"
          };
        key ++ " = " ++ "\"" ++ value ++ "\"";
@@ -59,10 +59,20 @@ let run_command_at_env = (env, cmd) => {
   let command = String.concat("\n", env @ [cmd]);
   Lib.exec(command);
 };
-let get_ocamlpath = build_env => {
+let get_ocamlpath = (target, build_env) => {
   // TODO: filter only the last one
   let env =
     build_env
+    |> List.filter(env =>
+         switch (target, env.Esy.Env.kind) {
+         | (_, `Built) => true
+         // TODO: move that to Lib
+         | (`Host(toolchain), `Id(id)) =>
+           !Lib.starts_with(~pattern="@_" ++ toolchain, id)
+         | (`Target(toolchain), `Id(id)) =>
+           Lib.starts_with(~pattern="@_" ++ toolchain, id)
+         }
+       )
     |> List.map(env =>
          Esy.Env.{
            ...env,
@@ -76,7 +86,7 @@ let get_ocamlpath = build_env => {
 
 let find_ocaml_install = (build_env, target) => {
   switch (target) {
-  | `Host =>
+  | `Host(_) =>
     let+await ocamlrun_path =
       run_command_at_env(build_env, "dirname $(dirname $(which ocamlrun))");
     ocamlrun_path |> String.trim;
@@ -87,18 +97,18 @@ let find_ocaml_install = (build_env, target) => {
 };
 
 let emit = (esy, target, name) => {
-  let target = `Target(target);
-
   let.await build_env = esy.Esy.build_env(name);
-  let path = get_ocamlpath(build_env);
   let destdir = Esy.Env.find_variable(build_env, "OCAMLFIND_DESTDIR");
 
   let.await host_findlib = {
-    let target = `Host;
+    let target = `Host(target);
+    let path = get_ocamlpath(target, build_env);
     let+await ocaml_install = find_ocaml_install(build_env, target);
     serialize_findlib({target, path, destdir, ocaml_install});
   };
   let.await target_findlib = {
+    let target = `Target(target);
+    let path = get_ocamlpath(target, build_env);
     let+await ocaml_install = find_ocaml_install(build_env, target);
     serialize_findlib({target, path, destdir, ocaml_install});
   };
