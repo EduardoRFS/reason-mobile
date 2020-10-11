@@ -147,7 +147,7 @@ let to_exported_env = (env): Yojson.Safe.t =>
   );
 
 let build_env_ocamlfind = (_nodes, node) => [
-  ("OCAMLFIND_CONF", `String("#{self.original_root}/findlib/findlib.conf")),
+  ("OCAMLFIND_CONF", `String("%{store}%/findlib/#{self.id}/findlib.conf")),
   (
     "OCAMLFIND_DESTDIR",
     `String("#{self.install}/" ++ Node.prefix(node) ++ "/lib"),

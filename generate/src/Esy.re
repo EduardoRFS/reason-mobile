@@ -5,6 +5,7 @@ type command = list(string);
 
 [@deriving yojson({strict: false})]
 type build_plan = {
+  id: string,
   name: string,
   version: string,
   build: [@default None] option(list(command)),

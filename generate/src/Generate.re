@@ -1,6 +1,8 @@
 open Helper;
 open Lib;
 
+// TODO: check if is inside of a esy shell
+
 [@deriving yojson]
 type mock_esy_manifest = {
   buildsInSource: bool,
@@ -354,7 +356,8 @@ let main = () => {
        )
     |> List.map(name => {
          let.await build_plan = new_lock.Esy.build_plan(name);
-         let root = build_plan.Esy.sourcePath ++ "/findlib";
+         let root =
+           new_lock.Esy.config.store ++ "/findlib/" ++ build_plan.Esy.id;
          let conf_d = root ++ "/findlib.conf.d";
          let.await () = Lib.mkdirp(conf_d);
          let.await (host_findlib, target_findlib) =
