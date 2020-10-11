@@ -49,43 +49,130 @@ type config = {
   localStore: string,
 };
 
-[@deriving yojson]
-type env =
-  | Set(string, string)
-  | Unset(string)
-  | Label(string);
-let find_variable_at_env_list = (~optional=false, env_list, var) => {
-  // TODO: find a proper solution for this
-  let apply_env = (env, value) =>
-    env
-    |> StringMap.bindings
-    |> List.sort_uniq(((left, _), (right, _)) =>
-         String.length(right) - String.length(left)
-       )
-    |> List.concat_map(((key, value)) =>
-         [("${" ++ key ++ "}", value), ("$" ++ key, value)]
-       )
-    |> List.fold_left(
-         (value, (pattern, by)) => value |> Lib.replace_all(~pattern, ~by),
-         value,
-       );
-  let value =
-    env_list
-    |> List.fold_left(
-         (env, op) =>
-           switch (op) {
-           | Set(key, value) =>
-             env |> StringMap.add(key, apply_env(env, value))
-           | Unset(key) => env |> StringMap.remove(key)
-           | _ => env
-           },
-         StringMap.empty,
-       )
-    |> StringMap.find_opt(var);
-  switch (value, optional) {
-  | (Some(value), _) => value
-  | (None, true) => ""
-  | (None, false) => failwith("couldn't found $" ++ var)
+// TODO: replace the esy build-env default by a structure representation of the shell script version
+module Env = {
+  [@deriving yojson]
+  type operation =
+    | Set(string, string)
+    | Unset(string);
+
+  type entry = {
+    kind: [ | `Built | `Id(string)],
+    operations: list(operation),
+  };
+  type t = list(entry);
+
+  let operations = List.concat_map(t => t.operations);
+
+  let find_variable = (~optional=false, t: t, var) => {
+    // TODO: find a proper solution for this
+    let apply_env = (env, value) =>
+      env
+      |> StringMap.bindings
+      |> List.sort_uniq(((left, _), (right, _)) =>
+           String.length(right) - String.length(left)
+         )
+      |> List.concat_map(((key, value)) =>
+           [("${" ++ key ++ "}", value), ("$" ++ key, value)]
+         )
+      |> List.fold_left(
+           (value, (pattern, by)) =>
+             value |> Lib.replace_all(~pattern, ~by),
+           value,
+         );
+    let value =
+      t
+      |> operations
+      |> List.fold_left(
+           (env, op) =>
+             switch (op) {
+             | Set(key, value) =>
+               env |> StringMap.add(key, apply_env(env, value))
+             | Unset(key) => env |> StringMap.remove(key)
+             },
+           StringMap.empty,
+         )
+      |> StringMap.find_opt(var);
+    switch (value, optional) {
+    | (Some(value), _) => value
+    | (None, true) => ""
+    | (None, false) => failwith("couldn't found $" ++ var)
+    };
+  };
+
+  let parse_from_shell = commands => {
+    let remove_header = commands => {
+      let rec remove_all_until_whitespace = commands =>
+        switch (commands) {
+        | ["", ...commands] => commands
+        | [_, ...commands] => remove_all_until_whitespace(commands)
+        | [] => []
+        };
+      switch (commands) {
+      | ["# Build environment" | "# Exec environment", ...commands] =>
+        remove_all_until_whitespace(commands)
+      | commands => commands
+      };
+    };
+    let commands_without_header =
+      commands
+      |> String.split_on_char('\n')
+      |> List.map(String.trim)
+      |> remove_header
+      |> List.filter(line => line != "" && line != "#");
+    let (t, last_entry) =
+      commands_without_header
+      |> List.fold_left(
+           ((entries, entry), line) =>
+             switch (line |> String.split_on_char(' ')) {
+             | ["export", ...assignment] =>
+               let (key, value) =
+                 switch (
+                   assignment
+                   |> String.concat(" ")
+                   |> String.split_on_char('=')
+                 ) {
+                 | [key, ...value] => (key, value |> String.concat("="))
+                 | _ => failwith("invalid export")
+                 };
+               let value =
+                 value |> String.length >= 2
+                   ? switch (value.[0], value.[String.length(value) - 1]) {
+                     | ('"', '"') =>
+                       String.sub(value, 1, String.length(value) - 2)
+                     | _ => value
+                     }
+                   : value;
+               (
+                 entries,
+                 {
+                   ...entry,
+                   operations: entry.operations @ [Set(key, value)],
+                 },
+               );
+             | ["unset", name] => (
+                 entries,
+                 {...entry, operations: entry.operations @ [Unset(name)]},
+               )
+             | ["#", "Built-in"] => (
+                 entries @ [entry],
+                 {kind: `Built, operations: []},
+               )
+             // TODO: assert this is an id
+             | ["#", id] => (
+                 entries @ [entry],
+                 {kind: `Id(id), operations: []},
+               )
+             | line =>
+               failwith(
+                 "unknown declaration on env: \""
+                 ++ String.concat(" ", line)
+                 ++ "\"",
+               )
+             },
+           ([], {kind: `Built, operations: []}),
+         );
+    t @ [last_entry] |> List.filter(env => env.operations != []);
   };
 };
 
@@ -94,8 +181,8 @@ type t = {
   lock,
   manifest,
   build_plan: string => Lwt.t(build_plan),
-  build_env: string => Lwt.t(list(env)),
-  exec_env: string => Lwt.t(list(env)),
+  build_env: string => Lwt.t(Env.t),
+  exec_env: string => Lwt.t(Env.t),
   config,
 };
 
@@ -154,35 +241,7 @@ let get_esy_env = (kind, name, pkg) => {
     | `Build => "build-env"
     };
   let+await output = run(name, [command, "-p", pkg]);
-  output
-  |> String.split_on_char('\n')
-  |> List.map(String.trim)
-  |> List.filter(line => line != "" && line != "#")
-  |> List.filter_map(line =>
-       switch (line |> String.split_on_char(' ')) {
-       | ["export", ...assignment] =>
-         let (key, value) =
-           switch (
-             assignment |> String.concat(" ") |> String.split_on_char('=')
-           ) {
-           | [key, ...value] => (key, value |> String.concat("="))
-           | _ => failwith("invalid export")
-           };
-         let value =
-           value |> String.length >= 2
-             ? switch (value.[0], value.[String.length(value) - 1]) {
-               | ('"', '"') =>
-                 String.sub(value, 1, String.length(value) - 2)
-               | _ => value
-               }
-             : value;
-         Some(Set(key, value));
-       | ["unset", name] => Some(Unset(name))
-       | ["#", label] => Some(Label(label))
-       | ["#", ..._] => None
-       | _ => failwith("unknown declaration on env")
-       }
-     );
+  output |> Env.parse_from_shell;
 };
 
 let make = manifest_path => {

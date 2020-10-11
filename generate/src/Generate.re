@@ -138,6 +138,7 @@ let create_nodes = () => {
          };
        Lwt.return({
          Node.name,
+         native_id: node.id,
          native,
          target,
          build_plan,
@@ -329,6 +330,7 @@ let main = () => {
         {
           ...root_mock.manifest.esy,
           buildsInSource: false,
+          // TODO: remove prefix and use that instead
           build: [],
           install: [],
         }

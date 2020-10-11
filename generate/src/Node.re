@@ -1,10 +1,12 @@
 type t = {
   name: string,
+  // TODO: use only the native_id?
+  native_id: string,
   native: string,
   target: [ | `Host | `Target(string)],
   build_plan: Esy.build_plan,
-  build_env: list(Esy.env),
-  exec_env: list(Esy.env),
+  build_env: Esy.Env.t,
+  exec_env: Esy.Env.t,
   dependencies: list(string),
   patch: option(Patch.t),
 };

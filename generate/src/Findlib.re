@@ -49,20 +49,28 @@ let serialize_findlib = findlib => {
 let run_command_at_env = (env, cmd) => {
   let env =
     env
+    |> Esy.Env.operations
     |> List.filter_map(
          fun
-         | Esy.Set(key, value) =>
+         | Esy.Env.Set(key, value) =>
            Some("export " ++ key ++ "=\"" ++ value ++ "\"")
-         | Esy.Unset(key) => Some("unset " ++ key)
-         | _ => None,
+         | Esy.Env.Unset(key) => Some("unset " ++ key),
        );
   let command = String.concat("\n", env @ [cmd]);
   Lib.exec(command);
 };
 let get_ocamlpath = build_env => {
   // TODO: filter only the last one
-  let env = build_env |> List.filter((!=)(Esy.Unset("OCAMLPATH")));
-  let ocamlpath = Esy.find_variable_at_env_list(env, "OCAMLPATH");
+  let env =
+    build_env
+    |> List.map(env =>
+         Esy.Env.{
+           ...env,
+           operations:
+             env.operations |> List.filter((!=)(Esy.Env.Unset("OCAMLPATH"))),
+         }
+       );
+  let ocamlpath = Esy.Env.find_variable(env, "OCAMLPATH");
   ocamlpath |> String.split_on_char(':');
 };
 
@@ -73,11 +81,7 @@ let find_ocaml_install = (build_env, target) => {
       run_command_at_env(build_env, "dirname $(dirname $(which ocamlrun))");
     ocamlrun_path |> String.trim;
   | `Target(_) =>
-    Esy.find_variable_at_env_list(
-      ~optional=true,
-      build_env,
-      "ESY_TOOLCHAIN_OCAML",
-    )
+    Esy.Env.find_variable(~optional=true, build_env, "ESY_TOOLCHAIN_OCAML")
     |> await
   };
 };
@@ -87,7 +91,7 @@ let emit = (esy, target, name) => {
 
   let.await build_env = esy.Esy.build_env(name);
   let path = get_ocamlpath(build_env);
-  let destdir = Esy.find_variable_at_env_list(build_env, "OCAMLFIND_DESTDIR");
+  let destdir = Esy.Env.find_variable(build_env, "OCAMLFIND_DESTDIR");
 
   let.await host_findlib = {
     let target = `Host;

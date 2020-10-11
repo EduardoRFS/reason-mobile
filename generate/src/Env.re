@@ -21,46 +21,45 @@ module Known_vars = {
       "cur__name",
       "cur__root",
       "cur__target_dir",
+      "cur__dev",
       "LD_LIBRARY_PATH",
       "OCAML_SECONDARY_COMPILER_PREFIX",
+      "OCAMLFIND_LDCONF",
+      "DUNE_BUILD_DIR",
+      "DUNE_STORE_ORIG_SOURCE_DIR",
     ]
     @ esy
     @ unset;
 };
 
 let find_node_manifest_env = node => {
-  let rec filter_all_after_label = (label, env) => {
-    let rec all_until_label = (acc, env) =>
-      switch (env) {
-      | [Esy.Label(_), ..._] => acc
-      | [entry, ...env] => all_until_label([entry, ...acc], env)
-      | [] => acc
-      };
-    switch (env) {
-    | [Esy.Label(name), ...env] when Lib.starts_with(~pattern=label, name) =>
-      all_until_label([], env)
-    | [_, ...env] => filter_all_after_label(label, env)
-    | [] => []
-    };
-  };
-  let extract_env = (label, env) =>
+  let extract_manifest = (kind, env) =>
     env
-    |> filter_all_after_label(label)
-    |> List.filter_map(entry =>
-         switch (entry) {
-         | Esy.Set(key, value) => Some((key, `String(value)))
-         | Esy.Unset(key) => Some((key, `Null))
-         | _ => None
-         }
+    |> List.filter_map(env =>
+         env.Esy.Env.kind == kind ? Some(env.Esy.Env.operations) : None
+       )
+    |> List.concat
+    |> List.map(
+         fun
+         | Esy.Env.Set(key, value) => (key, `String(value))
+         | Esy.Env.Unset(key) => (key, `Null),
        )
     |> List.filter(((key, _)) => !includes(key, Known_vars.ignore));
-
-  let exported_env = node.Node.exec_env |> extract_env(node.Node.name ++ "@");
-  let build_env = node.Node.build_env |> extract_env(node.Node.name ++ "@");
+  let exported_env =
+    node.Node.exec_env
+    |> List.rev
+    |> extract_manifest(`Id(node.Node.native_id))
+    |> List.filter(((key, _)) => !is_cur(key));
+  // TODO: esy build-env should return self as a distinct label
+  let build_env =
+    node.Node.build_env
+    |> List.rev
+    |> extract_manifest(`Built)
+    |> List.filter(((key, _)) => !is_cur(key));
   // TODO: Probably I can remove cur_env by buildPlan patch only
   let cur_env =
     node.Node.build_env
-    |> extract_env("Built-in")
+    |> extract_manifest(`Built)
     |> List.filter(((key, _)) => is_cur(key));
 
   (`Cur(cur_env), `Exported(exported_env), `Build(build_env));
