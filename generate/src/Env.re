@@ -126,8 +126,8 @@ let unresolve_string = (~additional_ignore=[], nodes, node, string) => {
 let unresolve_env = (nodes, node, env) =>
   env
   |> List.filter(((key, _)) => !includes(key, Known_vars.ignore))
-  |> List.filter_map(((key, value)) => {
-       let new_value =
+  |> List.map(((key, value)) => {
+       let value =
          switch (value) {
          | `String(value) =>
            `String(
@@ -135,7 +135,7 @@ let unresolve_env = (nodes, node, env) =>
            )
          | `Null => `Null
          };
-       new_value != value ? Some((key, new_value)) : None;
+       (key, value);
      });
 let to_exported_env = (env): Yojson.Safe.t =>
   `Assoc(
