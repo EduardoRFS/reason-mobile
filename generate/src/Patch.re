@@ -17,11 +17,15 @@ type t = {
   files_folder: option(string),
 };
 
-let root_folder =
-  Filename.concat(
-    Filename.current_dir_name,
-    Filename.concat("..", "patches"),
-  );
+let root_folder = {
+  let default =
+    Filename.concat(
+      Filename.current_dir_name,
+      Filename.concat("..", "patches"),
+    );
+  let.apply () = Option.value(~default);
+  Sys.getenv_opt("ESY__PATCHES");
+};
 
 // TODO: think a little bit better if using .none as early return is the best idea
 let get_patch_folder = (name, version) => {
