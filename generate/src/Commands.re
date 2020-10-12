@@ -11,20 +11,6 @@ let unresolve_commands = (nodes, node, commands) =>
        command |> List.map(part => Env.unresolve_string(nodes, node, part))
      );
 
-let to_script = commands => {
-  let escape_arg = arg => {
-    let escaped = arg |> Lib.replace_all(~pattern="\"", ~by="\\\\\"");
-    "\"" ++ escaped ++ "\"";
-  };
-  let script =
-    commands
-    |> List.map(command =>
-         command |> List.map(escape_arg) |> String.concat(" ")
-       )
-    |> String.concat("\n");
-  [["sh", "-c", "set -e\n" ++ script]];
-};
-
 // TODO: check that against a huge base of packages
 // TODO: search for more installers like make install
 let is_installer =
@@ -83,7 +69,7 @@ let build = (nodes, node) => {
   copy_source(node)
   @ copy_patch_files(node)
   @ setup_install(node)
-  @ to_script(commands);
+  @ commands;
 };
 
 let generateBin = Sys.argv[0];
@@ -97,5 +83,5 @@ let install = (nodes, node) => {
   let commands =
     commands
     @ [[generateBin, "--install", node.Node.target |> Node.target_to_string]];
-  to_script(commands);
+  commands;
 };
