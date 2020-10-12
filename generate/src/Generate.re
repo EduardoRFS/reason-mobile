@@ -1,6 +1,7 @@
 open Helper;
 open Lib;
 
+Printexc.record_backtrace(true);
 // TODO: check if is inside of a esy shell
 
 [@deriving yojson]
