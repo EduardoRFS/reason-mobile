@@ -4,9 +4,9 @@
     "ESY_TOOLCHAIN_OCAML": "#{self.install}/$ESY_TOOLCHAIN-sysroot"
   },
   "source": [
-    ["rm", "-rf", "ocaml", "$ESY_TOOLCHAIN-sysroot"],
     ["sh", "#{self.original_root}/files/git.clone.sh"],
-    ["mv", "ocaml", "$ESY_TOOLCHAIN-sysroot"]
+    ["cp", "-aR", "ocaml/.", "."],
+    ["mv", "ocaml", "__ocaml"]
   ],
   "build": [
     [
