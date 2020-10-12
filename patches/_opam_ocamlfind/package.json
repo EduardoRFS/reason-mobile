@@ -2,8 +2,10 @@
   "exported_env": {
     "OCAML_TOPLEVEL_PATH": "#{@opam/ocamlfind.install}/toplevel"
   },
+  "build_env": {
+    "PATH": "$ESY_TOOLCHAIN_OCAML/bin:$PATH"
+  },
   "build": [
-    ["export", "PATH=$ESY_TOOLCHAIN_OCAML/bin:$PATH"],
     [
       "./configure",
       "-bindir", "$cur__install/bin",
