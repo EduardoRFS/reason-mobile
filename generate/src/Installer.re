@@ -109,7 +109,7 @@ module Make = (Args: {
   };
   let readdir = dir => Lwt.catch(() => readdir(dir), _ => await([]));
   let main = () => {
-    let pwd = Unix.getenv("PWD");
+    let pwd = Unix.getcwd();
     // TODO: use proper opam parsing
     let dirs = [pwd, Filename.concat(pwd, "default." ++ target)];
     let.await files =
