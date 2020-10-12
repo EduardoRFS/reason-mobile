@@ -39,8 +39,7 @@ let copy_source = node => {
   };
 
   let from = node.Node.build_plan.sourcePath ++ "/.";
-  let to_ = "#{self.root}/" ++ Node.prefix(node);
-  let default = [["rm", "-rf", to_], ["cp", "-r", "-p", from, to_]];
+  let default = [["cp", "-r", "-p", from, "#{self.root}"]];
   patchSource |> Option.value(~default);
 };
 let copy_patch_files = node => {
@@ -49,7 +48,7 @@ let copy_patch_files = node => {
     let.some patch = node.Node.patch;
     patch.Patch.files_folder;
   };
-  let to_ = "#{self.root}/" ++ Node.prefix(node);
+  let to_ = "#{self.root}";
   [["cp", "-r", "#{self.original_root}/files/.", to_]];
 };
 let setup_install = node => [
@@ -84,7 +83,7 @@ let build = (nodes, node) => {
   copy_source(node)
   @ copy_patch_files(node)
   @ setup_install(node)
-  @ to_script([["cd", node |> Node.prefix]] @ commands);
+  @ to_script(commands);
 };
 
 let generateBin = Sys.argv[0];
@@ -98,5 +97,5 @@ let install = (nodes, node) => {
   let commands =
     commands
     @ [[generateBin, "--install", node.Node.target |> Node.target_to_string]];
-  to_script([["cd", node |> Node.prefix]] @ commands);
+  to_script(commands);
 };
