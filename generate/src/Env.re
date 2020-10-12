@@ -151,6 +151,7 @@ let build_env_ocamlfind = (_nodes, node) => [
     "OCAMLFIND_DESTDIR",
     `String("#{self.install}/" ++ Node.prefix(node) ++ "/lib"),
   ),
+  // TODO: add this only if depends on @opam/topkg
   (
     "TOPKG_CONF_TOOLCHAIN",
     `String(node.Node.target |> Node.target_to_string),

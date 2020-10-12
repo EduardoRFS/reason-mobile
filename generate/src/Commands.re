@@ -58,7 +58,7 @@ let patch_dune = (node, command) => {
 };
 // TODO: autoconf
 
-let build = (nodes, node) => {
+let build = (~is_root=false, nodes, node) => {
   let source_build = node.Node.build_plan.build |> Option.value(~default=[]);
 
   let commands =
@@ -66,10 +66,12 @@ let build = (nodes, node) => {
     |> List.map(patch_dune(node))
     |> List.filter(command => !is_installer(command));
 
-  copy_source(node)
-  @ copy_patch_files(node)
-  @ setup_install(node)
-  @ commands;
+  is_root
+    ? commands
+    : copy_source(node)
+      @ copy_patch_files(node)
+      @ setup_install(node)
+      @ commands;
 };
 
 let generateBin = Sys.argv[0];

@@ -161,6 +161,10 @@ let add_as_mock = (name, folder) => {
 
 let main = () => {
   let.await nodes = create_nodes();
+
+  let root_host = esy.Esy.lock.node |> StringMap.find(esy.Esy.lock.root);
+  let source_name = root_host.Esy.Node.name;
+
   let nodes_map =
     nodes |> List.map(node => (node.Node.name, node)) |> StringMap.of_list;
 
@@ -178,7 +182,14 @@ let main = () => {
        });
 
   let build_map =
-    nodes_map |> StringMap.map(node => Commands.build(nodes_map, node));
+    nodes_map
+    |> StringMap.map(node =>
+         Commands.build(
+           ~is_root=node.Node.native == source_name,
+           nodes_map,
+           node,
+         )
+       );
   let install_map =
     nodes_map |> StringMap.map(node => Commands.install(nodes_map, node));
   let env_map = nodes_map |> StringMap.map(node => Env.env(nodes_map, node));
@@ -283,9 +294,6 @@ let main = () => {
        })
     |> Lwt.all;
 
-  let root_host = esy.Esy.lock.node |> StringMap.find(esy.Esy.lock.root);
-  let source_name = root_host.Esy.Node.name;
-
   let root_name = target_name(`Target(target.name), source_name);
   let root = mocks |> List.find(mock => mock.manifest.name == root_name);
 
@@ -328,13 +336,7 @@ let main = () => {
       ("resolutions", `Assoc(resolutions)),
       (
         "esy",
-        {
-          ...root_mock.manifest.esy,
-          buildsInSource: false,
-          // TODO: remove prefix and use that instead
-          build: [],
-          install: [],
-        }
+        {...root_mock.manifest.esy, buildsInSource: false, install: []}
         |> mock_esy_manifest_to_yojson,
       ),
     ]);
