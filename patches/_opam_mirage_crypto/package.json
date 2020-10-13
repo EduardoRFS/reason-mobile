@@ -1,0 +1,6 @@
+{
+  "build": [
+    ["sh", "-c", "patch -p1 < config.patch"],
+    ["dune", "build", "-p", "mirage-crypto"]
+  ]
+}
