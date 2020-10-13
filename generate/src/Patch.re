@@ -17,26 +17,26 @@ type t = {
   files_folder: option(string),
 };
 
-let root_folder = {
+let patches_folder = {
   let default =
     Filename.concat(
       Filename.current_dir_name,
       Filename.concat("..", "patches"),
     );
   let.apply () = Option.value(~default);
-  Sys.getenv_opt("ESY__PATCHES");
+  Sys.getenv_opt("ESY__GENERATE_PATCHES");
 };
 
 // TODO: think a little bit better if using .none as early return is the best idea
 let get_patch_folder = (name, version) => {
   let name_and_version = name ++ "." ++ version;
-  let folders = Sys.readdir(root_folder) |> Array.to_list;
+  let folders = Sys.readdir(patches_folder) |> Array.to_list;
   let.some name = {
     // TODO: read the version from the original manifest
     let.none () = folders |> List.find_opt((==)(name_and_version));
     folders |> List.find_opt((==)(name));
   };
-  Filename.concat(root_folder, name) |> some;
+  Filename.concat(patches_folder, name) |> some;
 };
 
 let get_path = (name, version) => {

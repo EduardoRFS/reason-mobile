@@ -44,6 +44,16 @@ if (Sys.argv[1] == "--install") {
   exit(0);
 };
 
+let sysroot_folder = {
+  let default =
+    Filename.concat(
+      Filename.current_dir_name,
+      Filename.concat("..", "sysroot"),
+    );
+  let.apply () = Option.value(~default);
+  Sys.getenv_opt("ESY__GENERATE_SYSROOT");
+};
+
 let esy = {
   let.await exists = Lwt_unix.file_exists("./esy.json");
   exists ? Esy.make("esy.json") : Esy.make("package.json");
@@ -299,13 +309,18 @@ let main = () => {
 
   let.await additional_resolutions = {
     // TODO: avoid copying ndk when not needed
-    let.await tools = add_as_mock("sysroot.tools", "../sysroot/tools")
+    let.await tools =
+      add_as_mock("sysroot.tools", Filename.concat(sysroot_folder, "tools"))
     and.await sysroot =
       add_as_mock(
         "@_" ++ target.name ++ "/sysroot",
-        "../sysroot/" ++ target.name,
+        Filename.concat(sysroot_folder, target.name),
       )
-    and.await ndk = add_as_mock("@_android/ndk", "../sysroot/android.ndk");
+    and.await ndk =
+      add_as_mock(
+        "@_android/ndk",
+        Filename.concat(sysroot_folder, "android.ndk"),
+      );
     await([tools, sysroot] @ (target.system == "android" ? [ndk] : []));
   };
   let resolutions =
