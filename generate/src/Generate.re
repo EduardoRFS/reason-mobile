@@ -187,6 +187,8 @@ let main = () => {
          [
            node.Node.native,
            Lib.target_name(node.target, "sysroot"),
+           // TODO: split installer from generate to avoid cache invalidation
+           "generate",
            ...dependencies,
          ];
        });

@@ -74,8 +74,6 @@ let build = (~is_root=false, nodes, node) => {
       @ commands;
 };
 
-let generateBin = Sys.argv[0];
-
 let install = (nodes, node) => {
   let source_install =
     node.Node.build_plan.install |> Option.value(~default=[]);
@@ -84,6 +82,6 @@ let install = (nodes, node) => {
     |> List.filter(command => !is_installer(command));
   let commands =
     commands
-    @ [[generateBin, "--install", node.Node.target |> Node.target_to_string]];
+    @ [["generate", "--install", node.Node.target |> Node.target_to_string]];
   commands;
 };
