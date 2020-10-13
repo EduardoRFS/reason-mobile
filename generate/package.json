@@ -1,6 +1,20 @@
 {
   "name": "generate",
   "license": "MIT",
+  "esy": {
+    "build": "dune build -p generate",
+    "install": "esy-installer generate.install",
+    "exportedEnv": {
+      "ESY__GENERATE_PATCHES": {
+        "scope": "global",
+        "val": "#{self.root}/../patches"
+      },
+      "ESY__GENERATE_SYSROOT": {
+        "scope": "global",
+        "val": "#{self.root}/../sysroot"
+      }
+    }
+  },
   "dependencies": {
     "@esy-ocaml/reason": "^3.6.2",
     "@opam/dune": "^2.7.0",
