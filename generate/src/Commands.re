@@ -38,9 +38,9 @@ let copy_patch_files = node => {
   [["cp", "-r", "#{self.original_root}/files/.", to_]];
 };
 let setup_install = node => [
-  ["mv", "#{self.install}", "install"],
+  ["mv", "#{self.install}", "_____install_____"],
   ["mkdir", "-p", "#{self.install}/_esy"],
-  ["mv", "install", "#{self.install}/" ++ Node.prefix(node)],
+  ["mv", "_____install_____", "#{self.install}/" ++ Node.prefix(node)],
 ];
 let patch_dune = (node, command) => {
   // TODO: test
