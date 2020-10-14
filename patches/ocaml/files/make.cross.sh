@@ -149,5 +149,6 @@ make_target \
 
 ## Install
 
+cp $CAMLRUN runtime/ocamlrun
 make_host install
 make_host -C debugger install
