@@ -337,7 +337,10 @@ let main = () => {
         |> StringMap.bindings
         |> List.filter_map(((_, node)) => {
              let version = node.Esy.Node.version;
-             version |> Lib.starts_with(~pattern="github:")
+             version
+             |> Lib.starts_with(~pattern="github:")
+             || version
+             |> Lib.starts_with(~pattern="path:")
                ? Some((node.Esy.Node.name, `String(version))) : None;
            });
       },
