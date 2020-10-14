@@ -3,15 +3,15 @@
   "license": "MIT",
   "esy": {
     "build": "dune build -p generate",
-    "install": "esy-installer generate.install",
+    "install": "esy-installer generate/generate.install",
     "exportedEnv": {
       "ESY__GENERATE_PATCHES": {
         "scope": "global",
-        "val": "#{self.root}/../patches"
+        "val": "#{self.root}/patches"
       },
       "ESY__GENERATE_SYSROOT": {
         "scope": "global",
-        "val": "#{self.root}/../sysroot"
+        "val": "#{self.root}/sysroot"
       }
     }
   },
