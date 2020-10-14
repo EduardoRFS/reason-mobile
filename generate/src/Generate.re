@@ -188,9 +188,9 @@ let main = () => {
            node.Node.native,
            Lib.target_name(node.target, "sysroot"),
            // TODO: split installer from generate to avoid cache invalidation
-           "generate",
            ...dependencies,
-         ];
+         ]
+         @ ["generate"];
        });
 
   let build_map =
@@ -327,6 +327,15 @@ let main = () => {
   };
   let resolutions =
     [
+      {
+        esy.Esy.lock.node
+        |> StringMap.bindings
+        |> List.filter_map(((_, node)) => {
+             let version = node.Esy.Node.version;
+             version |> Lib.starts_with(~pattern="github:")
+               ? Some((node.Esy.Node.name, `String(version))) : None;
+           });
+      },
       mocks
       |> List.map(({file, manifest, _}) => (manifest.name, `String(file))),
       esy.Esy.manifest.resolutions |> StringMap.bindings,

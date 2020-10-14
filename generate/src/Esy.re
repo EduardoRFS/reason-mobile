@@ -23,6 +23,7 @@ module Node = {
   type t = {
     id: string,
     name: string,
+    version: string,
     dependencies: list(string),
     devDependencies: list(string),
   };
