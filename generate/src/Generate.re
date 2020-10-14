@@ -55,14 +55,19 @@ let sysroot_folder = {
 };
 
 let esy = {
-  let.await exists = Lwt_unix.file_exists("./esy.json");
-  exists ? Esy.make("esy.json") : Esy.make("package.json");
+  let.apply () = Lwt_main.run;
+  let.await manifest =
+    switch (Sys.getenv_opt("ESY__ROOT_PACKAGE_CONFIG_PATH")) {
+    | Some(path) => Filename.basename(path) |> await
+    | None =>
+      let+await exists = Lwt_unix.file_exists("./esy.json");
+      exists ? "esy.json" : "package.json";
+    };
+  Esy.make(manifest);
 };
-let esy = esy |> Lwt_main.run;
 
 // TODO: multiple targets
 let target = {
-  // TODO: can crash
   let parts = Sys.argv[1] |> String.split_on_char('.');
   switch (parts |> List.rev) {
   | [arch, ...system] =>
