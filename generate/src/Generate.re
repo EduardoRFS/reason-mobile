@@ -339,6 +339,7 @@ let main = () => {
   let dependencies: list((string, Yojson.Safe.t)) =
     [
       esy.Esy.manifest.dependencies |> StringMap.bindings,
+      esy.Esy.manifest.devDependencies |> StringMap.bindings,
       root.manifest.dependencies |> StringMap.bindings,
     ]
     |> List.concat
