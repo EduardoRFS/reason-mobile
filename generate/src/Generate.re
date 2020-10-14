@@ -341,6 +341,8 @@ let main = () => {
              |> Lib.starts_with(~pattern="github:")
              || version
              |> Lib.starts_with(~pattern="path:")
+             || version
+             |> Lib.starts_with(~pattern="archive:")
                ? Some((node.Esy.Node.name, `String(version))) : None;
            });
       },
