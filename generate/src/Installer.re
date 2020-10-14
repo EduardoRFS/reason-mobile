@@ -1,5 +1,10 @@
 open Helper;
 
+let map_with_concurrency = (concurrency, f) => {
+  let queue = Lwt_pool.create(concurrency, () => Lwt.return());
+  xs => xs |> List.map(x => Lwt_pool.use(queue, () => f(x))) |> Lwt.all;
+};
+
 module Make = (Args: {
                  let target: string;
                  let install_folder: string;
@@ -152,24 +157,28 @@ module Make = (Args: {
     let.await () = Lib.mkdirp(folders |> String.concat(" "));
     let.await _ =
       files
-      |> List.map(((`From(from), `To(to_))) => {
-           let optional = from |> Lib.starts_with(~pattern="?");
-           let from = {
-             let from =
-               optional
-                 ? String.sub(from, 1, String.length(from) - 1) : from;
-             Filename.is_relative(from) ? Filename.concat(pwd, from) : from;
-           };
-           let.await exists = Lwt_unix.file_exists(from);
-           switch (optional, exists) {
-           | (true, false) => await()
-           // TODO: should I ensure the file exists even when not optional?
-           | _ =>
-             let+await _ = Lib.exec("ln -s -f " ++ from ++ " " ++ to_);
-             ();
-           };
-         })
-      |> Lwt.all;
+      // TODO: needed because limit of file descriptors
+      |> map_with_concurrency(
+           32,
+           ((`From(from), `To(to_))) => {
+             let optional = from |> Lib.starts_with(~pattern="?");
+             let from = {
+               let from =
+                 optional
+                   ? String.sub(from, 1, String.length(from) - 1) : from;
+               Filename.is_relative(from)
+                 ? Filename.concat(pwd, from) : from;
+             };
+             let.await exists = Lwt_unix.file_exists(from);
+             switch (optional, exists) {
+             | (true, false) => await()
+             // TODO: should I ensure the file exists even when not optional?
+             | _ =>
+               let+await _ = Lib.exec("ln -s -f " ++ from ++ " " ++ to_);
+               ();
+             };
+           },
+         );
     await();
   };
 };
