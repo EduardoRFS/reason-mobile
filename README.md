@@ -36,7 +36,7 @@ Currently a couple of big projects can be built with small or zero changes, `esy
 
 ### Android
 
-Both `android.arm64` and `android.x86_64` are supposed to work out of box, as it has no dependency in the system.
+Both `android.arm64` and `android.x86_64` are supposed to work out of box, as it has no dependency in the system and will download the toolchain from `android.ndk`.
 
 ### iOS
 
@@ -48,10 +48,10 @@ With that done, `ios.arm64` and `ios.simulator.x86_64` should work
 ### Linux Musl
 
 For macOS you should follow this `https://github.com/FiloSottile/homebrew-musl-cross`
-For Linux installing the `http://musl.cc/` toolchain should be enough
-
 If you have `aarch64-linux-musl-gcc`, `linux.musl.arm64` should work
 If you have `x86_64-linux-musl-gcc`, `linux.musl.x86_64` should work
+
+For Linux both should work out of the box, as it will download the toolchain from `https://musl.cc/`
 
 ## What it is
 
