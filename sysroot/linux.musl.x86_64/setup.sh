@@ -13,10 +13,6 @@ gen_tools () {
   HOST="$(which $TOOL_NAME)"
   TARGET="$(which $BASE_TRIPLE-$TOOL_NAME || which $TOOL_NAME)"
 
-  if [ "$(uname)" == "Linux" ] && [ "$TOOL_NAME" == "gcc" ]; then
-    TARGET="REALGCC=$HOST musl-gcc"
-  fi
-
   sysroot-gen-tools "$TOOLCHAIN" "$TARGET_TRIPLE" "$TOOL_NAME" "$TARGET" "$HOST"
 }
 
