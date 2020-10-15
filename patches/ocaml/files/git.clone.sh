@@ -3,7 +3,8 @@
 set -e
 set -u
 
-BRANCH="4.10"
+## TODO: make a proper default branch
+BRANCH="4.10+android"
 if [ "$ESY_TOOLCHAIN_SYSTEM" == "android" ]; then
   BRANCH="4.10+android"
 fi
@@ -14,4 +15,5 @@ fi
 git clone \
   --single-branch --depth 1 \
   --branch $BRANCH \
+  --recursive \
   https://github.com/EduardoRFS/ocaml.git
