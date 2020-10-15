@@ -24,6 +24,7 @@ module Node = {
     id: string,
     name: string,
     version: string,
+    overrides: list(Yojson.Safe.t),
     dependencies: list(string),
     devDependencies: list(string),
   };

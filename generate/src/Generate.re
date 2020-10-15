@@ -337,13 +337,19 @@ let main = () => {
         |> StringMap.bindings
         |> List.filter_map(((_, node)) => {
              let version = node.Esy.Node.version;
-             version
-             |> Lib.starts_with(~pattern="github:")
-             || version
-             |> Lib.starts_with(~pattern="path:")
-             || version
-             |> Lib.starts_with(~pattern="archive:")
-               ? Some((node.Esy.Node.name, `String(version))) : None;
+             switch (version |> String.split_on_char(':')) {
+             | ["github", ..._]
+             | ["path", ..._] =>
+               Some((node.Esy.Node.name, `String(version)))
+             // TODO: only known case is esy-gmp
+             | ["archive", ..._] =>
+               switch (node.Esy.Node.overrides) {
+               | [`String(manifest)] =>
+                 Some((node.Esy.Node.name, `String(manifest)))
+               | _ => None
+               }
+             | _ => None
+             };
            });
       },
       mocks
