@@ -1,0 +1,6 @@
+{
+  "build": [
+    ["sh", "-c", "patch -p1 < ./bytes0.patch"],
+    ["dune", "build", "-p", "parsexp"]
+  ]
+}

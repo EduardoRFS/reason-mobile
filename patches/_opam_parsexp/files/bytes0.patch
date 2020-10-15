@@ -1,0 +1,20 @@
+diff --git a/src/bytes0.ml b/src/bytes0.ml
+new file mode 100644
+index 0000000..0fabb71
+--- /dev/null
++++ b/src/bytes0.ml
+@@ -0,0 +1,2 @@
++external get16 : bytes -> pos:int -> int = "%caml_bytes_get16"
++external set16 : bytes -> pos:int -> int -> unit = "%caml_bytes_set16"
+diff --git a/src/dune b/src/dune
+index 5317bb6..7df3123 100644
+--- a/src/dune
++++ b/src/dune
+@@ -3,6 +3,3 @@
+  (lint
+   (pps ppx_js_style -check-doc-comments ppx_compare ppx_sexp_conv
+    -type-conv-keep-w32=impl -apply=js_style,type_conv)))
+-
+-(rule (targets bytes0.ml) (deps (:first_dep gen/gen_bytes0.exe))
+- (action (bash "./%{first_dep} > %{targets}")))
+\ No newline at end of file
