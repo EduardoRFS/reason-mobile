@@ -1,6 +1,8 @@
 {
   "name": "@_android/ndk",
-  "dependencies": {},
+  "dependencies": {
+    "sysroot.tools": "*"
+  },
   "esy": {
     "build": "sh setup.sh",
     "exportedEnv": {
