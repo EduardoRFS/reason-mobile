@@ -20,7 +20,7 @@ ln -s $FILE "$cur__bin/$NAME"
 chmod +x "$cur__bin/$NAME"
 
 cat > $FILE <<EOF
-#! /bin/sh
+#! $(which bash)
 
 set -e
 set -u
