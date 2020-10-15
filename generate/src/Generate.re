@@ -315,9 +315,9 @@ let main = () => {
   let root = mocks |> List.find(mock => mock.manifest.name == root_name);
 
   let.await additional_resolutions = {
-    // TODO: avoid copying ndk when not needed
     let.await tools =
       add_as_mock("sysroot.tools", Filename.concat(sysroot_folder, "tools"))
+    // TODO: avoid copying ndk and musl_cc when not needed
     and.await sysroot =
       add_as_mock(
         "@_" ++ target.name ++ "/sysroot",
@@ -327,8 +327,17 @@ let main = () => {
       add_as_mock(
         "@_android/ndk",
         Filename.concat(sysroot_folder, "android.ndk"),
+      )
+    and.await musl_cc =
+      add_as_mock(
+        "@_linux.musl/cc",
+        Filename.concat(sysroot_folder, "linux.musl.cc"),
       );
-    await([tools, sysroot] @ (target.system == "android" ? [ndk] : []));
+    await(
+      [tools, sysroot]
+      @ (target.system == "android" ? [ndk] : [])
+      @ (target.system == "linux.musl" ? [musl_cc] : []),
+    );
   };
   let resolutions =
     [

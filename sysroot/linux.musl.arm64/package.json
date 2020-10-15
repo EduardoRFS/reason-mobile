@@ -1,7 +1,8 @@
 {
   "name": "@_linux.musl.arm64/sysroot",
   "dependencies": {
-    "sysroot.tools": "*"
+    "sysroot.tools": "*",
+    "@_linux.musl/cc": "*"
   },
   "esy": {
     "build": "sh setup.sh",
