@@ -1,0 +1,20 @@
+{
+  "build_env": {
+    "CPATH": null,
+    "CPPFLAGS": null,
+    "LDFLAGS": null,
+    "LIBRARY_PATH": null
+  },
+  "build": [
+    [
+      "./configure",
+      "--enable-fat",
+      "--prefix=${cur__install}",
+      "--with-pic",
+      "--build=$ESY_TOOLCHAIN_BUILD",
+      "--host=$ESY_TOOLCHAIN_FULL_HOST",
+      "CC=$ESY_TOOLCHAIN_CC"
+    ],
+    ["make", "-j4"]
+  ]
+}
