@@ -1,0 +1,79 @@
+diff --git a/config/discover.ml b/config/discover.ml
+index 44db589..40e2acf 100644
+--- a/config/discover.ml
++++ b/config/discover.ml
+@@ -46,7 +46,6 @@ let extract_from_target word_size str =
+   else
+        no_def
+ 
+-
+ let inc_gmp = {|
+   #include <gmp.h>
+   int main() {return 0;}
+@@ -57,16 +56,32 @@ let inc_mpir = {|
+   int main() {return 0;}
+ |}
+ 
+-
+-let check_code c code lib = C.c_test c code ~link_flags:["-l"^lib]
++let check_code c code lib =
++  let flags =
++    match C.Pkg_config.get c with
++    | None -> None
++    | Some pc ->
++        match C.Pkg_config.query pc ~package:lib with
++        | None -> None
++        | Some conf -> Some (conf.cflags, conf.libs) in
++
++  let (c_flags, link_flags) =
++    match flags with
++    | None -> ([], ["-l" ^ lib])
++    | Some flags -> flags in
++
++  if C.c_test c code ~c_flags ~link_flags then
++    Some (c_flags, link_flags)
++  else
++    None
+ 
+ let check_gmp c = match check_code c inc_gmp "gmp" with
+-  | true -> Some ("-DHAS_GMP", "-lgmp")
+-  | false -> None
++  | Some (c_flags, link_flags) -> Some (["-DHAS_GMP"] @ c_flags, link_flags)
++  | None -> None
+ 
+ let check_mpir c = match check_code c inc_mpir "mpir" with
+-  | true -> Some ("-DHAS_MPIR", "-lmpir")
+-  | false -> None
++  | Some (c_flags, link_flags) -> Some (["-DHAS_MPIR"] @ c_flags, link_flags)
++  | None -> None
+ 
+ let check_gmp_or_mpir_raw c =
+   if not(C.c_test c inc_gmp || C.c_test c inc_mpir)
+@@ -100,12 +115,12 @@ let () =
+     let defines, ldflags =match !param_cflags, !param_ldflags with
+     | [], [] -> begin
+                   match check_gmp_or_mpir c with
+-                  | Some (cflag,ldflag) -> cflag :: defines, [ldflag]
++                  | Some (cflag, ldflag) -> cflag @ defines, ldflag
+                   | None -> failwith "Cannot find GMP nor MPIR"
+                 end
+     | c_flags, ld_flags ->  begin
+                   match check_gmp_or_mpir c with
+-                  | Some (cflag,_) -> cflag :: defines @ c_flags, ld_flags
++                  | Some (cflag,_) -> cflag @ defines @ c_flags, ld_flags
+                   | None -> failwith "Cannot find GMP nor MPIR"
+                 end
+     in
+diff --git a/config/dune b/config/dune
+index f94f9d8..1217621 100644
+--- a/config/dune
++++ b/config/dune
+@@ -5,6 +5,5 @@
+ (rule
+  (targets ldflags.sxp cflags.sxp cflags asflags arch ldflags)
+  (deps discover.exe)
+- (action (run ./discover.exe)))
+-
+-
++ (action
++  (run ./discover.exe)))

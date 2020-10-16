@@ -1,0 +1,6 @@
+{
+  "build": [
+    ["sh", "-c", "patch -p1 < pkg-config.patch"],
+    ["dune", "build", "-p", "zarith"]
+  ]
+}
