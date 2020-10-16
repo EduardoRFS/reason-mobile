@@ -124,17 +124,14 @@ make_target () {
 
 ## missing ocamldoc, ocamltest, ocamldoc.opt, ocamltest.opt, so copy them?
 ## mostly extracted from opt.opt on ocaml/Makefile, but no coldstart
+
 make_host runtime coreall
-make_host \
-  opt-core \
-  ocaml \
-  ocamlc.opt \
-  ocamlopt.opt \
-  otherlibraries \
-  ocamldebugger \
-  ocamllex.opt \
-  ocamltoolsopt \
-  ocamltoolsopt.opt
+make_host ocaml
+make_host opt-core
+make_host ocamlc.opt
+make_host ocamlopt.opt
+make_host otherlibraries ocamldebugger
+make_host ocamllex.opt ocamltoolsopt ocamltoolsopt.opt
 
 rm $(find . | grep -e '\.cm.$')
 make_target -C stdlib all allopt
