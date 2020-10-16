@@ -1,0 +1,21 @@
+diff --git a/dune b/dune
+index 3bc3b10..874edb1 100644
+--- a/dune
++++ b/dune
+@@ -9,7 +9,7 @@
+ (rule
+  (targets libzarith_c_stubs%{ext_lib} dllzarith_c_stubs%{ext_dll})
+  (deps   caml_z_arch.o caml_z.o)
+- (action (run ocamlmklib -o zarith_c_stubs %{deps} %{read-lines:config/ldflags})))
++ (action (run %{env:ocamlmklib=ocamlmklib} -o zarith_c_stubs %{deps} %{read-lines:config/ldflags})))
+ 
+ (executable
+  (name z_pp)
+diff --git a/dune-project b/dune-project
+index 3474e94..da8c5b8 100644
+--- a/dune-project
++++ b/dune-project
+@@ -1,2 +1,2 @@
+-(lang dune 1.3)
++(lang dune 1.4)
+ (name zarith)

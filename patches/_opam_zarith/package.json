@@ -1,6 +1,7 @@
 {
   "build": [
     ["sh", "-c", "patch -p1 < pkg-config.patch"],
+    ["sh", "-c", "patch -p1 < ocamlmklib.patch"],
     ["dune", "build", "-p", "zarith"]
   ]
 }
