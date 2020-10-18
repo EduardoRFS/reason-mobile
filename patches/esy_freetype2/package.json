@@ -5,18 +5,18 @@
   },
   "build": [
     ["mkdir", "-p", "_build"],
-    ["cd", "_build"],
     [
       "cmake",
       "-GUnix Makefiles",
-      "../",
+      "-B", "_build",
+      "./",
       "-DCMAKE_INSTALL_PREFIX=$cur__install",
       "-DCMAKE_BUILD_TYPE=Release",
       "-DCMAKE_POSITION_INDEPENDENT_CODE=TRUE",
       "-DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=TRUE",
       "$ESY_TOOLCHAIN_CMAKE"
     ],
-    ["make", "-j6"]
+    ["make", "-C", "_build", "-j4"]
   ],
   "install": [
     ["make", "-C", "_build", "install"]
