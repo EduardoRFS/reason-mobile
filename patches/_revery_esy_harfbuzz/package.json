@@ -6,19 +6,7 @@
   "build": [
     ["sh", "esy/prep.sh"],
     ["touch", "_build/src/harfbuzz.def"],
-    ["cd", "_build"
-    ],
-    [
-      "./configure",
-      "--prefix=$cur__install",
-      "--build=$ESY_TOOLCHAIN_BUILD",
-      "--host=$ESY_TOOLCHAIN_HOST",
-      "--with-icu=no",
-      "--disable-dependency-tracking",
-      "CC=$ESY_TOOLCHAIN_CC",
-      "CXX=$ESY_TOOLCHAIN_CXX"
-    ],
-    ["cd", "../"],
+    ["sh", "configure-cross.sh"],
     ["sh", "esy/build.sh"]
   ]
 }
