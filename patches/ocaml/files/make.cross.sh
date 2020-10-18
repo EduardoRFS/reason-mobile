@@ -125,6 +125,11 @@ make_target () {
 ## missing ocamldoc, ocamltest, ocamldoc.opt, ocamltest.opt, so copy them?
 ## mostly extracted from opt.opt on ocaml/Makefile, but no coldstart
 
+if [ "$ESY_TOOLCHAIN_SYSTEM" == "linux" ]; then
+  patch -p1 < static.patch
+  echo 'MKEXE_OPT=$(MKEXE) -static' >> Makefile.config
+fi
+
 make_host runtime coreall
 make_host ocaml
 make_host opt-core
