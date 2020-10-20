@@ -1,5 +1,7 @@
 {
   "build_env": {
+    "PKG_CONFIG_PATH": "",
+    "PKG_CONFIG_LIBDIR": "",
     "HOST_REVERY": "#{revery.target_dir}"
   },
   "build": [
