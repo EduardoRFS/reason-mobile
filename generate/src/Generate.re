@@ -347,9 +347,6 @@ let main = () => {
         |> List.filter_map(((_, node)) => {
              let version = node.Esy.Node.version;
              switch (version |> String.split_on_char(':')) {
-             | ["github", ..._]
-             | ["path", ..._] =>
-               Some((node.Esy.Node.name, `String(version)))
              // TODO: only known case is esy-gmp
              | ["archive", ..._] =>
                switch (node.Esy.Node.overrides) {
@@ -357,7 +354,7 @@ let main = () => {
                  Some((node.Esy.Node.name, `String(manifest)))
                | _ => None
                }
-             | _ => None
+             | _ => Some((node.Esy.Node.name, `String(version)))
              };
            });
       },
