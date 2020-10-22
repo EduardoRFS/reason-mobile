@@ -36,7 +36,7 @@ CLANG_ARGS="-isysroot $SDK_SYSROOT --target=$DARWIN_TRIPLE -miphoneos-version-mi
 LD_ARGS="$ARCH_ARGS -platform_version ios $IOS_VERSION $SDK_VERSION -syslibroot $SDK_SYSROOT"
 
 gen_tools ar ""
-gen_tools as "$ARCH_ARGS"
+gen_tools as "$CLANG_ARGS"
 gen_tools clang "$CLANG_ARGS"
 gen_tools clang++ "$CLANG_ARGS"
 gen_tools ld "$LD_ARGS"
