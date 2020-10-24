@@ -4,7 +4,7 @@ set -e
 set -u
 
 ## TODO: make a proper default branch
-BRANCH="4.10+android"
+BRANCH="4.10+ios"
 if [ "$ESY_TOOLCHAIN_SYSTEM" == "android" ]; then
   BRANCH="4.10+android"
 fi
