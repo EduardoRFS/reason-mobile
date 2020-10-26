@@ -1,0 +1,45 @@
+name: Hello Reason
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    working-directory: hello-reason
+
+jobs:
+  native:
+    name: Build for Native
+
+    strategy:
+      matrix:
+        system: [ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: 14
+
+      - name: Install esy
+        run: npm install -g esy
+
+      - name: Create esy wrapper
+        run: |
+          echo '{
+            "source": "./package.json",
+            "override": {
+              "dependencies": {
+                "reason-mobile": "github:EduardoRFS/reason-mobile:generate.json#'"${GITHUB_SHA}"'"
+              }
+            }
+          }' > generate.json
+
+      - uses: EduardoRFS/github-action@587b2d1ac6e6762ac239848f0c2ae00b4db4509b
+        with:
+          working-directory: hello-reason
+          manifest: ./generate.json
+          cache-key: ${{ hashFiles('esy.lock/index.json') }}
