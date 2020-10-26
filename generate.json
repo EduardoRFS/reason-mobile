@@ -12,6 +12,10 @@
       "ESY__GENERATE_SYSROOT": {
         "scope": "global",
         "val": "#{self.root}/sysroot"
+      },
+      "ESY__GENERATE_INSTALLER": {
+        "scope": "global",
+        "val": "#{self.root}/generate-installer"
       }
     }
   },

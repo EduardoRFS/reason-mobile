@@ -33,17 +33,6 @@ type target = {
   name: string,
 };
 
-module type Installer = {let main: unit => Lwt.t(unit);};
-if (Sys.argv[1] == "--install") {
-  module Installer =
-    Installer.Make({
-      let install_folder = Sys.getenv("cur__install");
-      let target = Sys.argv[2];
-    });
-  Installer.main() |> Lwt_main.run;
-  exit(0);
-};
-
 let sysroot_folder = {
   let default =
     Filename.concat(
@@ -52,6 +41,15 @@ let sysroot_folder = {
     );
   let.apply () = Option.value(~default);
   Sys.getenv_opt("ESY__GENERATE_SYSROOT");
+};
+let installer_folder = {
+  let default =
+    Filename.concat(
+      Filename.current_dir_name,
+      Filename.concat("..", "generate-installer"),
+    );
+  let.apply () = Option.value(~default);
+  Sys.getenv_opt("ESY__GENERATE_INSTALLER");
 };
 
 let esy = {
@@ -192,10 +190,9 @@ let main = () => {
          [
            node.Node.native,
            Lib.target_name(node.target, "sysroot"),
-           // TODO: split installer from generate to avoid cache invalidation
+           "generate-installer",
            ...dependencies,
-         ]
-         @ ["generate"];
+         ];
        });
 
   let build_map =
@@ -332,9 +329,11 @@ let main = () => {
       add_as_mock(
         "@_linux.musl/cc",
         Filename.concat(sysroot_folder, "linux.musl.cc"),
-      );
+      )
+    and.await installer = add_as_mock("generate-installer", installer_folder);
+
     await(
-      [tools, sysroot]
+      [installer, tools, sysroot]
       @ (target.system == "android" ? [ndk] : [])
       @ (target.system == "linux.musl" ? [musl_cc] : []),
     );

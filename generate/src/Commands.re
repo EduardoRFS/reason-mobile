@@ -82,6 +82,6 @@ let install = (nodes, node) => {
     |> List.filter(command => !is_installer(command));
   let commands =
     commands
-    @ [["generate", "--install", node.Node.target |> Node.target_to_string]];
+    @ [["generate-installer", node.Node.target |> Node.target_to_string]];
   commands;
 };
