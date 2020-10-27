@@ -145,3 +145,54 @@ jobs:
           manifest: ./${{ matrix.target }}.json
           working-directory: hello-reason
           cache-key: ${{ matrix.target }}-${{ hashFiles('esy.lock/index.json') }}
+
+  ios:
+    name: iOS
+    needs: native
+    strategy:
+      fail-fast: false
+      matrix:
+        system: [macos-latest]
+        target: [ios.arm64, ios.simulator.x86_64]
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: 14
+
+      - name: Install esy
+        run: npm install -g esy
+
+      - name: Create esy wrapper
+        run: |
+          echo '{
+            "source": "./package.json",
+            "override": {
+              "dependencies": {
+                "reason-mobile": "github:EduardoRFS/reason-mobile:generate.json#'"${GITHUB_SHA}"'"
+              }
+            }
+          }' > generate.json
+
+      - uses: EduardoRFS/github-action@587b2d1ac6e6762ac239848f0c2ae00b4db4509b
+        with:
+          working-directory: hello-reason
+          manifest: ./generate.json
+          cache-key: ${{ hashFiles('esy.lock/index.json') }}
+
+      - name: Generate wrapper
+        run: esy @generate generate ${{ matrix.target }}
+
+      - name: list findlib
+        run: esy @generate ls "%{store}%/findlib"
+
+      - uses: EduardoRFS/github-action@587b2d1ac6e6762ac239848f0c2ae00b4db4509b
+        with:
+          manifest: ./${{ matrix.target }}.json
+          working-directory: hello-reason
+          cache-key: ${{ matrix.target }}-${{ hashFiles('esy.lock/index.json') }}
