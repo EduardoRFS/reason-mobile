@@ -1,5 +1,14 @@
 open Helper;
 
+let rec map_serial = (f, xs) =>
+  switch (xs) {
+  | [] => await([])
+  | [x, ...xs] =>
+    let.await x = f(x);
+    let.await xs = map_serial(f, xs);
+    await([x, ...xs]);
+  };
+
 let map_with_concurrency = (concurrency, f) => {
   let queue = Lwt_pool.create(concurrency, () => Lwt.return());
   xs => xs |> List.map(x => Lwt_pool.use(queue, () => f(x))) |> Lwt.all;
@@ -125,12 +134,13 @@ module Make = (Args: {
          })
       |> Lwt.all
       |> Lwt.map(List.concat);
-    let.await files =
+    let.await manifests =
       files
       |> List.filter(Lib.ends_with(~pattern=".install"))
       |> List.sort(String.compare)
       |> List.rev
       |> List.map(file => {
+           print_endline(file);
            let name = file |> Filename.basename |> Filename.remove_extension;
            let+await data = Lib.read_file(file);
            let pkg_name =
@@ -143,42 +153,45 @@ module Make = (Args: {
                : name;
            parse(pkg_name, data);
          })
-      |> Lwt.all
-      |> Lwt.map(List.concat);
+      |> Lwt.all;
 
-    if (List.length(files) == 0) {
+    let all_files = manifests |> List.concat;
+    if (List.length(all_files) == 0) {
       exit(0);
     };
 
     let folders =
-      files
+      all_files
       |> List.map(((_, `To(to_))) => Filename.dirname(to_))
       |> List.sort_uniq(String.compare);
     let.await () = Lib.mkdirp(folders |> String.concat(" "));
-    let.await _ =
-      files
-      // TODO: needed because limit of file descriptors
-      |> map_with_concurrency(
-           32,
-           ((`From(from), `To(to_))) => {
-             let optional = from |> Lib.starts_with(~pattern="?");
-             let from = {
-               let from =
-                 optional
-                   ? String.sub(from, 1, String.length(from) - 1) : from;
-               Filename.is_relative(from)
-                 ? Filename.concat(pwd, from) : from;
-             };
-             let.await exists = Lwt_unix.file_exists(from);
-             switch (optional, exists) {
-             | (true, false) => await()
-             // TODO: should I ensure the file exists even when not optional?
-             | _ =>
-               let+await _ = Lib.exec("ln -s -f " ++ from ++ " " ++ to_);
-               ();
-             };
-           },
-         );
+
+    // TODO: needed because limit of file descriptors
+    let link_files =
+      map_with_concurrency(
+        32,
+        ((`From(from), `To(to_))) => {
+          let optional = from |> Lib.starts_with(~pattern="?");
+          let from = {
+            let from =
+              optional ? String.sub(from, 1, String.length(from) - 1) : from;
+            Filename.is_relative(from) ? Filename.concat(pwd, from) : from;
+          };
+          let.await exists = Lwt_unix.file_exists(from);
+          switch (optional, exists) {
+          | (true, false) => await()
+          // TODO: should I ensure the file exists even when not optional?
+          | _ =>
+            let+await _ = Lib.exec("ln -s -f " ++ from ++ " " ++ to_);
+            ();
+          };
+        },
+      );
+    /*
+       each manifest needs to run in series,
+       otherwise pastel.install and pastel-android.arm64.install can be mixed
+     */
+    let.await _ = manifests |> map_serial(link_files);
     await();
   };
 };
@@ -189,4 +202,3 @@ module Installer =
     let target = Sys.argv[1];
   });
 Installer.main() |> Lwt_main.run;
-
