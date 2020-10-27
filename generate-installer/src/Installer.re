@@ -14,10 +14,14 @@ let map_with_concurrency = (concurrency, f) => {
   xs => xs |> List.map(x => Lwt_pool.use(queue, () => f(x))) |> Lwt.all;
 };
 
-module Make = (Args: {
-                 let target: string;
-                 let install_folder: string;
-               }) => {
+module Make =
+       (
+         Args: {
+           let verbose: bool;
+           let target: string;
+           let install_folder: string;
+         },
+       ) => {
   open Args;
   let normalize_opam_to = (prefix, to_) => {
     // TODO: check if exists some exception
@@ -140,7 +144,7 @@ module Make = (Args: {
       |> List.sort(String.compare)
       |> List.rev
       |> List.map(file => {
-           print_endline(file);
+           Printf.printf("parsing manifest: %s\n%!", file);
            let name = file |> Filename.basename |> Filename.remove_extension;
            let+await data = Lib.read_file(file);
            let pkg_name =
@@ -200,5 +204,6 @@ module Installer =
   Make({
     let install_folder = Sys.getenv("cur__install");
     let target = Sys.argv[1];
+    let verbose = Sys.getenv_opt("VERBOSE") != None;
   });
 Installer.main() |> Lwt_main.run;
