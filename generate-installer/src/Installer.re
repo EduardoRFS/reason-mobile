@@ -186,7 +186,7 @@ module Make =
           | (true, false) => await()
           // TODO: should I ensure the file exists even when not optional?
           | _ =>
-            let+await _ = Lib.exec("ln -s -f " ++ from ++ " " ++ to_);
+            let+await _ = Lib.exec("ln -sfn " ++ from ++ " " ++ to_);
             ();
           };
         },
