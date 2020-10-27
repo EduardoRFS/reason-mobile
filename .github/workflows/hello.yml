@@ -38,7 +38,7 @@ jobs:
             }
           }' > generate.json
 
-      - uses: EduardoRFS/github-action@587b2d1ac6e6762ac239848f0c2ae00b4db4509b
+      - uses: EduardoRFS/github-action@8c8a899590cabc093e0430c9207f75d87562cc7b
         with:
           working-directory: hello-reason
           manifest: ./generate.json
@@ -60,9 +60,9 @@ jobs:
             linux.musl.x86_64,
           ]
         exclude:
-          - system: ubuntu-latest
+          - system: ubuntu
             target: ios.arm64
-          - system: ubuntu-latest
+          - system: ubuntu
             target: ios.simulator.x86_64
 
     name: Build ${{ matrix.target }} on ${{ matrix.system }}
@@ -90,7 +90,7 @@ jobs:
             }
           }' > generate.json
 
-      - uses: EduardoRFS/github-action@587b2d1ac6e6762ac239848f0c2ae00b4db4509b
+      - uses: EduardoRFS/github-action@8c8a899590cabc093e0430c9207f75d87562cc7b
         with:
           working-directory: hello-reason
           manifest: ./generate.json
@@ -99,7 +99,7 @@ jobs:
       - name: Generate wrapper
         run: esy @generate generate ${{ matrix.target }}
 
-      - uses: EduardoRFS/github-action@587b2d1ac6e6762ac239848f0c2ae00b4db4509b
+      - uses: EduardoRFS/github-action@8c8a899590cabc093e0430c9207f75d87562cc7b
         with:
           manifest: ./${{ matrix.target }}.json
           working-directory: hello-reason
