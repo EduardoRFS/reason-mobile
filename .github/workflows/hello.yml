@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        system: [ubuntu-latest, macos-latest]
+        system: [ubuntu, macos]
         target:
           [
             android.arm64,
@@ -65,8 +65,8 @@ jobs:
           - system: ubuntu-latest
             target: ios.simulator.x86_64
 
-    name: Build ${{ matrix.target }}
-    runs-on: ${{ matrix.system }}
+    name: Build ${{ matrix.target }} on ${{ matrix.system }}
+    runs-on: ${{ matrix.system }}-latest
 
     steps:
       - name: Checkout code
