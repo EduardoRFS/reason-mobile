@@ -99,8 +99,5 @@ jobs:
       - name: Generate wrapper
         run: esy @generate generate ${{ matrix.target }}
 
-      - uses: EduardoRFS/github-action@8c8a899590cabc093e0430c9207f75d87562cc7b
-        with:
-          manifest: ./${{ matrix.target }}.json
-          working-directory: hello-reason
-          cache-key: ${{ matrix.target }}-${{ hashFiles('esy.lock/index.json') }}
+      - name: Build ${{ matrix.target }}
+        run: esy @${{ matrix.target }} build
