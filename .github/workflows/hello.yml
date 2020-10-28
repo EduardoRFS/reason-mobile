@@ -64,6 +64,11 @@ jobs:
             target: ios.arm64
           - system: ubuntu
             target: ios.simulator.x86_64
+          ## TODO: fix linux.musl + macOS on the CI
+          - system: macos
+            target: linux.musl.arm64
+          - system: macos
+            target: linux.musl.x86_64
 
     name: Build ${{ matrix.target }} on ${{ matrix.system }}
     runs-on: ${{ matrix.system }}-latest
