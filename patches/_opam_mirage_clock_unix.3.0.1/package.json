@@ -1,0 +1,6 @@
+{
+  "build": [
+    ["sh", "-c", "patch -p1 < android.patch"],
+    ["dune", "build", "-p", "mirage-clock-unix"]
+  ]
+}
