@@ -58,6 +58,7 @@ jobs:
             ios.simulator.x86_64,
             linux.musl.arm64,
             linux.musl.x86_64,
+            freebsd.x86_64
           ]
         exclude:
           - system: ubuntu
@@ -69,6 +70,8 @@ jobs:
             target: linux.musl.arm64
           - system: macos
             target: linux.musl.x86_64
+          - system: macos
+            target: freebsd.x86_64
 
     name: Build ${{ matrix.target }} on ${{ matrix.system }}
     runs-on: ${{ matrix.system }}-latest
