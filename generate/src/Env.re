@@ -25,7 +25,6 @@ module Known_vars = {
       "LD_LIBRARY_PATH",
       "OCAML_SECONDARY_COMPILER_PREFIX",
       "OCAMLFIND_LDCONF",
-      "DUNE_BUILD_DIR",
       "DUNE_STORE_ORIG_SOURCE_DIR",
     ]
     @ esy
@@ -70,15 +69,15 @@ let unresolve_string = (~additional_ignore=[], nodes, node, string) => {
     let {Esy.sourcePath, rootPath, buildPath, stagePath, installPath, env, _} =
       (nodes |> StringMap.find(node.Node.native)).Node.build_plan;
     let prefix = Node.prefix(node);
-    let to_replace =
-      [
-        (name ++ ".original_root", sourcePath),
-        (name ++ ".root", rootPath),
-        (name ++ ".target_dir", buildPath),
-        (name ++ ".install", stagePath),
-        (name ++ ".install", installPath),
-      ]
-      |> List.map(((key, value)) => ("#{" ++ key ++ "}/" ++ prefix, value));
+    let make_key = key => "#{" ++ key ++ "}";
+    let with_prefix = key => make_key(key) ++ "/" ++ prefix;
+    let to_replace = [
+      (make_key(name ++ ".original_root"), sourcePath),
+      (make_key(name ++ ".root"), rootPath),
+      (make_key(name ++ ".target_dir"), buildPath),
+      (with_prefix(name ++ ".install"), stagePath),
+      (with_prefix(name ++ ".install"), installPath),
+    ];
 
     let variables = env |> StringMap.bindings;
 
