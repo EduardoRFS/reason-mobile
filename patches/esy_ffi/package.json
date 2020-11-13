@@ -1,0 +1,18 @@
+{
+  "build_env": {
+    "LIBRARY_PATH": null
+  },
+  "build": [
+    [
+      "./configure",
+      "--prefix=${cur__install}",
+      "--enable-shared",
+      "--with-pic",
+      "--build=$ESY_TOOLCHAIN_BUILD",
+      "--host=$ESY_TOOLCHAIN_FULL_HOST",
+      "CC=$ESY_TOOLCHAIN_CC",
+      "CXX=$ESY_TOOLCHAIN_CXX"
+    ],
+    ["make", "-j4"]
+  ]
+}
