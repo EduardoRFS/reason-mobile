@@ -1,0 +1,28 @@
+diff --git a/Makefile b/Makefile
+index 4edd338..8d465de 100644
+--- a/Makefile
++++ b/Makefile
+@@ -168,7 +168,7 @@ libffi.config: src/discover/commands.mli src/discover/commands.ml src/discover/d
+ 	./discover -ocamlc "$(OCAMLFIND) ocamlc" > $@ || (rm $@ && false)
+ 
+ asneeded.config:
+-	./src/discover/determine_as_needed_flags.sh >> $@
++	./src/discover/determine_as_needed_flags.sh "$(OCAMLFIND)" >> $@
+ 
+ # dependencies
+ depend: configure
+diff --git a/src/discover/determine_as_needed_flags.sh b/src/discover/determine_as_needed_flags.sh
+index f10346a..ad288f0 100755
+--- a/src/discover/determine_as_needed_flags.sh
++++ b/src/discover/determine_as_needed_flags.sh
+@@ -1,7 +1,9 @@
+ #!/bin/sh
+ 
++OCAMLFIND=$1
++
+ touch as_needed_test.ml
+-if ocamlopt -shared -cclib -Wl,--no-as-needed as_needed_test.ml -o as_needed_test.cmxs 2>/dev/null
++if $OCAMLFIND ocamlopt -shared -cclib -Wl,--no-as-needed as_needed_test.ml -o as_needed_test.cmxs 2>/dev/null
+ then
+     echo 'as_needed_flags=-Wl,--no-as-needed'
+ else

@@ -1,8 +1,6 @@
 {
   "build": [
-    [
-      "bash",
-      "esy_build.sh"
-    ]
+    ["sh", "-c", "patch -p1 < as-needed-cross-compile.patch"],
+    ["bash", "esy_build.sh"]
   ]
 }
