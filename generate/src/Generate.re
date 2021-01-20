@@ -168,7 +168,8 @@ let add_as_mock = (name, folder) => {
   let.await hash = Lib.folder_sha1(folder);
   let hash = String.sub(hash, 0, 8);
   let mock_folder = ".mocks/" ++ hash;
-  let.await _ = Lib.exec("cp -a " ++ folder ++ " " ++ mock_folder);
+  /* this /. after the folder line ensures idempotency */
+  let.await _ = Lib.exec("cp -a " ++ folder ++ "/. " ++ mock_folder);
   Lwt.return((name, mock_folder ++ "/package.json"));
 };
 
