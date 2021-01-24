@@ -6,3 +6,4 @@ _esy
 .idea
 .merlin
 *.install
+BUILD.sh
