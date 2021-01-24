@@ -1,7 +1,7 @@
 open Pastel;
 Console.log(
   <Pastel>
-    <Pastel bold=true> "Hello" </Pastel>
-    <Pastel color=Red> "Reason" </Pastel>
+    <Pastel bold=true> "Tu tu ru~ " </Pastel>
+    <Pastel color=Red> "Mayushii desu!" </Pastel>
   </Pastel>,
 );
