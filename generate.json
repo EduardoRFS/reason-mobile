@@ -21,14 +21,14 @@
   },
   "dependencies": {
     "@esy-ocaml/reason": "^3.6.2",
-    "@opam/dune": "^2.7.0",
+    "@opam/dune": "2.7.1",
     "@opam/hex": "1.4.0",
     "@opam/lwt": "5.3.0",
     "@opam/mirage-crypto": "^0.8.4",
     "@opam/ppx_deriving": "4.5",
     "@opam/ppx_deriving_yojson": "3.5.3",
     "@opam/re": "1.9.0",
-    "ocaml": "~4.10.0"
+    "ocaml": "4.10.x"
   },
   "devDependencies": {
     "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam"
