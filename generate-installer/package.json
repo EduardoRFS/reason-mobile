@@ -1,5 +1,5 @@
 {
-  "name": "generate",
+  "name": "generate-installer",
   "license": "MIT",
   "esy": {
     "build": "dune build -p generate-installer",
