@@ -1,5 +1,5 @@
 {
-  "checksum": "25dc0214384f9e7a425c36c36722255d",
+  "checksum": "ab671e3f41bc9ad4ba85c7d364d74a64",
   "root": "hello-reason@link-dev:./package.json",
   "node": {
     "ocaml@4.10.2000@d41d8cd9": {
@@ -29,6 +29,7 @@
       "dependencies": [
         "ocaml@4.10.2000@d41d8cd9", "@reason-native/pastel@0.3.0@d41d8cd9",
         "@reason-native/console@0.1.0@d41d8cd9",
+        "@opam/dune-configurator@opam:2.7.1@96307faa",
         "@opam/dune@opam:2.7.1@baccb77f", "@esy-ocaml/reason@3.6.2@d41d8cd9"
       ],
       "devDependencies": []
@@ -335,6 +336,33 @@
         "ocaml@4.10.2000@d41d8cd9", "@opam/dune@opam:2.7.1@baccb77f"
       ]
     },
+    "@opam/dune-configurator@opam:2.7.1@96307faa": {
+      "id": "@opam/dune-configurator@opam:2.7.1@96307faa",
+      "name": "@opam/dune-configurator",
+      "version": "opam:2.7.1",
+      "source": {
+        "type": "install",
+        "source": [
+          "archive:https://opam.ocaml.org/cache/sha256/c3/c3528f2f8b3a2e3fe18e166fc823e6caeee8b7c78ade6b6fe4d2fa978070925d#sha256:c3528f2f8b3a2e3fe18e166fc823e6caeee8b7c78ade6b6fe4d2fa978070925d",
+          "archive:https://github.com/ocaml/dune/releases/download/2.7.1/dune-2.7.1.tbz#sha256:c3528f2f8b3a2e3fe18e166fc823e6caeee8b7c78ade6b6fe4d2fa978070925d"
+        ],
+        "opam": {
+          "name": "dune-configurator",
+          "version": "2.7.1",
+          "path": "esy.lock/opam/dune-configurator.2.7.1"
+        }
+      },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@4.10.2000@d41d8cd9", "@opam/result@opam:1.5@6b753c82",
+        "@opam/dune@opam:2.7.1@baccb77f", "@opam/csexp@opam:1.3.2@5cea14af",
+        "@esy-ocaml/substs@0.0.1@d41d8cd9"
+      ],
+      "devDependencies": [
+        "ocaml@4.10.2000@d41d8cd9", "@opam/result@opam:1.5@6b753c82",
+        "@opam/dune@opam:2.7.1@baccb77f", "@opam/csexp@opam:1.3.2@5cea14af"
+      ]
+    },
     "@opam/dune@opam:2.7.1@baccb77f": {
       "id": "@opam/dune@opam:2.7.1@baccb77f",
       "name": "@opam/dune",
@@ -365,6 +393,32 @@
       "devDependencies": [
         "ocaml@4.10.2000@d41d8cd9", "@opam/base-unix@opam:base@87d0b2eb",
         "@opam/base-threads@opam:base@36803084"
+      ]
+    },
+    "@opam/csexp@opam:1.3.2@5cea14af": {
+      "id": "@opam/csexp@opam:1.3.2@5cea14af",
+      "name": "@opam/csexp",
+      "version": "opam:1.3.2",
+      "source": {
+        "type": "install",
+        "source": [
+          "archive:https://opam.ocaml.org/cache/sha256/f2/f21f427b277f07e8bfd050e00c640a5893c1bf4b689147640fa383255dcf1c4a#sha256:f21f427b277f07e8bfd050e00c640a5893c1bf4b689147640fa383255dcf1c4a",
+          "archive:https://github.com/ocaml-dune/csexp/releases/download/1.3.2/csexp-1.3.2.tbz#sha256:f21f427b277f07e8bfd050e00c640a5893c1bf4b689147640fa383255dcf1c4a"
+        ],
+        "opam": {
+          "name": "csexp",
+          "version": "1.3.2",
+          "path": "esy.lock/opam/csexp.1.3.2"
+        }
+      },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@4.10.2000@d41d8cd9", "@opam/result@opam:1.5@6b753c82",
+        "@opam/dune@opam:2.7.1@baccb77f", "@esy-ocaml/substs@0.0.1@d41d8cd9"
+      ],
+      "devDependencies": [
+        "ocaml@4.10.2000@d41d8cd9", "@opam/result@opam:1.5@6b753c82",
+        "@opam/dune@opam:2.7.1@baccb77f"
       ]
     },
     "@opam/cppo@opam:1.6.7@c28ac3ae": {
