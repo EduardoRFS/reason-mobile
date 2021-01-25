@@ -9,4 +9,3 @@ _esy/
 reason-redis.install
 .DS_Store
 *.install
-esy.lock
