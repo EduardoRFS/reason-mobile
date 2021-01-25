@@ -37,7 +37,7 @@ jobs:
             "source": "./package.json",
             "override": {
               "dependencies": {
-                "${{ github.event.repository.name }}": "github:'"${GITHUB_REPOSITORY}"':generate.json#'"${GITHUB_SHA}"'"
+                "reason-mobile": "github:'"${GITHUB_REPOSITORY}"':generate.json#'"${GITHUB_SHA}"'"
               }
             }
           }' > generate.json
@@ -94,7 +94,7 @@ jobs:
             "source": "./package.json",
             "override": {
               "dependencies": {
-                "${{ github.event.repository.name }}": "github:'"${GITHUB_REPOSITORY}"':generate.json#'"${GITHUB_SHA}"'"
+                "reason-mobile": "github:'"${GITHUB_REPOSITORY}"':generate.json#'"${GITHUB_SHA}"'"
               }
             }
           }' > generate.json
