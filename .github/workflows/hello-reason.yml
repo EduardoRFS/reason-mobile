@@ -4,11 +4,11 @@ on: [push, pull_request]
 
 defaults:
   run:
-    working-directory: hello-reason
+    working-directory: examples/hello-reason
 
 jobs:
   native:
-    name: Build for Native
+    name: Build for native
 
     strategy:
       matrix:
@@ -17,10 +17,8 @@ jobs:
     runs-on: ${{ matrix.system }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: 14
 
@@ -33,18 +31,17 @@ jobs:
             "source": "./package.json",
             "override": {
               "dependencies": {
-                "reason-mobile": "github:EduardoRFS/reason-mobile:generate.json#'"${GITHUB_SHA}"'"
+                "reason-mobile": "github:'"${GITHUB_REPOSITORY}"':generate.json#'"${GITHUB_SHA}"'"
               }
             }
           }' > generate.json
-
-      - uses: EduardoRFS/github-action@8c8a899590cabc093e0430c9207f75d87562cc7b
+      - uses: esy/github-action@master
         with:
-          working-directory: hello-reason
+          working-directory: examples/hello-reason
           manifest: ./generate.json
           cache-key: ${{ hashFiles('esy.lock/index.json') }}
 
-  cross_compile:
+  cross-compile:
     needs: native
     strategy:
       fail-fast: false
@@ -54,18 +51,18 @@ jobs:
           [
             android.arm64,
             android.x86_64,
+            freebsd.x86_64,
             ios.arm64,
             ios.simulator.x86_64,
             linux.musl.arm64,
-            linux.musl.x86_64,
-            freebsd.x86_64
+            linux.musl.x86_64
           ]
         exclude:
           - system: ubuntu
             target: ios.arm64
           - system: ubuntu
             target: ios.simulator.x86_64
-          ## TODO: fix linux.musl + macOS on the CI
+          # TODO: Fix linux.musl + macOS on the CI
           - system: macos
             target: linux.musl.arm64
           - system: macos
@@ -77,10 +74,8 @@ jobs:
     runs-on: ${{ matrix.system }}-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: 14
 
@@ -93,14 +88,13 @@ jobs:
             "source": "./package.json",
             "override": {
               "dependencies": {
-                "reason-mobile": "github:EduardoRFS/reason-mobile:generate.json#'"${GITHUB_SHA}"'"
+                "reason-mobile": "github:'"${GITHUB_REPOSITORY}"':generate.json#'"${GITHUB_SHA}"'"
               }
             }
           }' > generate.json
-
-      - uses: EduardoRFS/github-action@8c8a899590cabc093e0430c9207f75d87562cc7b
+      - uses: esy/github-action@master
         with:
-          working-directory: hello-reason
+          working-directory: examples/hello-reason
           manifest: ./generate.json
           cache-key: ${{ hashFiles('esy.lock/index.json') }}
 
