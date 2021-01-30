@@ -278,15 +278,12 @@ let make = manifest_path => {
   let.await config = {
     let variables = ["project", "store", "localStore", "globalStorePrefix"];
     let.await values =
-      run(
-        name,
-        [
-          "exec-command",
-          "echo",
-          variables |> List.map(v => "%{" ++ v ++ "}%") |> String.concat(":"),
-        ],
-      );
-    switch (values |> String.split_on_char(':')) {
+      variables
+      |> Lwt_list.map_p(v =>
+           run(name, ["exec-command", "echo", "%{" ++ v ++ "}%"])
+         );
+
+    switch (values) {
     | [project, store, localStore, globalStorePrefix] =>
       {project, store, localStore, globalStorePrefix} |> await
     | _ => assert(false)
