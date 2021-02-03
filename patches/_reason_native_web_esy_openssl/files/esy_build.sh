@@ -15,7 +15,9 @@ if [ "$ESY_TOOLCHAIN_SYSTEM" == "android" ]; then
     --prefix=$cur__install \
     --openssldir=$cur__install/ssl \
     android-$ESY_TOOLCHAIN_PROCESSOR \
-    -D__ANDROID_API__=$ANDROID_API
+    -D__ANDROID_API__=$ANDROID_API \
+    no-shared # TODO: analyze if this is a good idea
+
 elif [ "$ESY_TOOLCHAIN_SYSTEM" == "ios" ]; then
   if [ "$ESY_TOOLCHAIN_PROCESSOR" == "x86_64" ]; then
     export CROSS_TOP="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer"
