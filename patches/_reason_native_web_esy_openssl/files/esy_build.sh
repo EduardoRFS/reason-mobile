@@ -33,7 +33,10 @@ elif [ "$ESY_TOOLCHAIN_SYSTEM" == "ios" ]; then
     --openssldir=$cur__install/ssl \
     iphoneos-cross
 else
-  ./openssl/config --prefix=$cur__install --openssldir=$cur__install/ssl --cross-compile-prefix=${ESY_TOOLCHAIN_HOST}-;
+  ./openssl/config \
+    --prefix=$cur__install 
+    --openssldir=$cur__install/ssl \
+    --cross-compile-prefix=${ESY_TOOLCHAIN_HOST}-;
 fi
 
 make -j8
