@@ -11,6 +11,9 @@ fi
 if [ "$ESY_TOOLCHAIN_SYSTEM" == "ios" ]; then
   BRANCH="4.10+ios"
 fi
+if [ "$ESY_TOOLCHAIN_SYSTEM" == "macos" ]; then
+  BRANCH="4.10+ios"
+fi
 
 git clone \
   --single-branch --depth 1 \

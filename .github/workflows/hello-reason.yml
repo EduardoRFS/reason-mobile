@@ -57,13 +57,16 @@ jobs:
             ios.arm64,
             ios.simulator.x86_64,
             linux.musl.arm64,
-            linux.musl.x86_64
+            linux.musl.x86_64,
+            macos.arm64
           ]
         exclude:
           - system: ubuntu
             target: ios.arm64
           - system: ubuntu
             target: ios.simulator.x86_64
+          - system: ubuntu
+            target: macos.arm64
           # TODO: Fix linux.musl + macOS on the CI
           - system: macos
             target: linux.musl.arm64
