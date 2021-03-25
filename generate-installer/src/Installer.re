@@ -191,10 +191,11 @@ module Make =
                  ? Filename.concat(pwd, from) : from;
              };
              let.await exists = Lwt_unix.file_exists(from);
-             switch (optional, exists) {
-             | (true, false) => await()
+             switch (exists) {
+             | false => await()
              // TODO: should I ensure the file exists even when not optional?
-             | _ =>
+             // about above, seems so for esy
+             | true =>
                let+await _ = Lib.exec("ln -sfn " ++ from ++ " " ++ to_);
                ();
              };
