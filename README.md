@@ -75,3 +75,4 @@ An esy package, making the compiler + sysroot available to esy. Currently we tar
 | iOS.simulator | x86_64 | 17.7.0 |
 | Linux         | arm64  | musl   |
 | Linux         | x86_64 | musl   |
+| macOS         | arm64  | 20.1.0 |
