@@ -12,13 +12,14 @@ jobs:
 
     strategy:
       matrix:
-        system: [ubuntu-latest, macos-latest]
+        system: [ubuntu, macos, macos-arm64]
 
-    runs-on: ${{ matrix.system }}
+    runs-on: ${{ matrix.system }}-latest
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+        if: ${{ matrix.system != 'macos-arm64' }}
         with:
           node-version: 14
 
@@ -46,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        system: [ubuntu, macos]
+        system: [ubuntu, macos, macos-arm64]
         target:
           [
             android.arm64,
@@ -69,6 +70,12 @@ jobs:
             target: linux.musl.x86_64
           - system: macos
             target: freebsd.x86_64
+          - system: macos-arm64
+            target: linux.musl.arm64
+          - system: macos-arm64
+            target: linux.musl.x86_64
+          - system: macos-arm64
+            target: freebsd.x86_64
 
     name: Build ${{ matrix.target }} on ${{ matrix.system }}
     runs-on: ${{ matrix.system }}-latest
@@ -76,6 +83,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+        if: ${{ matrix.system != 'macos-arm64' }}
         with:
           node-version: 14
 
