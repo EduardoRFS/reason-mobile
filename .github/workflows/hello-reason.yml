@@ -24,6 +24,7 @@ jobs:
           node-version: 14
 
       - name: Install esy
+        if: ${{ matrix.system != 'macos-arm64' }}
         run: npm install -g esy
 
       - name: Create esy wrapper
@@ -88,6 +89,7 @@ jobs:
           node-version: 14
 
       - name: Install esy
+        if: ${{ matrix.system != 'macos-arm64' }}
         run: npm install -g esy
 
       - name: Create esy wrapper
