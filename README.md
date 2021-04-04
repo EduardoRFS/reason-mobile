@@ -7,7 +7,7 @@ This repository is designed to provide tooling's to cross compile OCaml and Reas
 - esy@0.6.10
 - bash
 
-** warning, esy@0.6.10 actually matters **
+**warning, esy@0.6.10 actually matters**
 
 ## Example
 
