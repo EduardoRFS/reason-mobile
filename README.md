@@ -4,8 +4,10 @@ This repository is designed to provide tooling's to cross compile OCaml and Reas
 
 ## Requirements
 
-- esy@0.6.7
+- esy@0.6.10
 - bash
+
+** warning, esy@0.6.10 actually matters **
 
 ## Example
 
