@@ -164,10 +164,12 @@ let create_nodes = () => {
      })
   |> Lwt.all;
 };
+let mocks_folder = hash =>
+  esy.Esy.config.globalStorePrefix ++ "/" ++ "mocks/" ++ hash;
 let add_as_mock = (name, folder) => {
   let.await hash = Lib.folder_sha1(folder);
   let hash = String.sub(hash, 0, 8);
-  let mock_folder = ".mocks/" ++ hash;
+  let mock_folder = mocks_folder(hash);
   /* this /. after the folder line ensures idempotency */
   let.await _ = Lib.exec("cp -a " ++ folder ++ "/. " ++ mock_folder);
   Lwt.return((name, mock_folder ++ "/package.json"));
@@ -272,7 +274,7 @@ let main = () => {
            let hash = Lib.sha1(manifest_json ++ patch_checksum);
            String.sub(hash, 0, 8);
          };
-         let path = ".mocks/" ++ checksum;
+         let path = mocks_folder(checksum);
          let file = path ++ "/esy.json";
          let patch_files_folder = {
            let.some patch = node.Node.patch;
@@ -281,7 +283,6 @@ let main = () => {
          {manifest, path, file, patch_files_folder};
        });
 
-  let.await () = mkdirp(".mocks");
   let.await _ =
     mocks
     |> List.map(({path, file, manifest, patch_files_folder}) => {
