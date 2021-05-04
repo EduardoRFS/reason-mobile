@@ -104,6 +104,9 @@ jobs:
           - system: ubuntu
             word_size: 32
             target: linux.musl.armv6
+          - system: ubuntu
+            word_size: 32
+            target: linux.musl.armv7l
         exclude:
           - system: ubuntu
             target: ios.arm64
