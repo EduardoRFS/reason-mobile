@@ -12,7 +12,11 @@ jobs:
 
     strategy:
       matrix:
+        word_size: [64]
         system: [ubuntu, macos, macos-arm64]
+        include:
+          - system: ubuntu
+            word_size: 32
 
     runs-on: ${{ matrix.system }}-latest
 
@@ -27,7 +31,8 @@ jobs:
         if: ${{ matrix.system != 'macos-arm64' }}
         run: npm install -g esy
 
-      - name: Create esy wrapper
+      - name: Create esy wrapper 64bits
+        if: ${{ matrix.word_size == 64 }}
         run: |
           echo '{
             "source": "./package.json",
@@ -37,17 +42,52 @@ jobs:
               }
             }
           }' > generate.json
+
+      - name: Create esy wrapper 32bits
+        if: ${{ matrix.word_size == 32 }}
+        run: |
+          sudo apt-get install gcc-multilib
+          echo '{
+            "source": "./package.json",
+            "override": {
+              "dependencies": {
+                "reason-mobile": "github:'"${GITHUB_REPOSITORY}"':generate.json#'"${GITHUB_SHA}"'"
+              },
+              "resolutions": {
+                "ocaml": {
+                  "source": "esy-ocaml/ocaml#dd66cad318e04c7f2c753f8ce2fd8851e975f89a",
+                  "override": {
+                    "build": [
+                      [
+                        "./esy-configure",
+                        "--prefix", "$cur__install",
+                        "--build=x86_64-pc-linux-gnu",
+                        "--host=i386-linux",
+                        "CC=gcc -m32",
+                        "AS=as --32",
+                        "ASPP=gcc -m32 -c",
+                        "PARTIALLD=ld -r -melf_i386"
+                      ],
+                      "./esy-build"
+                    ]
+                  }
+                }
+              }
+            }
+          }' > generate.json
+
       - uses: esy/github-action@master
         with:
           working-directory: examples/hello-reason
           manifest: ./generate.json
-          cache-key: ${{ hashFiles('esy.lock/index.json') }}
+          cache-key: ${{ hashFiles('esy.lock/index.json') }}-${{ matrix.word_size }}
 
   cross-compile:
     needs: native
     strategy:
       fail-fast: false
       matrix:
+        word_size: [64]
         system: [ubuntu, macos, macos-arm64]
         target:
           [
@@ -58,8 +98,12 @@ jobs:
             ios.simulator.x86_64,
             linux.musl.arm64,
             linux.musl.x86_64,
-            macos.arm64
+            macos.arm64,
           ]
+        include:
+          - system: ubuntu
+            word_size: 32
+            target: linux.musl.armv6
         exclude:
           - system: ubuntu
             target: ios.arm64
@@ -95,7 +139,8 @@ jobs:
         if: ${{ matrix.system != 'macos-arm64' }}
         run: npm install -g esy
 
-      - name: Create esy wrapper
+      - name: Create esy wrapper 64bits
+        if: ${{ matrix.word_size == 64 }}
         run: |
           echo '{
             "source": "./package.json",
@@ -105,11 +150,45 @@ jobs:
               }
             }
           }' > generate.json
+
+      - name: Create esy wrapper 32bits
+        if: ${{ matrix.word_size == 32 }}
+        run: |
+          sudo apt-get install gcc-multilib
+          echo '{
+            "source": "./package.json",
+            "override": {
+              "dependencies": {
+                "reason-mobile": "github:'"${GITHUB_REPOSITORY}"':generate.json#'"${GITHUB_SHA}"'"
+              },
+              "resolutions": {
+                "ocaml": {
+                  "source": "esy-ocaml/ocaml#dd66cad318e04c7f2c753f8ce2fd8851e975f89a",
+                  "override": {
+                    "build": [
+                      [
+                        "./esy-configure",
+                        "--prefix", "$cur__install",
+                        "--build=x86_64-pc-linux-gnu",
+                        "--host=i386-linux",
+                        "CC=gcc -m32",
+                        "AS=as --32",
+                        "ASPP=gcc -m32 -c",
+                        "PARTIALLD=ld -r -melf_i386"
+                      ],
+                      "./esy-build"
+                    ]
+                  }
+                }
+              }
+            }
+          }' > generate.json
+
       - uses: esy/github-action@master
         with:
           working-directory: examples/hello-reason
           manifest: ./generate.json
-          cache-key: ${{ hashFiles('esy.lock/index.json') }}
+          cache-key: ${{ hashFiles('esy.lock/index.json') }}-${{ matrix.word_size == 64 }}
 
       - name: Generate wrapper
         run: esy @generate generate ${{ matrix.target }}
