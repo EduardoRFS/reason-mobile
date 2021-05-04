@@ -1,0 +1,75 @@
+{
+  "name": "@_linux.musl.armv7l/sysroot",
+  "dependencies": {
+    "sysroot.tools": "*"
+  },
+  "esy": {
+    "build": "sh setup.sh",
+    "exportedEnv": {
+      "ESY_TOOLCHAIN": {
+        "val": "linux.musl.armv7l",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_SYSTEM": {
+        "val": "linux",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_PROCESSOR": {
+        "val": "armv7l",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_SYSROOT": {
+        "val": "/",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CMAKE": {
+        "val": "-DCMAKE_TOOLCHAIN_FILE=#{self.install}/toolchain.cmake",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_BUILD": {
+        "val": "x86_64-pc-linux-gnu",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_HOST": {
+        "val": "armv7l-unknown-linux-musleabihf",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_FULL_HOST": {
+        "val": "armv7l-unknown-linux-musleabihf",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CC": {
+        "val": "armv7l-unknown-linux-musleabihf-gcc",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CXX": {
+        "val": "armv7l-unknown-linux-musleabihf-g++",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_AS": {
+        "val": "armv7l-unknown-linux-musleabihf-as",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_AR": {
+        "val": "armv7l-unknown-linux-musleabihf-ar",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_RANLIB": {
+        "val": "armv7l-unknown-linux-musleabihf-ranlib",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_ASPP": {
+        "val": "armv7l-unknown-linux-musleabihf-gcc -c",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_LD": {
+        "val": "armv7l-unknown-linux-musleabihf-ld",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_PARTIALLD": {
+        "val": "armv7l-unknown-linux-musleabihf-ld -r",
+        "scope": "global"
+      }
+    }
+  }
+}
