@@ -347,14 +347,22 @@ let main = () => {
         |> StringMap.bindings
         |> List.filter_map(((_, node)) => {
              let version = node.Esy.Node.version;
-             switch (version |> String.split_on_char(':')) {
+             switch (
+               version |> String.split_on_char(':'),
+               node.Esy.Node.overrides,
+             ) {
              // TODO: only known case is esy-gmp
-             | ["archive", ..._] =>
-               switch (node.Esy.Node.overrides) {
-               | [`String(manifest)] =>
-                 Some((node.Esy.Node.name, `String(manifest)))
-               | _ => None
-               }
+             | (["archive", ..._], [`String(manifest)]) =>
+               Some((node.Esy.Node.name, `String(manifest)))
+             | (["archive", ..._], _) => None
+             | (["github", ..._], [`Assoc(manifest)]) =>
+               Some((
+                 node.Esy.Node.name,
+                 `Assoc([
+                   ("source", `String(version)),
+                   ("override", `Assoc(manifest)),
+                 ]),
+               ))
              | _ => Some((node.Esy.Node.name, `String(version)))
              };
            });
