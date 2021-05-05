@@ -1,0 +1,82 @@
+{
+  "name": "@_android.armv7a/sysroot",
+  "dependencies": {
+    "sysroot.tools": "*",
+    "@_android/ndk": "*"
+  },
+  "esy": {
+    "build": [
+      [
+        "sh",
+        "setup.sh",
+        "#{@_android/ndk.install}/ndk/toolchains/llvm/prebuilt/#{os}-x86_64/bin"
+      ]
+    ],
+    "exportedEnv": {
+      "ESY_TOOLCHAIN": {
+        "val": "android.armv7a",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_SYSTEM": {
+        "val": "android",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_PROCESSOR": {
+        "val": "armv7a",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_SYSROOT": {
+        "val": "#{@_android/ndk.install}/ndk",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CMAKE": {
+        "val": "-DCMAKE_TOOLCHAIN_FILE=#{self.install}/toolchain.cmake",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_BUILD": {
+        "val": "x86_64-pc-linux-gnu",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_HOST": {
+        "val": "armv7a-unknown-linux-androideabi",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_FULL_HOST": {
+        "val": "armv7a-linux-androideabi24",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CC": {
+        "val": "armv7a-linux-androideabi24-clang",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_CXX": {
+        "val": "armv7a-linux-androideabi24-clang++",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_AS": {
+        "val": "armv7a-linux-androideabi24-as",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_AR": {
+        "val": "armv7a-linux-androideabi24-ar",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_RANLIB": {
+        "val": "armv7a-linux-androideabi24-ranlib",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_ASPP": {
+        "val": "armv7a-linux-androideabi24-clang -c",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_LD": {
+        "val": "armv7a-linux-androideabi24-ld",
+        "scope": "global"
+      },
+      "ESY_TOOLCHAIN_PARTIALLD": {
+        "val": "armv7a-linux-androideabi24-ld -r",
+        "scope": "global"
+      }
+    }
+  }
+}
