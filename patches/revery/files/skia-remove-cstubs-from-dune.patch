@@ -24,38 +24,48 @@ index e94b95bc..64b62ac2 100644
  let cxx_flags =
    switch (get_os) {
 diff --git a/packages/reason-skia/src/wrapped/bindings/dune b/packages/reason-skia/src/wrapped/bindings/dune
-index 149dd9e5..8bfee7af 100644
+index b3a4ac65..6dd82c79 100644
 --- a/packages/reason-skia/src/wrapped/bindings/dune
 +++ b/packages/reason-skia/src/wrapped/bindings/dune
-@@ -1,8 +1,3 @@
+@@ -1,11 +1,3 @@
 -(rule
 - (targets skia_generated_type_stubs.ml)
 - (deps ../stubgen/ml_types_stubgen.exe)
-- (action (with-stdout-to %{targets} (run %{deps}))))
+- (action
+-  (with-stdout-to
+-   %{targets}
+-   (run %{deps}))))
 -
  (library
   (name SkiaWrappedBindings)
   (flags -w -9)
 diff --git a/packages/reason-skia/src/wrapped/lib/dune b/packages/reason-skia/src/wrapped/lib/dune
-index f732b097..3d1abc2b 100644
+index 0ddb20ff..16e36204 100644
 --- a/packages/reason-skia/src/wrapped/lib/dune
 +++ b/packages/reason-skia/src/wrapped/lib/dune
-@@ -1,13 +1,3 @@
+@@ -1,20 +1,3 @@
 -(rule
 - (targets skia_generated_stubs.ml)
 - (deps ../stubgen/stubgen.exe)
-- (action (with-stdout-to %{targets} (run %{deps} -ml))))
+- (action
+-  (with-stdout-to
+-   %{targets}
+-   (run %{deps} -ml))))
 -
 -(rule
 - (targets skia_generated_stubs.c)
-- (deps (:stubgen ../stubgen/stubgen.exe))
-- (action (with-stdout-to %{targets} (run %{stubgen} -c))))
+- (deps
+-  (:stubgen ../stubgen/stubgen.exe))
+- (action
+-  (with-stdout-to
+-   %{targets}
+-   (run %{stubgen} -c))))
 -
  (library
-   (name SkiaWrapped)
-   (flags (-w -40 -w +26))
+  (name SkiaWrapped)
+  (flags
 diff --git a/packages/reason-skia/src/wrapped/stubgen/dune b/packages/reason-skia/src/wrapped/stubgen/dune
-index c90625aa..d5062ce7 100644
+index e098da9d..44f680d9 100644
 --- a/packages/reason-skia/src/wrapped/stubgen/dune
 +++ b/packages/reason-skia/src/wrapped/stubgen/dune
 @@ -1,17 +1,3 @@
@@ -76,3 +86,15 @@ index c90625aa..d5062ce7 100644
  (rule
   (targets ml_types_stubgen.c)
   (deps ./types_stubgen.exe)
+diff --git a/src/Native/shell.c b/src/Native/shell.c
+index aaeed87c..e7b3f046 100644
+--- a/src/Native/shell.c
++++ b/src/Native/shell.c
+@@ -15,6 +15,7 @@
+ #elif USE_GTK
+ #include "ReveryGtk.h"
+ #endif
++#include "utilities.h"
+ 
+ CAMLprim value revery_openURL(value vURL) {
+     CAMLparam1(vURL);
