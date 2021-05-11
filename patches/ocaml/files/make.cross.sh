@@ -4,6 +4,11 @@ set -e
 set -u
 set -x
 
+case "$(ocamlopt -version)" in
+  4.12.*) echo "4.12 compiler";;
+  *) echo "not 4.12 compiler"; exit 1;;
+esac
+
 TASKS="$(nproc || echo '8')"
 
 ## Parameters
@@ -127,8 +132,7 @@ make_target () {
 
 ## TODO: that clearly should be something else
 if [ "$ESY_TOOLCHAIN_SYSTEM" == "linux" ] || [ "$ESY_TOOLCHAIN_SYSTEM" == "freebsd" ]; then
-  patch -p1 < static.patch
-  echo 'MKEXE_OPT=$(MKEXE) -static' >> Makefile.config
+  echo 'MKEXE:=$(MKEXE) -static' >> Makefile.config
 fi
 
 make_host runtime coreall
@@ -141,7 +145,8 @@ make_host ocamllex.opt ocamltoolsopt ocamltoolsopt.opt
 
 rm $(find . | grep -e '\.cm.$')
 make_target -C stdlib all allopt
-make_target ocaml ocamlc ocamlopt
+make_target ocaml ocamlc
+make_target ocamlopt
 make_target otherlibraries otherlibrariesopt ocamltoolsopt
 make_target \
   driver/main.cmx \

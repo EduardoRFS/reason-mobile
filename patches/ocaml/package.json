@@ -3,12 +3,9 @@
     "OCAML_TOPLEVEL_PATH": "#{@opam/ocamlfind.install}/toplevel",
     "ESY_TOOLCHAIN_OCAML": "#{self.install}/$ESY_TOOLCHAIN-sysroot"
   },
-  "source": [
-    ["sh", "#{self.original_root}/files/git.clone.sh"],
-    ["cp", "-aR", "ocaml/.", "."],
-    ["mv", "ocaml", "__ocaml"]
-  ],
   "build": [
+    ["bash", "-c", "patch -p1 < cross-compile-camlrun.patch"],
+    ["bash", "-c", "patch -p1 < arm-additional-eabi.patch"],
     [
       "./configure",
       "--prefix=$cur__install",
