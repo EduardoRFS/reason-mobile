@@ -8,10 +8,13 @@
     "start": "#{self.target_dir}/default/bin/hello.exe"
   },
   "dependencies": {
-    "@esy-ocaml/reason": "^3.5.2",
-    "@opam/dune": "^2.8.2",
+    "@opam/reason": "^3.7.0",
+    "@opam/dune": "*",
     "@reason-native/console": "^0.1.0",
     "@reason-native/pastel": "^0.3.0",
-    "ocaml": "4.10.x"
+    "ocaml": "4.12.x"
+  },
+  "resolutions": {
+    "@esy-ocaml/reason": "EduardoRFS/reason:reason.json#35aa4df3de0daa60bdc1133dcf97855decac48f7"
   }
 }
