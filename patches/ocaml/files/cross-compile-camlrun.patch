@@ -1,0 +1,37 @@
+diff --git a/Makefile b/Makefile
+index 41d8e2636..70368e35b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1018,7 +1018,7 @@ toplevel/opttoploop.cmx: otherlibs/dynlink/dynlink.cmxa
+ make_opcodes := tools/make_opcodes$(EXE)
+ 
+ bytecomp/opcodes.ml: runtime/caml/instruct.h $(make_opcodes)
+-	runtime/ocamlrun$(EXE) $(make_opcodes) -opcodes < $< > $@
++	$(CAMLRUN) $(make_opcodes) -opcodes < $< > $@
+ 
+ bytecomp/opcodes.mli: bytecomp/opcodes.ml
+ 	$(CAMLC) -i $< > $@
+diff --git a/tools/Makefile b/tools/Makefile
+index 07e2eda1a..9c5847105 100644
+--- a/tools/Makefile
++++ b/tools/Makefile
+@@ -248,7 +248,7 @@ $(make_opcodes): make_opcodes.ml
+ 	$(CAMLC) $< -o $@
+ 
+ opnames.ml: $(ROOTDIR)/runtime/caml/instruct.h $(make_opcodes)
+-	$(ROOTDIR)/runtime/ocamlrun$(EXE) $(make_opcodes) -opnames < $< > $@
++	$(CAMLRUN) $(make_opcodes) -opnames < $< > $@
+ 
+ clean::
+ 	rm -f opnames.ml make_opcodes make_opcodes.exe make_opcodes.ml
+@@ -331,9 +331,7 @@ caml_tex := caml-tex$(EXE)
+ 
+ $(caml_tex): INCLUDES += $(addprefix -I $(ROOTDIR)/otherlibs/,str $(UNIXLIB))
+ $(caml_tex): $(caml_tex_files)
+-	$(ROOTDIR)/runtime/ocamlrun$(EXE) $(ROOTDIR)/ocamlc$(EXE) -nostdlib \
+-	                            -I $(ROOTDIR)/stdlib $(LINKFLAGS) -linkall \
+-	                            -o $@ -no-alias-deps $^
++	$(CAMLC) $(LINKFLAGS) -linkall -o $@ -no-alias-deps $^
+ 
+ # we need str and unix which depend on the bytecode version of other tools
+ # thus we delay building caml-tex to the opt.opt stage

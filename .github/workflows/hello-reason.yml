@@ -55,7 +55,7 @@ jobs:
               },
               "resolutions": {
                 "ocaml": {
-                  "source": "esy-ocaml/ocaml#dd66cad318e04c7f2c753f8ce2fd8851e975f89a",
+                  "source": "esy-ocaml/ocaml#b267980f969dc9c73c61cd509e7d63c870bb4996",
                   "override": {
                     "build": [
                       [
@@ -169,7 +169,7 @@ jobs:
               },
               "resolutions": {
                 "ocaml": {
-                  "source": "esy-ocaml/ocaml#dd66cad318e04c7f2c753f8ce2fd8851e975f89a",
+                  "source": "esy-ocaml/ocaml#b267980f969dc9c73c61cd509e7d63c870bb4996",
                   "override": {
                     "build": [
                       [
