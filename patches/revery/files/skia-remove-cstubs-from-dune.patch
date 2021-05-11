@@ -1,28 +1,3 @@
-diff --git a/packages/reason-harfbuzz/src/config/discover.re b/packages/reason-harfbuzz/src/config/discover.re
-index e94b95bc..64b62ac2 100644
---- a/packages/reason-harfbuzz/src/config/discover.re
-+++ b/packages/reason-harfbuzz/src/config/discover.re
-@@ -27,19 +27,12 @@ let c_flags = ["-fPIC", "-I", Sys.getenv("HARFBUZZ_INCLUDE_PATH")];
- let ccopt = s => ["-ccopt", s];
- let cclib = s => ["-cclib", s];
- 
--let extraFlags =
--  switch (get_os) {
--  | Windows => cclib("-lpthread")
--  | Linux => ccopt("-L/usr/lib")
--  | _ => []
--  };
--
- let lib_path_flags =
-   switch (get_os) {
-   | _ => [] @ ccopt("-L" ++ Sys.getenv("HARFBUZZ_LIB_PATH"))
-   };
- 
--let flags = [] @ cclib("-lharfbuzz") @ extraFlags @ lib_path_flags;
-+let flags = [] @ cclib("-lharfbuzz") @ lib_path_flags;
- 
- let cxx_flags =
-   switch (get_os) {
 diff --git a/packages/reason-skia/src/wrapped/bindings/dune b/packages/reason-skia/src/wrapped/bindings/dune
 index b3a4ac65..6dd82c79 100644
 --- a/packages/reason-skia/src/wrapped/bindings/dune
@@ -86,15 +61,3 @@ index e098da9d..44f680d9 100644
  (rule
   (targets ml_types_stubgen.c)
   (deps ./types_stubgen.exe)
-diff --git a/src/Native/shell.c b/src/Native/shell.c
-index aaeed87c..e7b3f046 100644
---- a/src/Native/shell.c
-+++ b/src/Native/shell.c
-@@ -15,6 +15,7 @@
- #elif USE_GTK
- #include "ReveryGtk.h"
- #endif
-+#include "utilities.h"
- 
- CAMLprim value revery_openURL(value vURL) {
-     CAMLparam1(vURL);
