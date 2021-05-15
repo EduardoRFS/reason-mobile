@@ -130,6 +130,9 @@ jobs:
             target: linux.musl.x86_64
           - system: macos-arm64
             target: freebsd.x86_64
+          # TODO: This was disabled only for the OCaml 4.12 PR
+          - system: ubuntu
+            target: freebsd.x86_64
 
     name: Build ${{ matrix.target }} on ${{ matrix.system }}
     runs-on: ${{ matrix.system }}-latest
