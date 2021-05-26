@@ -16,5 +16,8 @@
       "CC=$ESY_TOOLCHAIN_CC"
     ],
     ["make", "-j4"]
-  ]
+  ],
+  "dependencies": {
+    "@opam/conf-pkg-config": "*"
+  }
 }
