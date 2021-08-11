@@ -1,9 +1,9 @@
 {
   "build": [
-    ["sh", "-c", "patch -p1 < ./add-ocamlfind.patch"],
-    ["make", "OCAMLFIND_TOOLCHAIN=$ESY_TOOLCHAIN", "all"]
+    ["dune", "build", "-p", "opam-file-format", "@install"]
   ],
+  "install": [],
   "dependencies": {
-    "@opam/ocamlfind": "*"
+    "@opam/dune": "*"
   }
 }
