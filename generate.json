@@ -24,7 +24,7 @@
     "@opam/dune": "*",
     "@opam/hex": "^1.4.0",
     "@opam/lwt": "*",
-    "@opam/mirage-crypto": "^0.8.4",
+    "@opam/mirage-crypto": "^0.10.5",
     "@opam/ppx_deriving": "*",
     "@opam/ppx_deriving_yojson": "*",
     "@opam/re": "^1.9.0",
